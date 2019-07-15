@@ -1,0 +1,43 @@
+
+ {
+  "root_url": "http://localhost:3000",
+  "env": {
+    "1": {
+      "realm": "realm_name",
+      "auth-server-url": "https://auth.server.com",
+      "clients": [
+        {
+          "client_id": "client1",
+          "client_secret": "",
+          "title": "Anonymous Login / 2FA",
+          "display_block": [1, 2]
+        },
+        {
+          "client_id": "client2",
+          "client_secret": "",
+          "title": "Phone Login / SFA",
+          "display_block": [2]
+        }
+      ]
+    },
+    "3": {
+      "realm": "test",
+      "auth-server-url": "https://auth.server.com",
+      "clients": [
+        {
+          "client_id": "client1",
+          "client_secret": "",
+          "title": "Anonymous Login / 2FA",
+          "display_block": [1, 2]
+        },
+        {
+          "client_id": "client2",
+          "client_secret": "",
+          "title": "Phone Login / SFA",
+          "display_block": [1, 2]
+        }
+      ]
+    }
+
+  }
+}

@@ -1,0 +1,1 @@
+window.subscribe_topic();

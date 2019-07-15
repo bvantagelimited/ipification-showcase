@@ -1,0 +1,372 @@
+@import url('https://rsms.me/inter/inter.css');
+body * { font-family: 'Inter', sans-serif; }
+
+raiseText()
+	color grey
+	text-shadow  -1px 1px 0 white
+	-moz-text-shadow  -1px 1px 0 white
+	-webkit-text-shadow  -1px 1px 0 white
+
+body 
+	margin  0
+	padding  0
+	height  100%
+
+h2{
+	margin: 0 0 6px 0;
+	font-weight: bold; 
+}
+
+
+h6{
+	margin: 2px 0 20px 0;
+}
+
+hr{
+	margin 14px 0
+	border-top: 1px solid rgb(238, 238, 238);
+	border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+ul{
+	margin: 4px 0 0 0;
+}
+
+label, h6 {
+	color: #808080;
+	font-size: 13px;
+	font-weight: normal;
+	text-shadow: -1px 1px 0 #fff;
+}
+
+.form-login{
+	background: white;
+	border-radius: 4px;
+
+	.tab-title{
+		float:left;
+		margin-left: 10px;
+	}
+	.button-top-right{
+		float:right;
+		margin: 0 10px 20px 0;
+	}
+	margin-bottom 0;
+}
+
+.navbar-btn{
+	min-width: 100px
+	margin-right: 8px;
+	.btn{
+		min-width: 100px
+	}
+}
+
+.glyphicon{
+	margin-right: 8px;
+}
+
+/*
+	login window
+*/
+
+#login{
+	label{
+		margin-left: 2px;
+	}
+	.form-login{
+		padding: 0px 20px;
+		margin: auto;
+		margin-top: 70px;
+		position: relative;
+	}
+	.controls{
+		margin-top: 20px;
+	}
+	.btm-links{
+		font-size: .9em;
+		margin 2px 0 0 0
+		#forgot-password{
+			float left
+			margin-left 10px;
+		}
+		#create-account{
+			float right
+			margin-right 5px;
+		}
+	}
+
+	.info-icon{
+		background-image: url(../images/info.png);
+		width: 20px;
+		height: 20px;
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+		position: absolute;
+		right: 20px;
+		top: 10px;
+		cursor: pointer;
+	}
+
+	.block-button{
+		
+		padding: 20px 20px;
+		margin: 10px 0px;
+		border-radius: 8px;
+		position: relative;
+
+		button {
+				background-color: unset;
+				color: white;
+				border: 0;
+				cursor: pointer;
+				padding: 0px;
+				width: 100%;
+    		text-align: left;
+				font-size: 14px;
+
+				&:focus{
+					outline: none;
+					-webkit-box-shadow: none;
+  				box-shadow: none;
+				}
+
+				.right-icon{
+					background-image: url(../images/right.png);
+					width: 20px;
+					height: 20px;
+					background-repeat: no-repeat;
+					background-position: center;
+					background-size: cover;
+					position: absolute;
+					right: 20px;
+				}
+			}
+		
+
+		&.block-1{
+			background-image: linear-gradient(to right, #275EF5 , #8565FC);
+			box-shadow: 0px 3px 7px 2px #C7CBEE;
+
+			button{
+				padding: 5px 0px;
+			}
+
+			input {
+				background-color: transparent;
+				border: none;
+				border-radius: unset;
+				color: white;
+    		border-bottom: 1px solid white;
+				padding: 5px 0px;
+				font-size: 14px;
+
+				&:focus{
+					outline: none;
+					-webkit-box-shadow: none;
+  				box-shadow: none;
+				}
+			}
+			::placeholder{
+					color: #A0ABFB;
+			}
+		}
+
+		&.block-2{
+			background-image: linear-gradient(to right, #26C0BD , #00E0B5);
+			box-shadow: 0px 3px 7px 2px #b6f4df;
+
+			button {
+				padding: 25px;
+				padding-left: 48px;
+			}
+
+			.left-icon{
+				background-image: url(../images/phone.png);
+				width: 39px;
+				height: 39px;
+				background-repeat: no-repeat;
+				background-position: center;
+				background-size: cover;
+				position: absolute;
+				left: 15px;
+			}
+
+			.right-icon{
+				top: 45px;
+			}
+		}
+		&.block-3{
+			background-image: linear-gradient(to right, #FF6380 , #F33063);
+			box-shadow: 0px 3px 7px 2px #FBC1D7;
+
+			button {
+				padding: 25px;
+				padding-left: 48px;
+			}
+
+			.left-icon{
+				background-image: url(../images/lock.png);
+				width: 39px;
+				height: 39px;
+				background-repeat: no-repeat;
+				background-position: center;
+				background-size: cover;
+				position: absolute;
+				left: 15px;
+			}
+
+			.right-icon{
+				top: 45px;
+			}
+		}
+
+		&.block-4{
+			background-image: linear-gradient(to right, #26C0BD , #00E0B5);
+			box-shadow: 0px 3px 7px 2px #b6f4df;
+
+			button {
+				padding: 25px;
+				padding-left: 48px;
+			}
+
+			.left-icon{
+				background-image: url(../images/qrcode.png);
+				width: 39px;
+				height: 39px;
+				background-repeat: no-repeat;
+				background-position: center;
+				background-size: cover;
+				position: absolute;
+				left: 15px;
+				top: 35px;
+			}
+
+			.right-icon{
+				top: 45px;
+			}
+		}
+
+	}
+}
+
+@media (max-width: 768px) {
+	#login {
+		.form-login{
+			width:95%;
+		}
+	}
+}
+@media (min-width: 768px) {
+	#login {
+		.form-login{
+			width: 400px;
+		}
+	}
+}
+
+#account-form-container{
+	.form-login{
+		width:90%;
+		top: 30%;
+	}
+}
+
+/*
+	modal windows
+*/
+
+
+.modal_info{
+	.modal-dialog{
+		bottom: 0px;
+		position: absolute;
+		width: 100%;
+		max-width: 100%;
+		margin: 0px auto;
+
+		.modal-content{
+			max-width: 400px;
+			margin: 0px auto;
+		}
+
+		@media (max-width: 768px) {
+			.modal-content{
+				max-width: 100%;
+				margin: 0px auto;
+			}
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	.block-qr-code{
+		display: none
+	}
+}
+
+@media (min-width: 768px) {
+	#qrCode_info{
+		.modal-dialog{
+			bottom: 200px;
+
+			img{
+				width: 300px
+			}
+		}
+	}
+}
+	
+
+
+.center-vertical{
+	//height: 100vh;
+	position: relative;
+
+	form{
+		top: 40%;
+		margin:auto;
+		position: relative;
+		-webkit-transform: translateY(-50%);
+		-ms-transform: translateY(-50%);
+		transform: translateY(-50%);
+	}
+}
+
+.form-horizontal{
+	.form-buttons{
+		float right;
+		.btn{
+			width 80px
+			margin-left 6px
+		}
+	}
+	input, select{
+		height 30px
+	}
+}
+
+.json-pretty {
+    padding-left: 00px;
+    padding-right: 30px;
+}
+.json-selected {
+    background-color: rgba(139, 191, 228, 0.19999999999999996);
+}
+
+.json-string {
+    color: #6caedd;
+}
+
+.json-key {
+    color: #ec5f67;
+}
+
+.json-boolean {
+    color: #99c794;
+}
+
+.json-number {
+    color: #99c794;
+}

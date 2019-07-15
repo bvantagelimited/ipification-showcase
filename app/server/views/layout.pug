@@ -1,0 +1,23 @@
+doctype html
+html(lang="en")
+	head
+		title= title
+		link(rel="stylesheet", href=`${ROOT_URL}/vendor/bootstrap/4.0.0/bootstrap.min.css`)
+		link(rel='stylesheet', href=`${ROOT_URL}/css/animate.css`)
+		link(rel='stylesheet', href=`${ROOT_URL}/css/style.css?version=5`)
+		meta(charset='utf-8')
+		meta(name='viewport' content='width=device-width,initial-scale=1,user-scalable=no, shrink-to-fit=no')
+		meta(name='apple-mobile-web-app-capable' content='yes')
+		meta(name='apple-mobile-web-app-status-bar-style' content='black')
+		meta(http-equiv='Content-Type' content='text/html; charset=UTF-8')
+		meta(name='ROOT_URL', content=ROOT_URL)
+	body
+		div#ROOT_URL(style='display: none', url=ROOT_URL)
+		div#STATE_PARAM(style='display: none', state=state)
+		block content
+		script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js")
+		script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js", integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN", crossorigin="anonymous")
+		script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js", integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl", crossorigin="anonymous")
+		script(src=`${ROOT_URL}/js/base.js`)
+		script(src=`${ROOT_URL}/js/socket.js?version=3`)
+		block scripts

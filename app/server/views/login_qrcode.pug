@@ -1,0 +1,29 @@
+extends layout
+
+block content
+
+	#login.center-vertical
+		div.form-login
+			h2.text-center Login
+			h6.text-center Please Login To Your Account
+			.clearfix
+			hr
+			each client in clients
+				.form-group
+					h6.text-center !{client.title}
+						
+					div.text-center 
+						image.qrcode(src=client.qrCode)
+				.clearfix
+				hr
+				
+					
+		//footer.page-footer.font-small.blue
+			.footer-copyright.text-center.py-3
+				div= `server: ${auth_server_url}`
+				div= `realm: ${realm}`
+				div= `state: ${state}`
+				div(id='state_param', style="display: none", state=state)
+
+block scripts
+	script(src=`${ROOT_URL}/js/qrcode.js?version=1`)

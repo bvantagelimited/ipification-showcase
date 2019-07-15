@@ -1,0 +1,15 @@
+
+extends layout
+
+block content
+	include header
+	#login.center-vertical
+		form.well
+			h2.text-center Login Orange
+			.clearfix
+			hr
+			.form-group
+				.controls
+					a.btn.btn-primary.button-sign-in.btn-block(href=orange_auth_url)
+							span.glyphicon.glyphicon-lock
+							| Login

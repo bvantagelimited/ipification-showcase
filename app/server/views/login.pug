@@ -1,0 +1,84 @@
+
+extends layout
+
+block content
+	//- include header
+	#login.center-vertical
+		div.form-login
+			h3 IPification
+			h6 Secure access demo
+			span.info-icon
+			.clearfix
+
+			each client in sfa_clients
+				.block-button.block-1
+					.form-group
+						input.form-control(type='text', id='phone', name='phone', placeholder='Enter your phone number')
+					.form-group
+						.controls
+							button(type='button', 'onclick'=`login_phone('${client.client_id}', '${env_index}')`)
+								span.right-icon
+								span !{client.title}
+
+			each client, index in fa_clients
+				.block-button(class=`block-${index + 2}`)
+					button(type='button', 'onclick'=`goto_link('${ROOT_URL}/auth?env=${env_index}&client_id=${client.client_id}')`)
+						span.left-icon
+						span.right-icon
+						span !{client.title}
+
+			.block-button.block-4.block-qr-code
+				button(type='button', 'onclick'="show_qrcode()")
+					span.left-icon
+					span.right-icon
+					span QR Code
+
+	#app_info.modal_info.modal.animated.fadeInUp(tabindex="-1", role="dialog")
+		.modal-dialog
+			.modal-content
+				.modal-header
+					h5.modal-title About this demo
+					button.close(type='button' data-dismiss='modal' aria-label='Close')
+						span(aria-hidden='true') &times;
+				.modal-body
+					div.mb-4
+						strong realm
+						p #{realm}
+					div.mb-4
+						strong server
+						p #{auth_server_url}
+					div.mb-4
+						strong state
+						p #{state}
+	if ip_data
+		#response_info.modal_info.modal.animated.fadeInUp(tabindex="-1", role="dialog")
+			.modal-dialog
+				.modal-content
+					.modal-header
+						h5.modal-title Response
+						button.close(type='button' data-dismiss='modal' aria-label='Close')
+							span(aria-hidden='true') &times;
+					.modal-body
+						div.mb-4
+							strong realm
+							p #{realm}
+						div.mb-4
+							code!= ip_data.body
+
+	if qrCode
+		#qrCode_info.modal_info.modal.animated.fadeInUp(tabindex="-1", role="dialog")
+			.modal-dialog
+				.modal-content
+					.modal-header
+						h5.modal-title QR CODE
+						button.close(type='button' data-dismiss='modal' aria-label='Close')
+							span(aria-hidden='true') &times;
+					.modal-body
+						div.text-center 
+							image.qrcode(src=qrCode)
+		
+			
+				
+block scripts
+	script(src=`${ROOT_URL}/js/login.js?version=2`)
+	script(src=`${ROOT_URL}/js/qrcode.js?version=2`)

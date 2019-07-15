@@ -1,0 +1,300 @@
+@import url("https://rsms.me/inter/inter.css");
+body * {
+  font-family: 'Inter', sans-serif;
+}
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+h2 {
+  margin: 0 0 6px 0;
+  font-weight: bold;
+}
+h6 {
+  margin: 2px 0 20px 0;
+}
+hr {
+  margin: 14px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #fff;
+}
+ul {
+  margin: 4px 0 0 0;
+}
+label,
+h6 {
+  color: #808080;
+  font-size: 13px;
+  font-weight: normal;
+  text-shadow: -1px 1px 0 #fff;
+}
+.form-login {
+  background: #fff;
+  border-radius: 4px;
+  margin-bottom: 0;
+}
+.form-login .tab-title {
+  float: left;
+  margin-left: 10px;
+}
+.form-login .button-top-right {
+  float: right;
+  margin: 0 10px 20px 0;
+}
+.navbar-btn {
+  min-width: 100px;
+  margin-right: 8px;
+}
+.navbar-btn .btn {
+  min-width: 100px;
+}
+.glyphicon {
+  margin-right: 8px;
+}
+/*
+	login window
+*/
+#login label {
+  margin-left: 2px;
+}
+#login .form-login {
+  padding: 0px 20px;
+  margin: auto;
+  margin-top: 70px;
+  position: relative;
+}
+#login .controls {
+  margin-top: 20px;
+}
+#login .btm-links {
+  font-size: 0.9em;
+  margin: 2px 0 0 0;
+}
+#login .btm-links #forgot-password {
+  float: left;
+  margin-left: 10px;
+}
+#login .btm-links #create-account {
+  float: right;
+  margin-right: 5px;
+}
+#login .info-icon {
+  background-image: url("../images/info.png");
+  width: 20px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  cursor: pointer;
+}
+#login .block-button {
+  padding: 20px 20px;
+  margin: 10px 0px;
+  border-radius: 8px;
+  position: relative;
+}
+#login .block-button button {
+  background-color: unset;
+  color: #fff;
+  border: 0;
+  cursor: pointer;
+  padding: 0px;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+}
+#login .block-button button:focus {
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+#login .block-button button .right-icon {
+  background-image: url("../images/right.png");
+  width: 20px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  position: absolute;
+  right: 20px;
+}
+#login .block-button.block-1 {
+  background-image: linear-gradient(to right, #275ef5, #8565fc);
+  box-shadow: 0px 3px 7px 2px #c7cbee;
+}
+#login .block-button.block-1 button {
+  padding: 5px 0px;
+}
+#login .block-button.block-1 input {
+  background-color: transparent;
+  border: none;
+  border-radius: unset;
+  color: #fff;
+  border-bottom: 1px solid #fff;
+  padding: 5px 0px;
+  font-size: 14px;
+}
+#login .block-button.block-1 input:focus {
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+#login .block-button.block-1 ::placeholder {
+  color: #a0abfb;
+}
+#login .block-button.block-2 {
+  background-image: linear-gradient(to right, #26c0bd, #00e0b5);
+  box-shadow: 0px 3px 7px 2px #b6f4df;
+}
+#login .block-button.block-2 button {
+  padding: 25px;
+  padding-left: 48px;
+}
+#login .block-button.block-2 .left-icon {
+  background-image: url("../images/phone.png");
+  width: 39px;
+  height: 39px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  position: absolute;
+  left: 15px;
+}
+#login .block-button.block-2 .right-icon {
+  top: 45px;
+}
+#login .block-button.block-3 {
+  background-image: linear-gradient(to right, #ff6380, #f33063);
+  box-shadow: 0px 3px 7px 2px #fbc1d7;
+}
+#login .block-button.block-3 button {
+  padding: 25px;
+  padding-left: 48px;
+}
+#login .block-button.block-3 .left-icon {
+  background-image: url("../images/lock.png");
+  width: 39px;
+  height: 39px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  position: absolute;
+  left: 15px;
+}
+#login .block-button.block-3 .right-icon {
+  top: 45px;
+}
+#login .block-button.block-4 {
+  background-image: linear-gradient(to right, #26c0bd, #00e0b5);
+  box-shadow: 0px 3px 7px 2px #b6f4df;
+}
+#login .block-button.block-4 button {
+  padding: 25px;
+  padding-left: 48px;
+}
+#login .block-button.block-4 .left-icon {
+  background-image: url("../images/qrcode.png");
+  width: 39px;
+  height: 39px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  position: absolute;
+  left: 15px;
+  top: 35px;
+}
+#login .block-button.block-4 .right-icon {
+  top: 45px;
+}
+@media (max-width: 768px) {
+  #login .form-login {
+    width: 95%;
+  }
+}
+@media (min-width: 768px) {
+  #login .form-login {
+    width: 400px;
+  }
+}
+#account-form-container .form-login {
+  width: 90%;
+  top: 30%;
+}
+/*
+	modal windows
+*/
+.modal_info .modal-dialog {
+  bottom: 0px;
+  position: absolute;
+  width: 100%;
+  max-width: 100%;
+  margin: 0px auto;
+}
+.modal_info .modal-dialog .modal-content {
+  max-width: 400px;
+  margin: 0px auto;
+}
+@media (max-width: 768px) {
+  .modal_info .modal-dialog .modal-content {
+    max-width: 100%;
+    margin: 0px auto;
+  }
+}
+@media (max-width: 768px) {
+  .block-qr-code {
+    display: none;
+  }
+}
+@media (min-width: 768px) {
+  #qrCode_info .modal-dialog {
+    bottom: 200px;
+  }
+  #qrCode_info .modal-dialog img {
+    width: 300px;
+  }
+}
+.center-vertical {
+  position: relative;
+}
+.center-vertical form {
+  top: 40%;
+  margin: auto;
+  position: relative;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.form-horizontal .form-buttons {
+  float: right;
+}
+.form-horizontal .form-buttons .btn {
+  width: 80px;
+  margin-left: 6px;
+}
+.form-horizontal input,
+.form-horizontal select {
+  height: 30px;
+}
+.json-pretty {
+  padding-left: 0px;
+  padding-right: 30px;
+}
+.json-selected {
+  background-color: rgba(139,191,228,0.2);
+}
+.json-string {
+  color: #6caedd;
+}
+.json-key {
+  color: #ec5f67;
+}
+.json-boolean {
+  color: #99c794;
+}
+.json-number {
+  color: #99c794;
+}

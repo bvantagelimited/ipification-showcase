@@ -298,3 +298,8 @@ h6 {
 .json-number {
   color: #99c794;
 }
+
+.modal-header {
+    border-bottom: 0px solid #e9ecef;
+   
+}

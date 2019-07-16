@@ -8,13 +8,13 @@
         {
           "client_id": "webclient2",
           "client_secret": "",
-          "title": "Instant <br /> access",
+          "title": "Instant <br /> Access",
    	      "display_block": [1]
         },
         {
           "client_id": "webclient1",
           "client_secret": "",
-          "title": "Anonymous <br /> session",
+          "title": "Anonymous <br /> Session",
 	        "display_block": [1]
         },
 	      {
@@ -32,13 +32,13 @@
         {
           "client_id": "webclient1",
           "client_secret": "",
-          "title": "Anonymous <br /> session",
+          "title": "Anonymous <br /> Session",
 	        "display_block": [1]
         },
         {
           "client_id": "webclient2",
           "client_secret": "",
-          "title": "Instant <br /> access",
+          "title": "Instant <br /> Access",
 	        "display_block": [1]
         },
 	      {

@@ -10,6 +10,7 @@ body {
 h2 {
   margin: 0 0 6px 0;
   font-weight: bold;
+  
 }
 h6 {
   margin: 2px 0 20px 0;
@@ -33,10 +34,12 @@ h6 {
   background: #fff;
   border-radius: 4px;
   margin-bottom: 0;
+  
 }
 .form-login .tab-title {
   float: left;
   margin-left: 10px;
+  
 }
 .form-login .button-top-right {
   float: right;
@@ -60,6 +63,7 @@ h6 {
 }
 #login .app-name {
   font-weight: 700;
+  margin-bottom: 2px;
 }
 #login .app-des {
   font-size: 16px;
@@ -85,9 +89,10 @@ h6 {
 }
 #login .block-button {
   padding: 20px 20px;
-  margin: 15px 0px;
+  margin: 26px 0px;
   border-radius: 8px;
   position: relative;
+  
 }
 #login .block-button button {
   background-color: unset;
@@ -98,6 +103,7 @@ h6 {
   width: 100%;
   text-align: left;
   font-size: 14px;
+  font-weight: 500;
 }
 #login .block-button button:focus {
   outline: none;
@@ -120,7 +126,7 @@ h6 {
   padding: 25px 20px;
 }
 #login .block-button.block-1 button {
-  padding: 5px 0px;
+  padding: 18px 0px 0px 0px;
 }
 #login .block-button.block-1 input {
   background-color: transparent;
@@ -279,9 +285,4 @@ h6 {
 }
 .json-number {
   color: #99c794;
-}
-
-.modal-header {
-    border-bottom: 0px solid #e9ecef;
-   
 }

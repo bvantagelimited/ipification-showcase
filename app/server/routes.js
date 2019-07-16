@@ -94,7 +94,6 @@ module.exports = function(app) {
 		try {
 			const ip_data = JSON.parse(data);
 			if(ip_data){
-				console.log('ip_data', data)
 				page_options.ip_data = ip_data;
 				res.render('login', page_options);
 			}else{

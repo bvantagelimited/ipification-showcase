@@ -14,7 +14,7 @@ function login_phone(client_id, env){
 }
 
 function show_qrcode() {
-	$('#qrCode_info').modal('toggle')
+	$('#qrCode_info').modal('show')
 }
 
 function goto_link(url){
@@ -23,12 +23,12 @@ function goto_link(url){
 
 $(document).ready(function(){
 	$('.info-icon').on('click', function(){
-		$('#app_info').modal('toggle')
+		$('#app_info').modal('show')
 	})
 
 	
 
 	if($('#response_info').length > 0 ){
-		$('#response_info').modal('toggle')
+		$('#response_info').modal('show')
 	}
 })

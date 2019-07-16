@@ -74,35 +74,30 @@ label, h6 {
 	label{
 		margin-left: 2px;
 	}
+	.app-name{
+		font-weight: 700
+	}
+
+	.app-des{
+		font-size: 16px;
+		line-height: 1;
+		margin: 0;
+	}
+
 	.form-login{
 		padding: 0px 20px;
 		margin: auto;
-		margin-top: 70px;
+		margin-top: 40px;
 		position: relative;
 	}
-	.controls{
-		margin-top: 20px;
-	}
-	.btm-links{
-		font-size: .9em;
-		margin 2px 0 0 0
-		#forgot-password{
-			float left
-			margin-left 10px;
-		}
-		#create-account{
-			float right
-			margin-right 5px;
-		}
-	}
+	
 
 	.info-icon{
-		background-image: url(../images/info.png);
+		background-image: url(../images/info.svg);
 		width: 20px;
 		height: 20px;
 		background-repeat: no-repeat;
 		background-position: center;
-		background-size: cover;
 		position: absolute;
 		right: 20px;
 		top: 10px;
@@ -112,7 +107,7 @@ label, h6 {
 	.block-button{
 		
 		padding: 20px 20px;
-		margin: 10px 0px;
+		margin: 15px 0px;
 		border-radius: 8px;
 		position: relative;
 
@@ -133,12 +128,11 @@ label, h6 {
 				}
 
 				.right-icon{
-					background-image: url(../images/right.png);
+					background-image: url(../images/right.svg);
 					width: 20px;
 					height: 20px;
 					background-repeat: no-repeat;
 					background-position: center;
-					background-size: cover;
 					position: absolute;
 					right: 20px;
 				}
@@ -148,6 +142,8 @@ label, h6 {
 		&.block-1{
 			background-image: linear-gradient(to right, #275EF5 , #8565FC);
 			box-shadow: 0px 3px 7px 2px #C7CBEE;
+			margin-top: 40px;
+			padding: 25px 20px;
 
 			button{
 				padding: 5px 0px;
@@ -159,7 +155,7 @@ label, h6 {
 				border-radius: unset;
 				color: white;
     		border-bottom: 1px solid white;
-				padding: 5px 0px;
+				padding: 10px 0px;
 				font-size: 14px;
 
 				&:focus{
@@ -183,18 +179,17 @@ label, h6 {
 			}
 
 			.left-icon{
-				background-image: url(../images/phone.png);
+				background-image: url(../images/phone.svg);
 				width: 39px;
 				height: 39px;
 				background-repeat: no-repeat;
 				background-position: center;
-				background-size: cover;
 				position: absolute;
 				left: 15px;
 			}
 
 			.right-icon{
-				top: 45px;
+				top: 42%;
 			}
 		}
 		&.block-3{
@@ -207,18 +202,17 @@ label, h6 {
 			}
 
 			.left-icon{
-				background-image: url(../images/lock.png);
+				background-image: url(../images/anon.svg);
 				width: 39px;
 				height: 39px;
 				background-repeat: no-repeat;
 				background-position: center;
-				background-size: cover;
 				position: absolute;
 				left: 15px;
 			}
 
 			.right-icon{
-				top: 45px;
+				top: 42%;
 			}
 		}
 
@@ -295,6 +289,8 @@ label, h6 {
 			.modal-content{
 				max-width: 100%;
 				margin: 0px auto;
+				border-top-left-radius: 30px;
+    		border-top-right-radius: 30px;
 			}
 		}
 	}
@@ -321,7 +317,6 @@ label, h6 {
 
 
 .center-vertical{
-	//height: 100vh;
 	position: relative;
 
 	form{
@@ -331,19 +326,6 @@ label, h6 {
 		-webkit-transform: translateY(-50%);
 		-ms-transform: translateY(-50%);
 		transform: translateY(-50%);
-	}
-}
-
-.form-horizontal{
-	.form-buttons{
-		float right;
-		.btn{
-			width 80px
-			margin-left 6px
-		}
-	}
-	input, select{
-		height 30px
 	}
 }
 

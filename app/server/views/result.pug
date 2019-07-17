@@ -1,0 +1,22 @@
+
+extends layout
+
+block content
+	.response-block
+		.modal(style="display: block")
+			.modal-dialog(role='document')
+				.modal-content
+					.modal-header
+						h5.modal-title !{client_title.replace(/<[^>]*>?/gm, '')}
+						a(href=homeURL)
+							button.close.back_to_login(type='button' data-dismiss='modal' aria-label='Close')
+								span(aria-hidden='true') &times;
+					.modal-body
+						div.mb-4
+							strong realm
+							p #{realm_name}
+						div.mb-4
+							strong client id
+							p #{client_id}
+						div.mb-4
+							code!= body

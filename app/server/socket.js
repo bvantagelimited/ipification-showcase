@@ -1,7 +1,6 @@
 'use strict';
 var debug = require('debug')('info'),
-    _ = require('lodash'),
-    redis = require("redis");
+    _ = require('lodash');
 
 var ioEvents = function(io){
   

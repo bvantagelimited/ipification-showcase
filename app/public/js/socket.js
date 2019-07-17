@@ -26,3 +26,5 @@ window.subscribe_topic = function(){
     }
   });
 }
+
+window.subscribe_topic()

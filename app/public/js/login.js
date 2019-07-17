@@ -26,8 +26,6 @@ $(document).ready(function(){
 		$('#app_info').modal('show')
 	})
 
-	
-
 	if($('#response_info').length > 0 ){
 		$('#response_info').modal('show')
 	}

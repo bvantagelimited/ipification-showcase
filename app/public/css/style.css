@@ -211,6 +211,11 @@ h6 {
     width: 400px;
   }
 }
+.response-block .modal-content {
+  background-color: #f2f2f2;
+  border: 0;
+  border-radius: 8px;
+}
 #account-form-container .form-login {
   width: 90%;
   top: 30%;
@@ -279,9 +284,4 @@ h6 {
 }
 .json-number {
   color: #99c794;
-}
-
-.modal-header {
-    border-bottom: 0px solid #e9ecef;
-   
 }

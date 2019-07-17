@@ -1,0 +1,53 @@
+{
+  "root_url": "http://localhost:3000",
+  "env": {
+    "1": {
+      "realm": "realm_name",
+      "auth-server-url": "https://auth.server.com/auth",
+      "clients": [
+        {
+          "client_id": "webclient2",
+          "client_secret": "",
+          "title": "Instant <br /> Access",
+   	      "display_block": [1]
+        },
+        {
+          "client_id": "webclient1",
+          "client_secret": "",
+          "title": "Anonymous <br /> Session",
+	        "display_block": [1]
+        },
+	      {
+          "client_id": "webclient1",
+          "client_secret": "",
+          "title": "Phone Verification",
+          "display_block": [2]
+        }
+      ]
+    },
+    "3": {
+      "realm": "realm_name",
+      "auth-server-url": "https://auth.server.com/auth",
+      "clients": [
+        {
+          "client_id": "webclient1",
+          "client_secret": "",
+          "title": "Anonymous <br /> Session",
+	        "display_block": [1]
+        },
+        {
+          "client_id": "webclient2",
+          "client_secret": "",
+          "title": "Instant <br /> Access",
+	        "display_block": [1]
+        },
+	      {
+          "client_id": "webclient1",
+          "client_secret": "",
+          "title": "Phone Verification",
+          "display_block": [2]
+        }
+      ]
+    }
+  }
+}

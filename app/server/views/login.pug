@@ -6,7 +6,7 @@ block content
 	#login.center-vertical
 		div.form-login
 			h3.app-name IPification
-			h6.app-des Secure access demo
+			h6.app-des Access Showcase
 			span.info-icon
 			.clearfix
 
@@ -14,7 +14,7 @@ block content
 				.block-button.block-1
 					.div
 						input.form-control(type='text', id='phone', name='phone', placeholder='Enter your phone number')
-					.div(style="margin-top: 10px")
+					.div
 						button(type='button', 'onclick'=`login_phone('${client.client_id}', '${env_index}')`)
 							span.right-icon
 							span !{client.title}

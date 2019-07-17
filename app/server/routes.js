@@ -46,7 +46,7 @@ module.exports = function(app) {
 		const page_options = {
 			ROOT_URL: ROOT_URL,
 			env_index: env_index,
-			title: `Realm ${page_config.realm}`, 
+			title: `IPification Showcase`, 
 			fa_clients: _.filter(page_config.clients, row => row.display_block.length == 0 || row.display_block.indexOf(1) >= 0),
 			sfa_clients: _.filter(page_config.clients, row => row.display_block.length == 0 || row.display_block.indexOf(2) >= 0),
 			auth_server_url: auth_server_url,

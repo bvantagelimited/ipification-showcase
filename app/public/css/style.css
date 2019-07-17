@@ -10,7 +10,6 @@ body {
 h2 {
   margin: 0 0 6px 0;
   font-weight: bold;
-  
 }
 h6 {
   margin: 2px 0 20px 0;
@@ -34,12 +33,10 @@ h6 {
   background: #fff;
   border-radius: 4px;
   margin-bottom: 0;
-  
 }
 .form-login .tab-title {
   float: left;
   margin-left: 10px;
-  
 }
 .form-login .button-top-right {
   float: right;
@@ -92,7 +89,7 @@ h6 {
   margin: 26px 0px;
   border-radius: 8px;
   position: relative;
-  
+  height: 132px;
 }
 #login .block-button button {
   background-color: unset;
@@ -104,6 +101,7 @@ h6 {
   text-align: left;
   font-size: 14px;
   font-weight: 500;
+  position: relative;
 }
 #login .block-button button:focus {
   outline: none;
@@ -117,7 +115,7 @@ h6 {
   background-repeat: no-repeat;
   background-position: center;
   position: absolute;
-  right: 20px;
+  right: 0px;
 }
 #login .block-button.block-1 {
   background-image: linear-gradient(to right, #275ef5, #8565fc);
@@ -150,48 +148,50 @@ h6 {
   box-shadow: 0px 3px 7px 2px #b6f4df;
 }
 #login .block-button.block-2 button {
-  padding: 25px;
-  padding-left: 48px;
+  padding: 25px 0 25px 48px;
+  height: 92px;
 }
 #login .block-button.block-2 .left-icon {
   background-image: url("../images/phone.svg");
-  width: 39px;
-  height: 39px;
+  width: 40px;
+  height: 40px;
   background-repeat: no-repeat;
   background-position: center;
   position: absolute;
-  left: 15px;
+  left: -5px;
+  top: 27px;
 }
 #login .block-button.block-2 .right-icon {
-  top: 42%;
+  top: 40%;
 }
 #login .block-button.block-3 {
   background-image: linear-gradient(to right, #ff6380, #f33063);
   box-shadow: 0px 3px 7px 2px #fbc1d7;
 }
 #login .block-button.block-3 button {
-  padding: 25px;
-  padding-left: 48px;
+  padding: 25px 0 25px 48px;
+  height: 92px;
 }
 #login .block-button.block-3 .left-icon {
   background-image: url("../images/anon.svg");
-  width: 39px;
-  height: 39px;
+  width: 40px;
+  height: 40px;
   background-repeat: no-repeat;
   background-position: center;
   position: absolute;
-  left: 15px;
+  left: -5px;
+  top: 27px;
 }
 #login .block-button.block-3 .right-icon {
-  top: 42%;
+  top: 40%;
 }
 #login .block-button.block-4 {
   background-image: linear-gradient(to right, #26c0bd, #00e0b5);
   box-shadow: 0px 3px 7px 2px #b6f4df;
 }
 #login .block-button.block-4 button {
-  padding: 25px;
-  padding-left: 48px;
+  padding: 25px 0 25px 48px;
+  height: 92px;
 }
 #login .block-button.block-4 .left-icon {
   background-image: url("../images/qrcode.png");
@@ -201,11 +201,11 @@ h6 {
   background-position: center;
   background-size: cover;
   position: absolute;
-  left: 15px;
-  top: 35px;
+  left: -5px;
+  top: 27px;
 }
 #login .block-button.block-4 .right-icon {
-  top: 45px;
+  top: 40%;
 }
 @media (max-width: 768px) {
   #login .form-login {

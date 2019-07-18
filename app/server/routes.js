@@ -212,6 +212,7 @@ module.exports = function(app) {
 
 	app.get('/qrcode/:state', function(req, res){
 		const state = req.params.state;
+		const env_index = req.query.env;
 		const channel = `state_${state}`;
 
 		redisClient.get(channel, function(err, data) {
@@ -221,10 +222,10 @@ module.exports = function(app) {
 				if(response){
 					res.render('result', response);
 				}else{
-					res.status(200).send("state has expired");
+					res.redirect(getHomeURL(env_index || 1));
 				}
 			} catch (error) {
-				res.status(200).send("state has expired");
+				res.redirect(getHomeURL(env_index || 1));
 			}
 			
 		});

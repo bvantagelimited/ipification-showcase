@@ -5,7 +5,8 @@ body * {
 body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  height: 100vh;
+  background-image: linear-gradient(to bottom right, #f3f3f3, #cecece);
 }
 h2 {
   margin: 0 0 6px 0;
@@ -30,8 +31,6 @@ h6 {
   text-shadow: -1px 1px 0 #fff;
 }
 .form-login {
-  background: #fff;
-  border-radius: 4px;
   margin-bottom: 0;
 }
 .form-login .tab-title {
@@ -68,9 +67,8 @@ h6 {
   margin: 0;
 }
 #login .form-login {
-  padding: 0px 20px;
+  padding: 40px 20px 0px 20px;
   margin: auto;
-  margin-top: 40px;
   position: relative;
 }
 #login .info-icon {
@@ -81,7 +79,7 @@ h6 {
   background-position: center;
   position: absolute;
   right: 20px;
-  top: 10px;
+  top: 50px;
   cursor: pointer;
 }
 #login .block-button {
@@ -120,7 +118,6 @@ h6 {
 #login .block-button.block-1 {
   background-image: linear-gradient(to right, #275ef5, #8565fc);
   box-shadow: 0px 3px 7px 2px #c7cbee;
-  margin-top: 40px;
   padding: 25px 20px;
 }
 #login .block-button.block-1 button {
@@ -186,26 +183,20 @@ h6 {
   top: 40%;
 }
 #login .block-button.block-4 {
-  background-image: linear-gradient(to right, #26c0bd, #00e0b5);
-  box-shadow: 0px 3px 7px 2px #b6f4df;
+  background-color: #fff;
+  box-shadow: 0px 3px 7px 2px #dadada;
+  padding: 0;
+  padding-left: 20px;
 }
 #login .block-button.block-4 button {
-  padding: 25px 0 25px 48px;
-  height: 92px;
+  height: 132px;
+  color: #5f5f5f;
+  width: auto;
 }
-#login .block-button.block-4 .left-icon {
-  background-image: url("../images/qrcode.png");
-  width: 39px;
-  height: 39px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  position: absolute;
-  left: -5px;
-  top: 27px;
-}
-#login .block-button.block-4 .right-icon {
-  top: 40%;
+#login .block-button.block-4 .qrcode {
+  height: 132px;
+  float: right;
+  border-radius: 8px;
 }
 @media (max-width: 768px) {
   #login .form-login {
@@ -214,7 +205,7 @@ h6 {
 }
 @media (min-width: 768px) {
   #login .form-login {
-    width: 400px;
+    max-width: 600px;
   }
 }
 .response-block .modal-content {

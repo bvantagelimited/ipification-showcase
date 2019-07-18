@@ -13,10 +13,6 @@ function login_phone(client_id, env){
 
 }
 
-function show_qrcode() {
-	$('#qrCode_info').modal('show')
-}
-
 function goto_link(url){
 	window.location.href = url;
 }

@@ -6,7 +6,7 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
-  background-image: linear-gradient(to bottom right, #f3f3f3, #cecece);
+
 }
 h2 {
   margin: 0 0 6px 0;
@@ -25,10 +25,9 @@ ul {
 }
 label,
 h6 {
-  color: #808080;
+  color: #000;
   font-size: 13px;
   font-weight: normal;
-  text-shadow: -1px 1px 0 #fff;
 }
 .form-login {
   margin-bottom: 0;
@@ -84,7 +83,7 @@ h6 {
 }
 #login .block-button {
   padding: 20px 20px;
-  margin: 26px 0px;
+  margin-top: 26px;
   border-radius: 8px;
   position: relative;
   height: 132px;
@@ -197,16 +196,22 @@ h6 {
   height: 132px;
   float: right;
   border-radius: 8px;
+  padding: 8px 8px 8px 0px;
 }
 @media (max-width: 768px) {
   #login .form-login {
     width: 95%;
-  }
+     }
+  
 }
 @media (min-width: 768px) {
   #login .form-login {
-    max-width: 600px;
+    max-width: 600px;    
   }
+  
+  body { background: linear-gradient(to bottom right, #f9f9f9, #d5d5d5);
+}
+
 }
 .response-block .modal-content {
   background-color: #f2f2f2;
@@ -238,11 +243,13 @@ h6 {
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
   }
+  
 }
 @media (max-width: 768px) {
   .block-qr-code {
     display: none;
   }
+  
 }
 @media (min-width: 768px) {
   #qrCode_info .modal-dialog {

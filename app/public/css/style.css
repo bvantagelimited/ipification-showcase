@@ -6,7 +6,6 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
-
 }
 h2 {
   margin: 0 0 6px 0;
@@ -201,17 +200,15 @@ h6 {
 @media (max-width: 768px) {
   #login .form-login {
     width: 95%;
-     }
-  
+  }
 }
 @media (min-width: 768px) {
   #login .form-login {
-    max-width: 600px;    
+    max-width: 600px;
   }
-  
-  body { background: linear-gradient(to bottom right, #f9f9f9, #d5d5d5);
-}
-
+  body {
+    background: linear-gradient(to bottom right, #f9f9f9, #d5d5d5);
+  }
 }
 .response-block .modal-content {
   background-color: #f2f2f2;
@@ -243,13 +240,11 @@ h6 {
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
   }
-  
 }
 @media (max-width: 768px) {
   .block-qr-code {
     display: none;
   }
-  
 }
 @media (min-width: 768px) {
   #qrCode_info .modal-dialog {

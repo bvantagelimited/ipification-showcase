@@ -11,6 +11,7 @@
     "express": "^4.16.3",
     "json-pretty-html": "^1.1.2",
     "lodash": "^4.17.11",
+    "nocache": "^2.1.0",
     "pug": "^2.0.3",
     "qrcode": "^1.3.3",
     "redis": "^2.8.0",
@@ -22,7 +23,7 @@
   },
   "scripts": {
     "version": "echo $npm_package_version",
-    "start": "nodemon app.js"
+    "start": "nodemon ipification-showcase.js"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"

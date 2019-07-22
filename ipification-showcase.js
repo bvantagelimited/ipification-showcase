@@ -3,6 +3,7 @@ var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+const nocache = require('nocache');
 
 var app = express();
 
@@ -15,13 +16,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(require('stylus').middleware({ src: __dirname + '/app/public' }));
 app.use(express.static(__dirname + '/app/public'));
+app.use(nocache());
 
 var ioServer = require('./app/server/socket')(app);
 require('./app/server/routes')(app);
-
-// http.createServer(app).listen(app.get('port'), '192.168.0.160', function(){
-// 	console.log('Express server listening on port ' + app.get('port'));
-// });
 
 const sv_port = app.get('port');
 ioServer.listen(sv_port);

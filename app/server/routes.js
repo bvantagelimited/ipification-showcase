@@ -197,7 +197,10 @@ module.exports = function(app) {
 						redisClient.set(channel, JSON.stringify(response), 'EX', 5);
 						if(qrcode == "1"){
 							socketIO.to(channel).emit('messages', { event_name: 'login_success', state: state, data: response })
-							res.send("Login successfully")
+							// res.send("Login successfully");
+							res.render('qr_success', {
+								ROOT_URL: ROOT_URL
+							})
 						}else{
 							res.render('result', response);
 						}
@@ -232,10 +235,5 @@ module.exports = function(app) {
 		
 
 	})
-	
-	
-	app.get('*', function(req, res) { 
-		res.redirect(`${ROOT_URL}/login`);
-	});
 
 };

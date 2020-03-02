@@ -2,6 +2,7 @@ const querystring = require('querystring');
 const debug = require('debug')('info');
 const request = require('request');
 const appConfig = require('config');
+const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const prettyHtml = require('json-pretty-html').default;
 const ROOT_URL = appConfig.get('root_url');
@@ -113,8 +114,9 @@ module.exports = function(app) {
 		};
 
 		if(phone){
-			params.login_hint = phone;
+			// params.login_hint = phone;
 			params.nonce = `${uuidv4()}:${phone}`;
+			params.request = jwt.sign({login_hint: phone, client_id: client_id}, client.client_secret, {algorithm: 'HS256'}, {typ: 'JWT'});
 		}
 		let redirectURL = `${auth_server_url}/realms/${realm_name}/protocol/openid-connect/auth?` + querystring.stringify(params);
 		console.log(`redirectURL: ${redirectURL} - ${new Date().getTime()}`);

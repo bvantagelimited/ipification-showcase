@@ -10,6 +10,7 @@
     "debug": "^4.1.1",
     "express": "^4.16.3",
     "json-pretty-html": "^1.1.2",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
     "nocache": "^2.1.0",
     "pug": "^2.0.3",
@@ -23,7 +24,7 @@
   },
   "scripts": {
     "version": "echo $npm_package_version",
-    "start": "nodemon ipification-showcase.js"
+    "start": "nodemon showcase.js"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"

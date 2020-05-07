@@ -1,9 +1,9 @@
 
-var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
 const nocache = require('nocache');
+const appConfig = require('config');
+const cookieSession = require('cookie-session');
 
 var app = express();
 
@@ -11,12 +11,18 @@ app.locals.pretty = true;
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/app/server/views');
 app.set('view engine', 'pug');
-app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(require('stylus').middleware({ src: __dirname + '/app/public' }));
 app.use(express.static(__dirname + '/app/public'));
 app.use(nocache());
+
+app.use(cookieSession({
+  name: 'ipshowcase',
+  keys: [appConfig.get('secret')],
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 var ioServer = require('./app/server/socket')(app);
 require('./app/server/routes')(app);

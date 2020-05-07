@@ -7,7 +7,7 @@ const _ = require('lodash');
 const prettyHtml = require('json-pretty-html').default;
 const ROOT_URL = appConfig.get('root_url');
 const QRCode = require('qrcode');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 const {promisify} = require('util');
 
 const redisURL = `redis://${process.env.REDIS_HOST || '127.0.0.1'}:${process.env.REDIS_PORT || 6379}`;
@@ -104,22 +104,22 @@ module.exports = function(app) {
 		}
 
 		let redirectClientURL = `${ROOT_URL}/ipification/${env_index}/${client_id}/${qrcode}/callback`;
-
+		const state = req.query.state || uuidv4()
 		let params = {
 			response_type: 'code',
 			client_id: client_id,
 			redirect_uri: redirectClientURL,
 			scope: 'openid',
-			state: req.query.state || uuidv4()
+			state: state,
+			nonce: uuidv4()
 		};
 
 		if(phone){
-			// params.login_hint = phone;
-			params.nonce = `${uuidv4()}:${phone}`;
-			params.request = jwt.sign({login_hint: phone, client_id: client_id}, client.client_secret, {algorithm: 'HS256'}, {typ: 'JWT'});
+			params.request = jwt.sign({login_hint: phone, client_id: client_id, state: state}, client.client_secret, {algorithm: 'HS256'}, {typ: 'JWT'});
 		}
 		let redirectURL = `${auth_server_url}/realms/${realm_name}/protocol/openid-connect/auth?` + querystring.stringify(params);
 		console.log(`redirectURL: ${redirectURL} - ${new Date().getTime()}`);
+		req.session.state = state;
 		res.redirect(redirectURL);
 	})
 
@@ -147,6 +147,11 @@ module.exports = function(app) {
 
 		if(req.query.error){
 			res.status(200).send(req.query.error);
+			return;
+		}
+
+		if(req.session.state !== state){
+			res.status(200).send("Something went wrong on your request.");
 			return;
 		}
 

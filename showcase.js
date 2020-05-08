@@ -3,9 +3,14 @@ var express = require('express');
 var bodyParser = require('body-parser');
 const nocache = require('nocache');
 const appConfig = require('config');
-const cookieSession = require('cookie-session');
+const session = require('express-session');
+const redis = require('redis');
+const redisClient = redis.createClient();
+const redisStore = require('connect-redis')(session);
 
 var app = express();
+
+app.set('trust proxy', 1);
 
 app.locals.pretty = true;
 app.set('port', process.env.PORT || 3000);
@@ -17,12 +22,14 @@ app.use(require('stylus').middleware({ src: __dirname + '/app/public' }));
 app.use(express.static(__dirname + '/app/public'));
 app.use(nocache());
 
-app.use(cookieSession({
+app.use(session({
+  secret: appConfig.get('secret'),
   name: 'ipshowcase',
-  keys: [appConfig.get('secret')],
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }, // Note that the cookie-parser module is no longer needed
+  store: new redisStore({ host: 'localhost', port: 6379, client: redisClient, ttl: 86400 }),
+}));
 
 var ioServer = require('./app/server/socket')(app);
 require('./app/server/routes')(app);

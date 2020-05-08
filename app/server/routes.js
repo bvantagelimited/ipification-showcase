@@ -119,8 +119,13 @@ module.exports = function(app) {
 		}
 		let redirectURL = `${auth_server_url}/realms/${realm_name}/protocol/openid-connect/auth?` + querystring.stringify(params);
 		console.log(`redirectURL: ${redirectURL} - ${new Date().getTime()}`);
-		req.session.state = state;
-		res.redirect(redirectURL);
+
+		req.session.regenerate(function(err) {
+			// will have a new session here
+			req.session.state = state;
+			res.redirect(redirectURL);
+		});
+		
 	})
 
 	app.get('/ipification/:env/:client_id/:qrcode/callback', function(req, res){

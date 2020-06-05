@@ -12,6 +12,7 @@
     "express-session": "^1.17.1",
     "json-pretty-html": "^1.1.2",
     "jsonwebtoken": "^8.5.1",
+    "jwt-simple": "^0.5.6",
     "lodash": "^4.17.15",
     "nocache": "^2.1.0",
     "pug": "^2.0.3",

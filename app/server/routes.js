@@ -2,7 +2,7 @@ const querystring = require('querystring');
 const debug = require('debug')('info');
 const request = require('request');
 const appConfig = require('config');
-// const jwt = require('jsonwebtoken');
+const jsonwebtoken = require('jsonwebtoken');
 const jwt = require('jwt-simple');
 const _ = require('lodash');
 const prettyHtml = require('json-pretty-html').default;
@@ -35,6 +35,7 @@ module.exports = function(app) {
 	app.get('/login', async function(req, res){
 		// check realm exist in config
 		let env_index = req.query.env || 1;
+		let iat = req.query.iat || 0;
 		
 		if(!appConfig.has('env.' + env_index)){
 			res.redirect(getHomeURL(1));
@@ -53,7 +54,8 @@ module.exports = function(app) {
 			sfa_clients: _.filter(page_config.clients, row => row.display_block.length == 0 || row.display_block.indexOf(2) >= 0),
 			auth_server_url: auth_server_url,
 			realm: page_config.realm,
-			state: state
+			state: state,
+			iat: iat
 		}
 
 		const state_param = req.query.state;
@@ -62,7 +64,7 @@ module.exports = function(app) {
 		const data = await getAsync(channel);
 		// qrcode
 		const client = page_config.clients[0];
-		const authUrl = `${ROOT_URL}/auth?env=${env_index}&client_id=${client.client_id}&state=${state}&qrcode=1`
+		const authUrl = `${ROOT_URL}/auth?env=${env_index}&client_id=${client.client_id}&state=${state}&qrcode=1&iat=${iat}`
 		const qrCode = await QRCode.toDataURL(authUrl);
 		page_options.qrCode = qrCode;
 		
@@ -95,6 +97,9 @@ module.exports = function(app) {
 		let client_id = req.query.client_id;
 		let phone = req.query.phone;
 		let qrcode = req.query.qrcode || 0;
+		let iat = parseInt(req.query.iat || 0);
+
+		console.log('req.query', req.query)
 
 		// check client
 		let clients = page_config.clients;
@@ -116,7 +121,14 @@ module.exports = function(app) {
 		};
 
 		if(phone){
-			params.request = jwt.encode({login_hint: phone, client_id: client_id, state: state}, client.client_secret);
+			if(iat === 1){
+				console.log('iat == 1');
+				params.request = jsonwebtoken.sign({login_hint: phone, client_id: client_id, state: state}, client.client_secret, {algorithm: 'HS256'}, {typ: 'JWT'});
+			}else{
+				console.log('iat == 0');
+				params.request = jwt.encode({login_hint: phone, client_id: client_id, state: state}, client.client_secret);
+			}
+			
 		}
 		let redirectURL = `${auth_server_url}/realms/${realm_name}/protocol/openid-connect/auth?` + querystring.stringify(params);
 		console.log(`redirectURL: ${redirectURL} - ${new Date().getTime()}`);

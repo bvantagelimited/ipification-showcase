@@ -17,7 +17,7 @@ block content
 							.div
 								input.form-control(type='text', id='phone', name='phone', placeholder='Enter your phone number')
 							.div
-								button(type='button', 'onclick'=`login_phone('${client.client_id}', '${env_index}')`)
+								button(type='button', 'onclick'=`login_phone('${client.client_id}', '${env_index}', ${iat})`)
 									span.right-icon
 									span !{client.title}
 				

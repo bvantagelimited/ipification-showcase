@@ -1,4 +1,4 @@
-function login_phone(client_id, env){
+function login_phone(client_id, env, iat){
 	var input_phone = document.getElementById('phone');
 	var phone_number = input_phone.value;
 	
@@ -7,7 +7,7 @@ function login_phone(client_id, env){
 		return;
 	}
 
-	var redirectURL = window.ROOT_URL + '/auth?env=' + env + '&client_id=' + client_id + '&phone=' + phone_number;
+	var redirectURL = window.ROOT_URL + '/auth?env=' + env + '&client_id=' + client_id + '&phone=' + phone_number + '&iat=' + iat;
 	console.log(redirectURL);
 	goto_link(redirectURL);
 

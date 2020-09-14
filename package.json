@@ -13,7 +13,7 @@
     "json-pretty-html": "^1.1.6",
     "jsonwebtoken": "^8.5.1",
     "jwt-simple": "^0.5.6",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "nocache": "^2.1.0",
     "pug": "3.0.0",
     "qrcode": "1.4.4",

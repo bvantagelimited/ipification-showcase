@@ -27,6 +27,15 @@ module.exports = function(app) {
 
 	const socketIO = app.get('socket.io');
 
+	app.all("*", function (req, res, next) {  // runs on ALL requests
+		var ua = req.header('user-agent');
+		res.locals.isMobile = false;
+		if(/mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile|ipad|android|android 3.0|xoom|sch-i800|playbook|tablet|kindle/i.test(ua)) {
+			res.locals.isMobile = true;
+		}
+		next()
+	})
+
 	app.get('/', function(req, res){
 		res.redirect(getHomeURL(1));
 	})

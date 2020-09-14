@@ -2,38 +2,39 @@
 extends layout
 
 block content
-	//- include header
-	#login.center-vertical
-		div.form-login
-			h3.app-name IPification
-			h6.app-des Access Showcase
-			span.info-icon
-			.clearfix
+	.container
+		//- include header
+		#login.center-vertical
+			div.form-login
+				h3.app-name IPification
+				h6.app-des Access Showcase
+				span.info-icon
+				.clearfix
 
-			.row(style="margin-top: 15px")
-				each client in sfa_clients
+				.row(style="margin-top: 15px")
+					each client in sfa_clients
+						.col-md-6.col-sm-12
+							.block-button.block-1
+								.div
+									input.form-control(type='text', id='phone', name='phone', placeholder='Enter your phone number')
+								.div
+									button(type='button', 'onclick'=`login_phone('${client.client_id}', '${env_index}', ${iat})`)
+										span.right-icon
+										span !{client.title}
+					
 					.col-md-6.col-sm-12
-						.block-button.block-1
-							.div
-								input.form-control(type='text', id='phone', name='phone', placeholder='Enter your phone number')
-							.div
-								button(type='button', 'onclick'=`login_phone('${client.client_id}', '${env_index}', ${iat})`)
+						.block-button.block-4.block-qr-code
+							button(type='button')
+								span Verification <br/> by QR code
+							image.qrcode(src=qrCode)
+
+					each client, index in fa_clients
+						.col-md-6.col-sm-12
+							.block-button(class=`block-${index + 2}`)
+								button(type='button', 'onclick'=`goto_link('${ROOT_URL}/auth?env=${env_index}&client_id=${client.client_id}')`)
+									span.left-icon
 									span.right-icon
 									span !{client.title}
-				
-				.col-md-6.col-sm-12
-					.block-button.block-4.block-qr-code
-						button(type='button')
-							span Verification <br/> by QR code
-						image.qrcode(src=qrCode)
-
-				each client, index in fa_clients
-					.col-md-6.col-sm-12
-						.block-button(class=`block-${index + 2}`)
-							button(type='button', 'onclick'=`goto_link('${ROOT_URL}/auth?env=${env_index}&client_id=${client.client_id}')`)
-								span.left-icon
-								span.right-icon
-								span !{client.title}
 
 
 	#app_info.modal_info.modal.animated.fadeInUp(tabindex="-1", role="dialog")

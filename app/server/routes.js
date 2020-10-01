@@ -72,6 +72,7 @@ module.exports = function(app) {
 		const qrCode = await QRCode.toDataURL(authUrl);
 		page_options.qrCode = qrCode;
 		
+		console.log(`${req.session.id} login_page, state: ${state}`);
 		res.render('login', page_options);
 		
 	});
@@ -94,7 +95,7 @@ module.exports = function(app) {
 		let state = req.session.state || req.query.state;
 		req.session.state = state;
 
-		console.log('req.query', req.query);
+		console.log(`${req.session.id} auth_page, state: ${state}`);
 
 		if(!state || state == ''){
 			res.status(200).send("state params is missing");
@@ -167,8 +168,10 @@ module.exports = function(app) {
 			return;
 		}
 
+		console.log(`${req.session.id} callback_page, session state: ${req.session.state}, query state: ${state}`);
 		if(req.session.state !== state){
-			res.status(200).send("Something went wrong on your request.");
+			console.log(`${req.session.id} state_error`);
+			res.redirect(getHomeURL(env_index));
 			return;
 		}
 

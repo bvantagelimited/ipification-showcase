@@ -95,7 +95,7 @@ module.exports = function(app) {
 		let state = req.session.state || req.query.state;
 		req.session.state = state;
 
-		console.log(`${req.session.id} auth_page, state: ${state}`);
+		console.log(`${req.session.id} auth_page, state: ${state}, query: ${querystring.stringify(req.query)}`);
 
 		if(!state || state == ''){
 			res.status(200).send("state params is missing");

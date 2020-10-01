@@ -9,13 +9,11 @@ const prettyHtml = require('json-pretty-html').default;
 const ROOT_URL = appConfig.get('root_url');
 const QRCode = require('qrcode');
 const { v4: uuidv4 } = require('uuid');
-const {promisify} = require('util');
 
 const redisURL = `redis://${process.env.REDIS_HOST || '127.0.0.1'}:${process.env.REDIS_PORT || 6379}`;
 
 const redis = require("redis");
 const redisClient = redis.createClient({url: redisURL});
-const getAsync = promisify(redisClient.get).bind(redisClient);
 
 console.log('redisURL:', redisURL);
 
@@ -67,28 +65,14 @@ module.exports = function(app) {
 			iat: iat
 		}
 
-		const state_param = req.query.state;
-		const channel = `state_${state_param}`;
-
-		const data = await getAsync(channel);
+		req.session.state = state;
 		// qrcode
 		const client = page_config.clients[0];
 		const authUrl = `${ROOT_URL}/auth?env=${env_index}&client_id=${client.client_id}&state=${state}&qrcode=1&iat=${iat}`
 		const qrCode = await QRCode.toDataURL(authUrl);
 		page_options.qrCode = qrCode;
 		
-		try {
-			const ip_data = JSON.parse(data);
-			if(ip_data){
-				page_options.ip_data = ip_data;
-				res.render('login', page_options);
-			}else{
-				res.render('login', page_options);
-			}
-		} catch (error) {
-			res.render('login', page_options);
-		}
-		
+		res.render('login', page_options);
 		
 	});
 
@@ -107,8 +91,15 @@ module.exports = function(app) {
 		let phone = req.query.phone;
 		let qrcode = req.query.qrcode || 0;
 		let iat = parseInt(req.query.iat || 0);
+		let state = req.session.state || req.query.state;
+		req.session.state = state;
 
-		console.log('req.query', req.query)
+		console.log('req.query', req.query);
+
+		if(!state || state == ''){
+			res.status(200).send("state params is missing");
+			return;
+		}
 
 		// check client
 		let clients = page_config.clients;
@@ -119,7 +110,7 @@ module.exports = function(app) {
 		}
 
 		let redirectClientURL = `${ROOT_URL}/ipification/${env_index}/${client_id}/${qrcode}/callback`;
-		const state = req.query.state || uuidv4()
+		
 		let params = {
 			response_type: 'code',
 			client_id: client_id,
@@ -142,11 +133,10 @@ module.exports = function(app) {
 		let redirectURL = `${auth_server_url}/realms/${realm_name}/protocol/openid-connect/auth?` + querystring.stringify(params);
 		console.log(`redirectURL: ${redirectURL} - ${new Date().getTime()}`);
 
-		req.session.regenerate(function(err) {
-			// will have a new session here
-			req.session.state = state;
+		setTimeout(() => {
 			res.redirect(redirectURL);
-		});
+		}, 100);
+		
 		
 	})
 

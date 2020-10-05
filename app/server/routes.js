@@ -92,7 +92,7 @@ module.exports = function(app) {
 		let phone = req.query.phone;
 		let qrcode = req.query.qrcode || 0;
 		let iat = parseInt(req.query.iat || 0);
-		let state = req.session.state || req.query.state;
+		let state = req.query.state || req.session.state;
 		req.session.state = state;
 
 		console.log(`${req.session.id} auth_page, state: ${state}, query: ${querystring.stringify(req.query)}`);
@@ -149,6 +149,9 @@ module.exports = function(app) {
 		const client_id = req.params.client_id;
 		const state = req.query.state;
 		const qrcode = req.params.qrcode;
+
+		console.log('auth_callback params', JSON.stringify(req.params))
+		console.log('auth_callback query', JSON.stringify(req.query))
 
 		// check client
 		let clients = page_config.clients;
@@ -223,8 +226,8 @@ module.exports = function(app) {
 						const channel = `state_${state}`;
 						redisClient.set(channel, JSON.stringify(response), 'EX', 5);
 						if(qrcode == "1"){
+							console.log('emit qrcode success to channel: ', channel)
 							socketIO.to(channel).emit('messages', { event_name: 'login_success', state: state, data: response })
-							// res.send("Login successfully");
 							res.render('qr_success', {
 								ROOT_URL: ROOT_URL
 							})

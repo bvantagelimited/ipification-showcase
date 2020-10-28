@@ -6,7 +6,7 @@ function login_phone(client_id, env, iat){
 		alert("Please enter phone number");
 		return;
 	}
-
+	phone_number = phone_number.replaceAll('+', '')
 	var redirectURL = window.ROOT_URL + '/auth?env=' + env + '&client_id=' + client_id + '&phone=' + phone_number + '&iat=' + iat;
 	console.log(redirectURL);
 	goto_link(redirectURL);

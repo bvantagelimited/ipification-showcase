@@ -1,6 +1,8 @@
-function login_phone(client_id, env, iat){
-	var input_phone = document.getElementById('phone');
-	var phone_number = input_phone.value;
+function login_phone(inputPhone){
+	var client_id = inputPhone.data('client-id');
+	var env = inputPhone.data('env');
+	var iat = inputPhone.data('iat');
+	var phone_number = inputPhone.val();
 	
 	if(!phone_number){
 		alert("Please enter phone number");
@@ -20,6 +22,19 @@ function goto_link(url){
 $(document).ready(function(){
 	$('.info-icon').on('click', function(){
 		$('#app_info').modal('show')
+	})
+
+	$('.btnLoginPhone').click(function() {
+		var parent = $(this).closest('.block-button');
+		var inputPhone = parent.find('input');
+		login_phone(inputPhone);
+	})
+
+	$('input[name=phone]').keypress(function() {
+		var keycode = (event.keyCode ? event.keyCode : event.which);
+    if(keycode == '13'){
+			login_phone($(this));
+    }
 	})
 
 	if($('#response_info').length > 0 ){

@@ -38,6 +38,10 @@ module.exports = function(app) {
 		res.redirect(getHomeURL(1));
 	})
 
+	app.get('callback/mi', function(req, res){
+		res.status(200).send();
+	})
+
 	// main login page //
 	app.get('/login', async function(req, res){
 		// check realm exist in config

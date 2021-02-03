@@ -10,6 +10,7 @@
     "debug": "^4.1.1",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "html-entities": "^2.1.0",
     "json-pretty-html": "^1.1.6",
     "jsonwebtoken": "^8.5.1",
     "jwt-simple": "^0.5.6",

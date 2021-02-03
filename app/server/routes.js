@@ -5,6 +5,7 @@ const appConfig = require('config');
 const jsonwebtoken = require('jsonwebtoken');
 const jwt = require('jwt-simple');
 const _ = require('lodash');
+const htmlEntities = require('html-entities');
 const prettyHtml = require('json-pretty-html').default;
 const ROOT_URL = appConfig.get('root_url');
 const QRCode = require('qrcode');
@@ -171,7 +172,7 @@ module.exports = function(app) {
 		let userEndpointURL = auth_server_url + '/realms/' + realm_name + '/protocol/openid-connect/userinfo';
 
 		if(req.query.error){
-			res.status(200).send(req.query.error);
+			res.status(200).send(htmlEntities.encode(req.query.error));
 			return;
 		}
 

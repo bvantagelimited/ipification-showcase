@@ -2,39 +2,43 @@
 extends layout
 
 block content
-	.container
-		//- include header
-		#login.center-vertical
-			div.form-login
-				h3.app-name IPification
-				h6.app-des Access Showcase
-				span.info-icon
-				.clearfix
+	.container.d-flex.flex-column.h-100.w-100.p-3
+		main
+			#login.center-vertical
+				div.form-login
+					h3.app-name IPification
+					h6.app-des Access Showcase
+					span.info-icon
+					.clearfix
 
-				.row(style="margin-top: 15px")
-					each client in sfa_clients
+					.row(style="margin-top: 15px")
+						each client in sfa_clients
+							.col-md-6.col-sm-12
+								.block-button.block-1
+									.div
+										input.form-control(type='text', name='phone', placeholder='Enter your phone number' data-client-id=client.client_id data-env=env_index data-iat=iat)
+									.div
+										button(type='button' class="btnLoginPhone")
+											span.right-icon
+											span !{client.title}
+						
 						.col-md-6.col-sm-12
-							.block-button.block-1
-								.div
-									input.form-control(type='text', name='phone', placeholder='Enter your phone number' data-client-id=client.client_id data-env=env_index data-iat=iat)
-								.div
-									button(type='button' class="btnLoginPhone")
+							.block-button.block-4.block-qr-code
+								button(type='button')
+									span Verification <br/> by QR code
+								image.qrcode(src=qrCode)
+
+						each client, index in fa_clients
+							.col-md-6.col-sm-12
+								.block-button(class=`block-${index + 2}`)
+									button(type='button', 'onclick'=`goto_link('${ROOT_URL}/auth?env=${env_index}&client_id=${client.client_id}')`)
+										span.left-icon
 										span.right-icon
 										span !{client.title}
-					
-					.col-md-6.col-sm-12
-						.block-button.block-4.block-qr-code
-							button(type='button')
-								span Verification <br/> by QR code
-							image.qrcode(src=qrCode)
-
-					each client, index in fa_clients
-						.col-md-6.col-sm-12
-							.block-button(class=`block-${index + 2}`)
-								button(type='button', 'onclick'=`goto_link('${ROOT_URL}/auth?env=${env_index}&client_id=${client.client_id}')`)
-									span.left-icon
-									span.right-icon
-									span !{client.title}
+		footer(class="mt-auto")
+			.text-center.p-4
+				a(href="https://www.ipification.com/legal")
+					| Privacy Policy
 
 
 	#app_info.modal_info.modal.animated.fadeInUp(tabindex="-1", role="dialog")

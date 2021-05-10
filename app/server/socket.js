@@ -23,8 +23,6 @@ var init_socket = function(app){
   var server 	= require('http').Server(app),
       io 		= require('socket.io')(server);
 
-  io.set('transports', ['polling', 'websocket']);
-
   // middleware
   io.use((socket, next) => {
     var state = socket.handshake.query.state;

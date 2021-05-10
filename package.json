@@ -5,31 +5,31 @@
   "private": true,
   "dependencies": {
     "body-parser": "1.19.0",
-    "config": "3.3.1",
-    "connect-redis": "^4.0.4",
-    "debug": "^4.1.1",
+    "config": "3.3.6",
+    "connect-redis": "^5.2.0",
+    "debug": "^4.3.1",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "html-entities": "^2.1.0",
+    "html-entities": "^2.3.2",
     "json-pretty-html": "^1.1.6",
     "jsonwebtoken": "^8.5.1",
     "jwt-simple": "^0.5.6",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "nocache": "^2.1.0",
-    "pug": "3.0.1",
+    "pug": "3.0.2",
     "qrcode": "1.4.4",
-    "redis": "3.0.2",
+    "redis": "3.1.2",
     "request": "^2.88.2",
-    "socket.io": "2.4.0",
-    "socket.io-redis": "5.3.0",
+    "socket.io": "4.0.2",
+    "socket.io-redis": "6.1.0",
     "stylus": "^0.54.7",
-    "uuid": "^8.2.0"
+    "uuid": "^8.3.2"
   },
   "scripts": {
     "version": "echo $npm_package_version",
     "start": "nodemon showcase.js"
   },
   "devDependencies": {
-    "nodemon": "^1.19.1"
+    "nodemon": "^2.0.7"
   }
 }

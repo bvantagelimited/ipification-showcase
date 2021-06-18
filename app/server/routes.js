@@ -171,8 +171,8 @@ module.exports = function(app) {
 		let tokenEndpointURL = auth_server_url + '/realms/' + realm_name + '/protocol/openid-connect/token';
 		let userEndpointURL = auth_server_url + '/realms/' + realm_name + '/protocol/openid-connect/userinfo';
 
-		if(req.query.error){
-			res.status(200).send(htmlEntities.encode(req.query.error));
+		if(req.query.error || req.query.error_description){
+			res.status(200).send(htmlEntities.encode(req.query.error_description || req.query.error));
 			return;
 		}
 

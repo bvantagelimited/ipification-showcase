@@ -1,14 +1,15 @@
 
-var express = require('express');
-var bodyParser = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
 const nocache = require('nocache');
 const appConfig = require('config');
 const session = require('express-session');
 const redis = require('redis');
 const redisClient = redis.createClient();
 const redisStore = require('connect-redis')(session);
+const logger = require('./app/server/winston');
 
-var app = express();
+const app = express();
 
 app.set('trust proxy', 1);
 
@@ -30,6 +31,15 @@ app.use(session({
   cookie: { secure: false }, // Note that the cookie-parser module is no longer needed
   store: new redisStore({ host: 'localhost', port: 6379, client: redisClient, ttl: 86400 }),
 }));
+
+app.use((req, res, next) => {
+  let method = req.method;
+  let url = req.url;
+  let status = res.statusCode;
+  let log = `[${req.session.id}] ${method} "${url}" ${status}`;
+  logger.info(log);
+  next();
+});
 
 var ioServer = require('./app/server/socket')(app);
 require('./app/server/routes')(app);

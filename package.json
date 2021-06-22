@@ -4,8 +4,8 @@
   "description": "",
   "private": true,
   "dependencies": {
-    "body-parser": "1.19.0",
-    "config": "3.3.6",
+    "body-parser": "^1.19.0",
+    "config": "^3.3.6",
     "connect-redis": "^5.2.0",
     "debug": "^4.3.1",
     "express": "^4.17.1",
@@ -17,13 +17,14 @@
     "lodash": "^4.17.21",
     "nocache": "^2.1.0",
     "pug": "3.0.2",
-    "qrcode": "1.4.4",
-    "redis": "3.1.2",
+    "qrcode": "^1.4.4",
+    "redis": "^3.1.2",
     "request": "^2.88.2",
-    "socket.io": "4.0.2",
-    "socket.io-redis": "6.1.0",
-    "stylus": "^0.54.7",
-    "uuid": "^8.3.2"
+    "socket.io": "^4.1.2",
+    "socket.io-redis": "^6.1.1",
+    "stylus": "^0.54.8",
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3"
   },
   "scripts": {
     "version": "echo $npm_package_version",

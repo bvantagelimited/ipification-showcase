@@ -8,7 +8,6 @@ function login_phone(inputPhone){
 		alert("Please enter phone number");
 		return;
 	}
-	phone_number = phone_number.replaceAll('+', '')
 	var redirectURL = window.ROOT_URL + '/auth?env=' + env + '&client_id=' + client_id + '&phone=' + phone_number + '&iat=' + iat;
 	console.log(redirectURL);
 	goto_link(redirectURL);
@@ -36,6 +35,10 @@ $(document).ready(function(){
 			login_phone($(this));
     }
 	})
+
+	$('input[name=phone]').on('input', function(e) {
+		$(this).val($(this).val().replace(/[^0-9]/g, ''));
+});
 
 	if($('#response_info').length > 0 ){
 		$('#response_info').modal('show')

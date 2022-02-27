@@ -1,0 +1,6 @@
+node_modules
+config/default.json
+package-lock.json
+public/css/style.css
+config/default.json.sample
+.DS_Store

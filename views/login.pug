@@ -1,0 +1,107 @@
+
+extends layout
+
+block content
+	.container.d-flex.h-100.w-100.mx-auto.flex-column
+		main
+			#login.center-vertical
+				div.form-login
+					.clearfix
+					.row.block-header
+						.col-12
+							.row
+								h3.app-name IPification features showcase
+								span.info-icon
+
+					.row.block-page
+						ul.list-tabs.nav.nav-tabs
+							li.nav-item
+								a.nav-link.nav-link-pnv.active(href="#pnv" onClick="select_nav('pnv')") PNV
+							li.nav-item
+								a.nav-link.nav-link-login(href="#login" onClick="select_nav('login')") Login
+							li.nav-item
+								a.nav-link.nav-link-identity(href="#identity" onClick="select_nav('identity')") Identity
+
+						.col-12.row-item
+							.block-button.block.block-pnv.block-1.active#pnv
+								p.description_title Phone Number Verification		
+								p.description Verify phone number through IP or IM auth.	
+								.div(style="margin-top: 15px")
+									.row
+										.col
+											input.form-control#phoneNumber(type='text' name='phone' placeholder='Enter your phone number')
+											button.btn_full.btn.btn_phone.btn-active.btnLoginPhone.btn-user-flow(data-title=get_flow_title('pvn_ip', 'IP Phone Number Verification') data-user-flow='pvn_ip') IP
+												span.right-icon
+											button.btn_full.btn.btn_IM.btnLoginPhone.btn-user-flow(data-title=get_flow_title('pvn_im', 'IM Phone Number Verification') data-user-flow='pvn_im') IM
+												span.right-icon
+
+							.block-button.block-login.block.block-2#login(class=`block-${index + 2}`)
+								p.description_title Quick Access		
+								p.description.description_helper Login through IP or IM auth with phone number sharing.
+								button.btn_full_blue.btn_instant.btn-user-flow(type='button' data-title=get_flow_title('login_ip', 'IP Login') data-user-flow='login_ip')
+									span.right-icon
+									span IP
+								button.btn_full_blue.btn-user-flow(type='button' data-title=get_flow_title('login_im', 'IM Login') data-user-flow='login_im')
+									span.right-icon
+									span IM
+
+							.block-button.block.block-identity.block-1#identity
+								p.description_title Mobile ID & Know Your Customer		
+								p.description.description_helper Verify user with anonymus identity (mobile_id) or obtain user info with KYC.
+								button.btn_full_blue.btn_instant.btn-user-flow(type='button' data-title=get_flow_title('anonymous', 'Anonymous Identity') style="margin-bottom:59px" data-user-flow='anonymous')
+									span.right-icon.right-icon-blue
+									span Anonymous Identity
+								.div
+									input.form-control#phoneNumber(type='text' name='phone_kyc' placeholder='Enter your phone number')
+									button.btn_full.btn.btn_kyc.btnLoginPhone.btn-user-flow(data-title=get_flow_title('kyc_phone', 'KYC Data')  type='button' data-user-flow='kyc_phone') KYC
+										span.right-icon
+
+		footer(class="mt-auto")
+			.privacy-link
+				a(href="https://www.ipification.com/legal")
+					| Privacy Policy
+
+
+	#app_info.modal(tabindex="-1" role="dialog")
+		.modal-dialog
+			.modal-content(style="border-radius: 0px;")
+				.modal-header
+					h5.modal-title About this demo
+					button.close(type='button' data-dismiss='modal' aria-label='Close')
+						span(aria-hidden='true').right-icon 
+				.modal-body
+					div.mb-3
+						strong realm
+						p #{realm}
+					div.mb-3
+						strong server
+						p #{auth_server_url}
+					div.mb-3
+						strong state
+						p #{state}
+					.developer-link
+						a(href="https://developer.ipification.com/#/")
+							| Developer.ipification
+
+	#input_alert.modal(tabindex="-1" role="dialog")
+		.modal-dialog
+			.modal-content(style="border-radius: 0px;")
+				.modal-header
+					h6.modal-title Please enter phone number
+
+	.wrapper-loader
+		span.loader 
+			span.loader-inner
+			
+	if error_message
+		#error_alert.modal(tabindex="-1" role="dialog")
+			.modal-dialog
+				.modal-content(style="border-radius: 0px;")
+					.modal-header
+						h6.modal-title #{error_message}
+
+block head_scripts
+	script(type="text/javascript").
+		var base_url = "!{baseUrl}";
+		var session_state = "!{state}";
+

@@ -21,7 +21,7 @@ List packages need to install:
 3. Access `http://192.168.1.100:3000`
 
 
-## client use case description
+## user case description on default.json
 
 1. `pvn_ip`: Client use when click button `IP` on tab `PVN`
 2. `pvn_im`: Client use when click button `IM` on tab `PVN`

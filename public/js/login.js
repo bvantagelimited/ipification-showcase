@@ -124,13 +124,11 @@ function select_nav(selector) {
   localStorage.setItem("selector", selector);
 }
 
-$('#select').on('change', function () {
-  var url = $(this).val();
-  if (url) {
-      window.location = url; 
-  }
-  return false;
-});
+$('.select').click(function(selector){
+      $('.select').removeClass('active')
+      $('.select_'+selector).addClass('active')
+})
+
 
 function showQrcodeWithLink(title, url) {
   Swal.fire({
@@ -149,3 +147,11 @@ function showQrcodeWithLink(title, url) {
     },
   });
 }
+
+
+
+
+
+
+
+

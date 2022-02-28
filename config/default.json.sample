@@ -1,0 +1,50 @@
+{
+  "realm": "ipification",
+  "auth_server_url": "",
+  "clients": [
+    {
+      "user_flow": "pvn_ip",
+      "client_id": "",
+      "client_secret": "",
+      "title": "IP Phone Number Verification",
+      "scope": "openid ip:phone_verify"
+    },
+    {
+      "user_flow": "pvn_im",
+      "client_id": "",
+      "client_secret": "",
+      "title": "IM Phone Number Verification",
+      "scope": "openid ip:phone_verify",
+      "channel": "wa viber telegram"
+    },
+    {
+      "user_flow": "login_ip",
+      "client_id": "",
+      "client_secret": "",
+      "title": "IP Login",
+      "scope": "openid ip:mobile_id ip:phone"
+    },
+    {
+      "user_flow": "login_im",
+      "client_id": "",
+      "client_secret": "",
+      "title": "IM Login",
+      "scope": "openid ip:phone",
+      "channel": "wa viber telegram"
+    },
+    {
+      "user_flow": "anonymous",
+      "client_id": "",
+      "client_secret": "",
+      "title": "Anonymous Identity",
+      "scope": "openid ip:mobile_id"
+    },
+    {
+      "user_flow": "kyc_phone",
+      "client_id": "",
+      "client_secret": "",
+      "title": "KYC Data",
+      "scope": "openid ip:profile"
+    }
+  ]
+}

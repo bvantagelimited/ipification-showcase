@@ -197,18 +197,6 @@ label, h6 {
 		position: relative;
 	}
 
-	.info-icon {
-		background-image: url('../images/info.svg');
-		width: 20px;
-		height: 20px;
-		background-repeat: no-repeat;
-		background-position: center;
-		position: absolute;
-		right: 0px;
-		top: 6px;
-		cursor: pointer;
-	}
-
 	.block-button {
 		position: relative;
 
@@ -659,7 +647,32 @@ button.close:focus {
 	}
 }
 
+.info-icon {
+	margin: auto;
+	text-align: right;
+	padding-bottom: 55px;
+	padding-left: 16px;
+	text-decoration: underline;
+	font-size: 14px;
+	cursor: pointer;
+	position: absolute;
+	right: 16px;
+
+	@media (max-width: 576px) {
+		right: 20px;
+	}
+}
+
+#select {
+	position: absolute;
+	right: 0;
+	font-size: 14px
+	font-weight: bold
+	border: none
+}
+
 .privacy-link {
+	position: relative;
 	width: 610px;
 	margin: auto;
 	text-align: left;

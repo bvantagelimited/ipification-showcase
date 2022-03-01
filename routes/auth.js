@@ -17,6 +17,7 @@ router.get('/login', function(req, res) {
   res.render('login', {
     state: state,
     errorMessage: htmlEntities.encode(errorMessage),
+    node_env: process.env.NODE_ENV
   });
 });
 

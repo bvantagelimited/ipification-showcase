@@ -124,6 +124,17 @@ function select_nav(selector) {
   localStorage.setItem("selector", selector);
 }
 
+var value = $('#select').attr('value');
+$("#select option[data-selected="+value+"]").attr('selected','selected');
+
+$('#select').on('change', function () {
+  var url = $(this).val();
+  if (url) {
+      window.location = url; 
+  }
+  return false;
+})
+
 function showQrcodeWithLink(title, url) {
   Swal.fire({
     title: title,

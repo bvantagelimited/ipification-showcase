@@ -11,8 +11,10 @@ block content
 						.col-12
 							.row
 								h3.app-name IPification features showcase
-								span.info-icon
-
+								select(id="select" value=node_env)
+									option(data-selected="stage" value="http:/test-stage.ipification.com") Stage
+									option(data-selected='prod' value="http:/test-prod.ipification.com") Production				
+								
 					.row.block-page
 						ul.list-tabs.nav.nav-tabs
 							li.nav-item

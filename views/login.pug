@@ -11,8 +11,10 @@ block content
 						.col-12
 							.row
 								h3.app-name IPification features showcase
-								span.info-icon
-
+								select(id="select")
+									option(selected value="http:/test-stage.ipification.com") Stage
+									option( value="http:/test-prod.ipification.com") Production				
+								
 					.row.block-page
 						ul.list-tabs.nav.nav-tabs
 							li.nav-item
@@ -60,8 +62,9 @@ block content
 			.privacy-link
 				a(href="https://www.ipification.com/legal")
 					| Privacy Policy
-
-
+				span.info-icon
+					| About
+			
 	#app_info.modal(tabindex="-1" role="dialog")
 		.modal-dialog
 			.modal-content(style="border-radius: 0px;")

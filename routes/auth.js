@@ -38,30 +38,28 @@ router.get('/start', function(req, res) {
 
   const { client_id: clientId, client_secret: clientSecret, scope, channel } = client;
   const redirectUrl = `${baseUrl}/auth/callback/${userFlow}/${qrcode}`;
-		let params = {
-			response_type: 'code',
-			client_id: clientId,
-			redirect_uri: redirectUrl,
-			scope: scope,
-			state: state,
-			nonce: uuidv4()
-		};
-
-		if(channel) params.channel = channel;
-
-		if(phone){
-			params.request = jwt.encode({
-				login_hint: phone, 
-				client_id: clientId, 
-				state: state, 
-				scope,
-				response_type:'code',
-				redirect_uri: redirectUrl
-			}, clientSecret);
-		}
-		const authUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/auth?` + qs.stringify(params);
-		debug(`authUrl: ${authUrl}`);
-		res.redirect(authUrl);
+  let params = {
+    response_type: 'code',
+    client_id: clientId,
+    redirect_uri: redirectUrl,
+    scope: scope,
+    state: state,
+    nonce: uuidv4()
+  };
+	if(channel) params.channel = channel; 
+	if(phone){
+		params.request = jwt.encode({
+			login_hint: phone, 
+			client_id: clientId, 
+			state: state, 
+			scope,
+			response_type:'code',
+			redirect_uri: redirectUrl
+		}, clientSecret);
+	}
+	const authUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/auth?` + qs.stringify(params);
+	debug(`authUrl: ${authUrl}`);
+	res.redirect(authUrl);
 });
 
 router.get('/callback/:userFlow/:qrcode', async function(req, res){
@@ -88,42 +86,42 @@ router.get('/callback/:userFlow/:qrcode', async function(req, res){
   const tokenUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/token`;
   const userUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/userinfo`;
 
-  const params = {
-    code: code,
-    redirect_uri: redirectUrl,
-    grant_type: 'authorization_code',
-    client_id: clientId,
-    client_secret: clientSecret
-  };
+	const params = {
+		code: code,
+		redirect_uri: redirectUrl,
+		grant_type: 'authorization_code',
+		client_id: clientId,
+		client_secret: clientSecret
+	};
 
-  try {
-    const config = {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}
-    const { data: tokenInfo } = await axios.post(tokenUrl, qs.stringify(params), config);
-    const { access_token: accessToken } = tokenInfo;
+	
+	try {
+		const config = {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}
+		const { data: tokenInfo } = await axios.post(tokenUrl, qs.stringify(params), config);
+		const { access_token: accessToken } = tokenInfo;
 
-    const { data: userInfo } = await axios.post(userUrl, qs.stringify({ access_token: accessToken }), config);
-    console.log('userInfo', JSON.stringify(userInfo));
+		const { data: userInfo } = await axios.post(userUrl, qs.stringify({ access_token: accessToken }), config);
 
-    const response = {
-      userInfo: prettyHtml(userInfo), 
-      client_id: clientId,
-      client_title: pageTitle,
-      state
-    }
+		const response = {
+			userInfo: prettyHtml(userInfo), 
+			client_id: clientId,
+			client_title: pageTitle,
+			state
+		}
 
-    const channel = `auth:${state}`;
-    await dataStore.set(channel, response);
+		const channel = `auth:${state}`;
+		await dataStore.set(channel, response);
 
-    if(qrcode == "1"){
-      req.app.get('socket').to(channel).emit('messages', { event_name: 'login_success', state: state, data: response })
-      res.redirect('/auth/qrcode/complete');
-    }else{
-      res.redirect(`/auth/complete`);
-    }
-  } catch (err) {
-    console.log('---> get token error: ', err.message);
-    res.status(400).send(err.message);
-  }
+		if(qrcode == "1"){
+			req.app.get('socket').to(channel).emit('messages', { event_name: 'login_success', state: state, data: response })
+			res.redirect('/auth/qrcode/complete');
+		}else{
+			res.redirect(`/auth/complete`);
+		}
+	} catch (err) {
+		console.log('---> get token error: ', err.message);
+		res.status(400).send(err.message);
+	}
 })
 
 router.get('/qrcode/complete', async (req, res) => {

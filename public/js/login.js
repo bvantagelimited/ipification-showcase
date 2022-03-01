@@ -152,3 +152,11 @@ function showQrcodeWithLink(title, url) {
     },
   });
 }
+
+
+
+
+
+
+
+

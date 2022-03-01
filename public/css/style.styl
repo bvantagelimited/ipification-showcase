@@ -662,15 +662,20 @@ button.close:focus {
 	}
 }
 
-// #select {
-// position: absolute;
-// right: 0;
-// font-size: 14px;
-// font-weight: bold;
-// border: none;
-// background-color: #fff
+#select {
+	position: absolute;
+	text-align: center
+	right: 0;
+	font-size: 14px;
+	font-weight: bold;
+	border: none;
+	background-color: #fff;
 
-// }
+	&:focus-visible {
+		outline: none;
+	}
+}
+
 .privacy-link {
 	position: relative;
 	width: 610px;
@@ -968,30 +973,4 @@ button.close:focus {
 	top: 30px;
 	left: 26px;
 	font-size: 20px !important;
-}
-
-.select {
-	margin: auto;
-	right: 0;
-
-	a {
-		color: #000;
-		font-size: 14px;
-		padding-left: 20px;
-
-		&.active {
-			text-decoration: underline;
-		}
-	}
-
-	.select_stage {
-		position: absolute;
-		top: 0;
-		right: 50px;
-	}
-
-	.select_prod {
-		position: absolute;
-		top: 0;
-	}
 }

@@ -124,11 +124,13 @@ function select_nav(selector) {
   localStorage.setItem("selector", selector);
 }
 
-$('.select').click(function(selector){
-      $('.select').removeClass('active')
-      $('.select_'+selector).addClass('active')
+$('#select').on('change', function () {
+  var url = $(this).val();
+  if (url) {
+      window.location = url; 
+  }
+  return false;
 })
-
 
 function showQrcodeWithLink(title, url) {
   Swal.fire({

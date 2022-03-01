@@ -10,13 +10,14 @@ const prettyHtml = require('json-pretty-html').default;
 
 router.get('/login', function(req, res) {
   const state = uuidv4();
-  const errorMessage = req.session.errorMessage;
-  req.session.errorMessage = null;
+  const error_message = req.session.error_message;
+  req.session.error_message = null;
   req.session.state = state;
 
   res.render('login', {
     state: state,
-    errorMessage: htmlEntities.encode(errorMessage),
+    error_message: htmlEntities.encode(error_message),
+    node_env: process.env.NODE_ENV
   });
 });
 
@@ -68,7 +69,7 @@ router.get('/callback/:userFlow/:qrcode', async function(req, res){
 
   if(req.query.error || req.query.error_description){
     const error_message = req.query.error_description || req.query.error;
-    req.session.errorMessage = error_message;
+    req.session.error_message = error_message;
     res.redirect('/auth/login');
     return;
   }

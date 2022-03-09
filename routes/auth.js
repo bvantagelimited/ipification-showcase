@@ -68,7 +68,7 @@ router.get('/callback/:userFlow/:qrcode', async function(req, res){
 
   if(req.query.error || req.query.error_description){
     const error_message = req.query.error_description || req.query.error;
-    req.session.error_message = error_message;
+    req.session.errorMessage = error_message;
     res.redirect('/auth/login');
     return;
   }

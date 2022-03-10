@@ -7,6 +7,7 @@ const logger = require('morgan');
 const createError = require('http-errors');
 const config = require('config');
 const redis = require("ioredis");
+const nocache = require("nocache");
 const json_cache = require("redis-json");
 const redisStore = require('connect-redis')(session);
 
@@ -18,6 +19,7 @@ const app = express();
 app.set('trust proxy', 1);
 app.locals.pretty = true;
 
+app.use(nocache());
 app.use(logger('dev'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');

@@ -51,7 +51,7 @@ router.get('/start', function(req, res) {
     state: state,
     nonce: uuidv4()
   };
-  if(live === '1') params = {...params, mcc: '000', mnc: '00'};
+  if(live === '0') params = {...params, mcc: '000', mnc: '00'};
 	if(channel) params.channel = channel;
 
 	if(phone){

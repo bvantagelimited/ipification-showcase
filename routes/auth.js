@@ -9,7 +9,7 @@ const jwt = require('jwt-simple');
 const prettyHtml = require('json-pretty-html').default;
 
 router.get('/login', function(req, res) {
-  const { live = 0 } = req.query || {};
+  const { live = 1 } = req.query || {};
   const state = uuidv4() + ':' + live;
   const error_message = req.session.error_message;
   req.session.error_message = null;
@@ -18,7 +18,7 @@ router.get('/login', function(req, res) {
   res.render('login', {
     state: state,
     error_message: htmlEntities.encode(error_message),
-    node_env: process.env.NODE_ENV
+    node_env: process.env.NODE_ENV === 'stage' ? (process.env.NODE_ENV + `-${live}`) : process.env.NODE_ENV
   });
 });
 

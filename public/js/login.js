@@ -130,7 +130,7 @@ $("#select option[data-selected="+value+"]").attr('selected','selected');
 $('#select').on('change', function () {
   var url = $(this).val();
   if (url) {
-      window.location = url; 
+      window.location.href = url; 
   }
   return false;
 })

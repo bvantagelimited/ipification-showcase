@@ -9,7 +9,8 @@ const jwt = require('jwt-simple');
 const prettyHtml = require('json-pretty-html').default;
 
 router.get('/login', function(req, res) {
-  const state = uuidv4();
+  const { live = 1 } = req.query || {};
+  const state = uuidv4() + ':' + live;
   const error_message = req.session.error_message;
   req.session.error_message = null;
   req.session.state = state;
@@ -36,6 +37,10 @@ router.get('/start', function(req, res) {
     return;
   }
 
+  const live = state.split(':').pop();
+
+  debug(`---> live: ${live}`);
+
   const { client_id: clientId, client_secret: clientSecret, scope, channel } = client;
   const redirectUrl = `${baseUrl}/auth/callback/${userFlow}/${qrcode}`;
   let params = {
@@ -44,11 +49,11 @@ router.get('/start', function(req, res) {
     redirect_uri: redirectUrl,
     scope: scope,
     state: state,
-    nonce: uuidv4(),
-    mcc: '000',
-    mnc: '00'
+    nonce: uuidv4()
   };
-	if(channel) params.channel = channel; 
+  if(live === '1') params = {...params, mcc: '000', mnc: '00'};
+	if(channel) params.channel = channel;
+
 	if(phone){
 		params.request = jwt.encode({
 			login_hint: phone, 
@@ -75,6 +80,8 @@ router.get('/callback/:userFlow/:qrcode', async function(req, res){
     res.redirect('/auth/login');
     return;
   }
+
+  debug(`---> state: ${state}`);
 
   const client = clients.find(item => item.user_flow === userFlow);
   if(!client){

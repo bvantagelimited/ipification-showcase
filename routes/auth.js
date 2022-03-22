@@ -44,7 +44,9 @@ router.get('/start', function(req, res) {
     redirect_uri: redirectUrl,
     scope: scope,
     state: state,
-    nonce: uuidv4()
+    nonce: uuidv4(),
+    mcc: '000',
+    mnc: '00'
   };
 	if(channel) params.channel = channel; 
 	if(phone){

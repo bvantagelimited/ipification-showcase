@@ -39,8 +39,6 @@ router.get('/start', function(req, res) {
 
   const live = state.split(':').pop();
 
-  debug(`---> live: ${live}`);
-
   const { client_id: clientId, client_secret: clientSecret, scope, channel } = client;
   const redirectUrl = `${baseUrl}/auth/callback/${userFlow}/${qrcode}`;
   let params = {
@@ -74,14 +72,14 @@ router.get('/callback/:userFlow/:qrcode', async function(req, res){
   const { state, code } = req.query || {};
   const { clients, auth_server_url, realm, baseUrl, dataStore } = res.locals;
 
+  const live = state.split(':').pop();
+
   if(req.query.error || req.query.error_description){
     const error_message = req.query.error_description || req.query.error;
     req.session.error_message = error_message;
-    res.redirect('/auth/login');
+    res.redirect(`/auth/login?live=${live || '0'}`);
     return;
   }
-
-  debug(`---> state: ${state}`);
 
   const client = clients.find(item => item.user_flow === userFlow);
   if(!client){

@@ -9,22 +9,20 @@ const jwt = require('jwt-simple');
 const prettyHtml = require('json-pretty-html').default;
 
 router.get('/login', function(req, res) {
-  const { live = req.session.live || '0' } = req.query || {};
-  const state = uuidv4() + ':' + live;
+  const state = uuidv4();
   const error_message = req.session.error_message;
   req.session.error_message = null;
   req.session.state = state;
-  req.session.live = live;
 
   res.render('login', {
     state: state,
     error_message: htmlEntities.encode(error_message),
-    node_env: process.env.NODE_ENV === 'stage' ? (process.env.NODE_ENV + `-${live}`) : process.env.NODE_ENV
+    node_env: process.env.NODE_ENV
   });
 });
 
 router.get('/start', function(req, res) {
-  const { clients, auth_server_url, realm, baseUrl } = res.locals;
+  const { clients, auth_server_url, realm, baseUrl, is_fake_mcc } = res.locals;
   const { user_flow: userFlow, phone, qrcode = 0, state } = req.query || {};
   const client = clients.find(item => item.user_flow === userFlow);
   
@@ -38,8 +36,6 @@ router.get('/start', function(req, res) {
     return;
   }
 
-  const live = state.split(':').pop();
-
   const { client_id: clientId, client_secret: clientSecret, scope, channel } = client;
   const redirectUrl = `${baseUrl}/auth/callback/${userFlow}/${qrcode}`;
   let params = {
@@ -50,7 +46,7 @@ router.get('/start', function(req, res) {
     state: state,
     nonce: uuidv4()
   };
-  if(live === '0') params = {...params, mcc: '000', mnc: '00'};
+  if(process.env.NODE_ENV == 'stage') params = {...params, mcc: '000', mnc: '00'};
 	if(channel) params.channel = channel;
 
 	if(phone){
@@ -73,12 +69,10 @@ router.get('/callback/:userFlow/:qrcode', async function(req, res){
   const { state, code } = req.query || {};
   const { clients, auth_server_url, realm, baseUrl, dataStore } = res.locals;
 
-  const live = state.split(':').pop();
-
   if(req.query.error || req.query.error_description){
     const error_message = req.query.error_description || req.query.error;
     req.session.error_message = error_message;
-    res.redirect(`/auth/login?live=${live || '0'}`);
+    res.redirect(`/auth/login`);
     return;
   }
 

@@ -46,7 +46,7 @@ router.get('/start', function(req, res) {
     state: state,
     nonce: uuidv4()
   };
-  if(process.env.NODE_ENV == 'stage') params = {...params, mcc: '000', mnc: '00'};
+  // if(process.env.NODE_ENV == 'stage') params = {...params, mcc: '000', mnc: '00'};
 	if(channel) params.channel = channel;
 
 	if(phone){

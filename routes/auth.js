@@ -9,13 +9,10 @@ const jwt = require('jwt-simple');
 const prettyHtml = require('json-pretty-html').default;
 
 router.get('/login', function(req, res) {
-  const state = uuidv4();
   const error_message = req.session.error_message;
   req.session.error_message = null;
-  req.session.state = state;
 
   res.render('login', {
-    state: state,
     error_message: htmlEntities.encode(error_message),
     node_env: process.env.NODE_ENV
   });
@@ -23,11 +20,11 @@ router.get('/login', function(req, res) {
 
 router.get('/start', function(req, res) {
   const { clients, auth_server_url, realm, baseUrl } = res.locals;
-  const { user_flow: userFlow, phone, qrcode = 0, state } = req.query || {};
+  const { user_flow: userFlow, phone, state } = req.query || {};
   const client = clients.find(item => item.user_flow === userFlow);
   
   if(!client){
-    res.send("User flow not found");
+    res.send("Client not found");
     return;
   }
 
@@ -36,17 +33,16 @@ router.get('/start', function(req, res) {
     return;
   }
 
+  // build auth url
   const { client_id: clientId, client_secret: clientSecret, scope, channel } = client;
-  const redirectUrl = `${baseUrl}/auth/callback/${userFlow}/${qrcode}`;
+  const redirectUrl = `${baseUrl}/auth/callback/${userFlow}`;
   let params = {
     response_type: 'code',
     client_id: clientId,
     redirect_uri: redirectUrl,
     scope: scope,
     state: state,
-    nonce: uuidv4(),
-    mcc: '000',
-    mnc: '00'
+    nonce: uuidv4()
   };
 	if(channel) params.channel = channel; 
 	if(phone){
@@ -64,10 +60,11 @@ router.get('/start', function(req, res) {
 	res.redirect(authUrl);
 });
 
-router.get('/callback/:userFlow/:qrcode', async function(req, res){
-  const { userFlow, qrcode } = req.params || {};
-  const { state, code } = req.query || {};
-  const { clients, auth_server_url, realm, baseUrl, dataStore } = res.locals;
+router.get('/callback/:userFlow', async function(req, res){
+  const { userFlow } = req.params || {};
+  // default check qrcode in state
+  const { state, code, qrcode = '1' } = req.query || {};
+  const { clients, auth_server_url, realm, baseUrl } = res.locals;
 
   if(req.query.error || req.query.error_description){
     const error_message = req.query.error_description || req.query.error;
@@ -84,19 +81,34 @@ router.get('/callback/:userFlow/:qrcode', async function(req, res){
 
   const { client_id: clientId, client_secret: clientSecret, title: pageTitle } = client;
 
-  const redirectUrl = `${baseUrl}/auth/callback/${userFlow}/${qrcode}`;
+  const redirectUri = `${baseUrl}/auth/callback/${userFlow}`;
   const tokenUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/token`;
   const userUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/userinfo`;
 
+  
+  const channel = `auth:${state}`;
+
+  // if check qr code in state and state have qrcode text
+  // forward url to desktop browser to continue auth flow and exchange code
+  
+  if(qrcode === '1' && state.indexOf('-qrcode') >= 0) {
+    // emit to desktop browser
+    req.app.get('socket').to(channel).emit('messages', { 
+      event_name: 'url',
+      url: `${baseUrl}${req.originalUrl}&qrcode=0` // stop check qrcode from state
+    });
+    res.redirect('/auth/qrcode/complete');
+    return;
+  }
+
 	const params = {
 		code: code,
-		redirect_uri: redirectUrl,
+		redirect_uri: redirectUri,
 		grant_type: 'authorization_code',
 		client_id: clientId,
 		client_secret: clientSecret
 	};
 
-	
 	try {
 		const config = {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}
 		const { data: tokenInfo } = await axios.post(tokenUrl, qs.stringify(params), config);
@@ -111,15 +123,11 @@ router.get('/callback/:userFlow/:qrcode', async function(req, res){
 			state
 		}
 
-		const channel = `auth:${state}`;
-		await dataStore.set(channel, response);
+    // set user is logined in
+    req.session.isAuthenticated = true;
+    req.session.userData = response;
 
-		if(qrcode == "1"){
-			req.app.get('socket').to(channel).emit('messages', { event_name: 'login_success', state: state, data: response })
-			res.redirect('/auth/qrcode/complete');
-		}else{
-			res.redirect(`/auth/complete`);
-		}
+    res.redirect('/user/info');
 	} catch (err) {
 		console.log('---> get token error: ', err.message);
 		res.status(400).send(err.message);
@@ -128,22 +136,6 @@ router.get('/callback/:userFlow/:qrcode', async function(req, res){
 
 router.get('/qrcode/complete', async (req, res) => {
   res.render('qr_success');
-})
-
-router.get('/complete', async (req, res) => {
-  const { dataStore } = res.locals;
-  const state = req.session.state;
-  const channel = `auth:${state}`;
-
-  const response = await dataStore.get(channel);
-  if(response) {
-    req.session.isAuthenticated = true;
-    req.session.userData = response;
-
-    res.redirect('/user/info');
-  } else {
-    res.status(401).send();
-  }
 })
 
 module.exports = router;

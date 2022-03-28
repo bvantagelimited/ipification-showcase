@@ -1,21 +1,26 @@
-window.subscribe_session = function(state){
-  var socketPath = '/socket.io';
+(function () {
+  var start_session_listener = function(state){
 
-  window.socket = io('', { 
-    path: socketPath,
-    query: {
-      state: state
-    }
-  });
+    var socket = io();
 
-  window.socket.on('messages', function (response) {
-    console.log('socket response: ', response);
-    var event_name = response.event_name;
+    socket.on('connect', () => {
+      // emit socket server to join state channel
+      socket.emit('init', { state: state })
+    })
 
-    if(event_name == 'login_success'){
-      window.location.href = '/auth/complete';
-    }
-  });
-}
+    // listener messages from socket server
+    socket.on('messages', (response) => {
+      // console.log('socket response: ', response);
+      var event_name = response.event_name;
 
-if(typeof session_state !== 'undefined') window.subscribe_session(session_state)
+      if(event_name == 'url'){
+        window.location.href = response.url;
+      }
+    });
+  }
+
+  if(typeof(window.start_session_listener) === 'undefined'){
+    window.start_session_listener = start_session_listener;
+  }
+
+})();

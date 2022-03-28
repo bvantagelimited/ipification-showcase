@@ -1,7 +1,18 @@
-const isMobile =
-  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+  navigator.userAgent
+);
+
+function randomstring(L) {
+  var s = '';
+  var randomchar = function() {
+    var n = Math.floor(Math.random() * 62);
+    if (n < 10) return n; //1-10
+    if (n < 36) return String.fromCharCode(n + 55); //A-Z
+    return String.fromCharCode(n + 61); //a-z
+  }
+  while (s.length < L) s += randomchar();
+  return s;
+}
 
 function goto_link(url) {
   $(".wrapper-loader").addClass("show");
@@ -41,27 +52,24 @@ $(document).ready(function () {
     var data_title = $(this).attr("data-title");
 
     var params = new URLSearchParams({
-      state: session_state,
       user_flow: user_flow
     });
-
     if(phone_number) params.set("phone", phone_number);
 
     var redirectURL = base_url + "/auth/start";
 
-    if (isMobile) {
+    if (isMobile || user_flow === "pvn_im" || user_flow === 'login_im') {
+      params.set("state", randomstring(40));
       redirectURL += "?" + params.toString();
+      console.log('redirectURL', redirectURL);
       goto_link(redirectURL);
     } else {
-      if (user_flow === "pvn_im" || user_flow === 'login_im') {
-        redirectURL += "?" + params.toString();
-        goto_link(redirectURL);
-      } else {
-        params.set("qrcode", 1);
-        redirectURL += "?" + params.toString();
-        console.log('redirectURL', redirectURL);
-        showQrcodeWithLink(data_title, redirectURL);
-      }
+      // state format "randomstring-qrcode" and we will know use qr code or not
+      var state = randomstring(40) + '-' + 'qrcode';
+      params.set("state", state);
+      redirectURL += "?" + params.toString();
+      console.log('redirectURL', redirectURL);
+      showQrcodeWithLink(data_title, redirectURL, state);
     }
   })
 
@@ -135,7 +143,10 @@ $('#select').on('change', function () {
   return false;
 })
 
-function showQrcodeWithLink(title, url) {
+function showQrcodeWithLink(title, url, state) {
+  // add event listener when scan qr code successful
+  start_session_listener(state);
+
   Swal.fire({
     title: title,
     html: "<div class='qr-code-block'><div class='qrcode-title'>Scan QR code with your phone</div><div class='qrcode-img'></div></div>",

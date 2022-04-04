@@ -137,8 +137,8 @@ $('#select').on('change', function () {
 
 $("#help").click(() => {
   const desktop = $(window).width() > 576;
-  console.log(desktop)
-  if(desktop) {
+  console.log(desktop);
+  if (desktop) {
     window.open(
       "https://www.ipification.com/media/IPification-Showcase-Guide.pdf",
       "wwww",
@@ -147,27 +147,13 @@ $("#help").click(() => {
         ",height=" +
         parseInt(window.innerHeight) * 1 +
         "left=0,top=0"
-    )
+    );
   } else {
-  let newUrl ='https://www.ipification.com/media/IPification-Showcase-Guide.pdf'
- console.log(newUrl)
-  $('#help').attr('href', newUrl)
-
-   $('#help').attr('target','_blank')
-    // console.log($('#help').attr('href'))
+    let newUrl =
+      "https://www.ipification.com/media/IPification-Showcase-Guide.pdf";
+    $("#help").attr("href", newUrl);
+    $("#help").attr("target", "_blank");
   }
-  // desktop
-  //   ? window.open(
-  //       "https://www.google.com",
-  //       "wwww",
-  //       "width=" +
-  //         parseInt(window.innerWidth) * 0.35 +
-  //         ",height=" +
-  //         parseInt(window.innerHeight) * 0.7 +
-  //         "left=0,top=0"
-  //     )
-  //   : $(this).attr('target','_blank')
-  //   console.log('ovde je')
 });
 
 function showQrcodeWithLink(title, url) {

@@ -92,7 +92,7 @@ label, h6 {
 
 		.nav-item {
 			width: 33.3%;
-			margin-bottom: -2px
+			margin-bottom: -2px;
 
 			.nav-link {
 				border: none;
@@ -651,12 +651,13 @@ button.close:focus {
 .info-icon {
 	margin: auto;
 	text-align: right;
-	padding-left: 16px;
-	text-decoration: underline;
+	padding: 0 18px;
 	font-size: 14px;
 	cursor: pointer;
-	position: absolute;
-	right: 16px;
+
+	&:hover {
+		text-decoration: underline;
+	}
 
 	@media (max-width: 576px) {
 		right: 20px;
@@ -665,7 +666,7 @@ button.close:focus {
 
 #select {
 	position: absolute;
-	text-align: center
+	text-align: center;
 	right: 0;
 	font-size: 14px;
 	font-weight: bold;
@@ -684,7 +685,6 @@ button.close:focus {
 	text-align: left;
 	padding-bottom: 55px;
 	padding-left: 16px;
-	text-decoration: underline;
 
 	@media (max-width: 576px) {
 		width: 100%;

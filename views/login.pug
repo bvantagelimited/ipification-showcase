@@ -49,7 +49,7 @@ block content
 
 							.block-button.block.block-identity.block-1#identity
 								p.description_title Mobile ID & Know Your Customer		
-								p.description.description_helper Verify user with anonymus identity (mobile_id) or obtain user info with KYC.
+								p.description.description_helper Identify user with anonymus identity (mobile_id) or obtain user info with KYC.
 								button.btn_full_blue.btn_instant.btn-user-flow(type='button' data-title=get_flow_title('anonymous', 'Anonymous Identity') style="margin-bottom:59px" data-user-flow='anonymous')
 									span.right-icon.right-icon-blue
 									span Anonymous Identity
@@ -60,11 +60,12 @@ block content
 
 		footer(class="mt-auto")
 			.privacy-link
-				a(href="https://www.ipification.com/legal")
+				a(href="https://www.ipification.com/legal" target="_blank")
 					| Privacy Policy
 				span.info-icon
 					| About
-			
+				a(href="javascript:void(0)" id="help")
+					| Help
 	#app_info.modal(tabindex="-1" role="dialog")
 		.modal-dialog
 			.modal-content(style="border-radius: 0px;")

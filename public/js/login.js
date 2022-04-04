@@ -144,8 +144,7 @@ $('#select').on('change', function () {
 })
 
 $("#help").click(() => {
-  const desktop = $(window).width() > 576;
-  console.log(desktop);
+  const desktop = $(window).width() >= 576;
   if (desktop) {
     window.open(
       "https://www.ipification.com/media/IPification-Showcase-Guide.pdf",

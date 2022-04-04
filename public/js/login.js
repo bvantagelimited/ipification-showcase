@@ -143,6 +143,27 @@ $('#select').on('change', function () {
   return false;
 })
 
+$("#help").click(() => {
+  const desktop = $(window).width() > 576;
+  console.log(desktop);
+  if (desktop) {
+    window.open(
+      "https://www.ipification.com/media/IPification-Showcase-Guide.pdf",
+      "wwww",
+      "width=" +
+        parseInt(window.innerWidth) * 0.37 +
+        ",height=" +
+        parseInt(window.innerHeight) * 1 +
+        "left=0,top=0"
+    );
+  } else {
+    let newUrl =
+      "https://www.ipification.com/media/IPification-Showcase-Guide.pdf";
+    $("#help").attr("href", newUrl);
+    $("#help").attr("target", "_blank");
+  }
+});
+
 function showQrcodeWithLink(title, url, state) {
   // add event listener when scan qr code successful
   start_session_listener(state);

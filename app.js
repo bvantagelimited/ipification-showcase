@@ -8,11 +8,9 @@ const createError = require('http-errors');
 const config = require('config');
 const redis = require("ioredis");
 const nocache = require("nocache");
-const json_cache = require("redis-json");
 const redisStore = require('connect-redis')(session);
 
 const redisClient = new redis(process.env.REDIS_URL);
-const dataStore = new json_cache(redisClient, { prefix: "demo:" });
 
 const app = express();
 
@@ -42,7 +40,6 @@ app.use((req, res, next) => {
     title: 'IPification Showcase',
     ...res.locals,
     ...config,
-    dataStore,
     baseUrl: `${req.protocol}://${req.headers.host}`,
     get_flow_title: (user_flow, default_title) => {
       const client = config.clients.find(item => item.user_flow === user_flow);

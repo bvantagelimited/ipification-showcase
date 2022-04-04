@@ -18,16 +18,16 @@ $(document).ready(function () {
     $("#app_info").modal("show");
   });
 
-  $(".btn-user-flow").click(function () {
-    var user_flow = $(this).data("user-flow");
-    console.log("user_flow", user_flow);
+  $('.btn-user-flow').click(function() {
+    var user_flow = $(this).data('user-flow');
+    console.log('user_flow', user_flow);
     var phone_number;
 
-    if (["pvn_ip", "pvn_im", "kyc_phone"].indexOf(user_flow) >= 0) {
+    if(['pvn_ip', 'pvn_im', 'kyc_phone'].indexOf(user_flow) >= 0) {
       var parent = $(this).closest(".block-button");
       var inputPhone = parent.find("input#phoneNumber");
 
-      if (inputPhone.length > 0) {
+      if(inputPhone.length > 0) {
         phone_number = inputPhone.val();
         if (!phone_number) {
           $(".wrapper-loader").removeClass("show");
@@ -36,16 +36,16 @@ $(document).ready(function () {
         }
       }
     }
-
-    localStorage.setItem("selector", location.hash.substring(1));
+    
+    localStorage.setItem('selector', location.hash.substring(1));
     var data_title = $(this).attr("data-title");
 
     var params = new URLSearchParams({
       state: session_state,
-      user_flow: user_flow,
+      user_flow: user_flow
     });
 
-    if (phone_number) params.set("phone", phone_number);
+    if(phone_number) params.set("phone", phone_number);
 
     var redirectURL = base_url + "/auth/start";
 
@@ -53,17 +53,18 @@ $(document).ready(function () {
       redirectURL += "?" + params.toString();
       goto_link(redirectURL);
     } else {
-      if (user_flow === "pvn_im" || user_flow === "login_im") {
+      if (user_flow === "pvn_im" || user_flow === 'login_im') {
         redirectURL += "?" + params.toString();
         goto_link(redirectURL);
       } else {
         params.set("qrcode", 1);
         redirectURL += "?" + params.toString();
-        console.log("redirectURL", redirectURL);
+        console.log('redirectURL', redirectURL);
         showQrcodeWithLink(data_title, redirectURL);
       }
     }
-  });
+  })
+
 
   $("input[name=phone]").on("input", function (e) {
     var phone = $(this)
@@ -123,20 +124,21 @@ function select_nav(selector) {
   localStorage.setItem("selector", selector);
 }
 
-var value = $("#select").attr("value");
-$("#select option[data-selected=" + value + "]").attr("selected", "selected");
+var value = $('#select').attr('value');
+$("#select option[data-selected="+value+"]").attr('selected','selected');
 
-$("#select").on("change", function () {
+$('#select').on('change', function () {
   var url = $(this).val();
   if (url) {
-    window.location.href = url;
+      window.location.href = url; 
   }
   return false;
-});
+})
 
 $("#help").click(() => {
-  const desktop = $(window).width() >= 576;
-  if (desktop) {
+  const desktop = $(window).width() > 576;
+  console.log(desktop)
+  if(desktop) {
     window.open(
       "https://www.ipification.com/media/IPification-Showcase-Guide.pdf",
       "wwww",
@@ -145,13 +147,27 @@ $("#help").click(() => {
         ",height=" +
         parseInt(window.innerHeight) * 1 +
         "left=0,top=0"
-    );
+    )
   } else {
-    let newUrl =
-      "https://www.ipification.com/media/IPification-Showcase-Guide.pdf";
-    $("#help").attr("href", newUrl);
-    $("#help").attr("target", "_blank");
+  let newUrl ='https://www.ipification.com/media/IPification-Showcase-Guide.pdf'
+ console.log(newUrl)
+  $('#help').attr('href', newUrl)
+
+   $('#help').attr('target','_blank')
+    // console.log($('#help').attr('href'))
   }
+  // desktop
+  //   ? window.open(
+  //       "https://www.google.com",
+  //       "wwww",
+  //       "width=" +
+  //         parseInt(window.innerWidth) * 0.35 +
+  //         ",height=" +
+  //         parseInt(window.innerHeight) * 0.7 +
+  //         "left=0,top=0"
+  //     )
+  //   : $(this).attr('target','_blank')
+  //   console.log('ovde je')
 });
 
 function showQrcodeWithLink(title, url) {
@@ -171,3 +187,11 @@ function showQrcodeWithLink(title, url) {
     },
   });
 }
+
+
+
+
+
+
+
+

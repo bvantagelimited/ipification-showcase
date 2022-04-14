@@ -42,7 +42,8 @@ router.get('/start', function(req, res) {
     redirect_uri: redirectUrl,
     scope: scope,
     state: state,
-    nonce: uuidv4()
+    nonce: uuidv4(),
+    ui_locales: 'en'
   };
 	if(channel) params.channel = channel;
 

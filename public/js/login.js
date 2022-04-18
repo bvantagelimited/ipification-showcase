@@ -24,6 +24,17 @@ function choose_option(selector) {
   $(".btn_" + selector).addClass("btn-active");
 }
 
+$('#phoneNumber').keypress(function(e){ 
+  if (this.value.length == 0 && e.which == 48 ){
+   return false;
+   }
+});
+
+$('#phoneNumberKYC').keypress(function(e){ 
+  if (this.value.length == 0 && e.which == 48 ){
+   return false;
+   }
+});
 $(document).ready(function () {
   $(".info-icon").on("click", function () {
     $("#app_info").modal("show");
@@ -37,6 +48,7 @@ $(document).ready(function () {
     if(['pvn_ip', 'pvn_im', 'kyc_phone'].indexOf(user_flow) >= 0) {
       var parent = $(this).closest(".block-button");
       // var inputPhone1 = parent.find("input#phoneNumber");
+     
       var inputPhone= iti.getNumber()
       var inputPhoneKYC= itiKYC.getNumber()
 
@@ -194,7 +206,6 @@ function showQrcodeWithLink(title, url, state) {
 
 var phoneInputID = "#phoneNumber" ;
 var input = document.querySelector(phoneInputID);
-console.log('input',input)
 var iti = window.intlTelInput(input, {
   // allowDropdown: false,
   // autoHideDialCode: false,

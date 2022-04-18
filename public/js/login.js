@@ -31,19 +31,20 @@ $(document).ready(function () {
 
   $('.btn-user-flow').click(function() {
     var user_flow = $(this).data('user-flow');
-    console.log('user_flow', user_flow);
     var phone_number;
+    var phone_numberKYC;
 
     if(['pvn_ip', 'pvn_im', 'kyc_phone'].indexOf(user_flow) >= 0) {
       var parent = $(this).closest(".block-button");
-      // var inputPhone = parent.find("input#phoneNumber");
+      // var inputPhone1 = parent.find("input#phoneNumber");
       var inputPhone= iti.getNumber()
+      var inputPhoneKYC= itiKYC.getNumber()
 
-      if(inputPhone.length > 0) {
+      if(inputPhone.length >= 0 || inputPhoneKYC.length >=0) {
         // phone_number = inputPhone.val();
-        phone_number = inputPhone
-        console.log('phone_number',phone_number)
-        if (!phone_number) {
+        phone_number = inputPhone.replace('+','')
+        phone_numberKYC = inputPhoneKYC.replace('+','')
+        if (!phone_number && !phone_numberKYC) {
           $(".wrapper-loader").removeClass("show");
           $("#input_alert").modal("show");
           return;
@@ -58,6 +59,7 @@ $(document).ready(function () {
       user_flow: user_flow
     });
     if(phone_number) params.set("phone", phone_number);
+    if(phone_numberKYC) params.set("phone", phone_numberKYC);
 
     var redirectURL = base_url + "/auth/start";
 
@@ -128,6 +130,9 @@ $(document).ready(function () {
 });
 
 function select_nav(selector) {
+  $("#phoneNumber").val('')
+  $("#phoneNumberKYC").val('')
+  $('.block-button').removeClass('block-active')
   $(".nav-link").removeClass("active");
   $(".nav-link-" + selector).addClass("active");
   $(".block").removeClass("active");
@@ -187,9 +192,37 @@ function showQrcodeWithLink(title, url, state) {
   });
 }
 
-var phoneInputID = "#phoneNumber";
+var phoneInputID = "#phoneNumber" ;
 var input = document.querySelector(phoneInputID);
+console.log('input',input)
 var iti = window.intlTelInput(input, {
+  // allowDropdown: false,
+  // autoHideDialCode: false,
+  // autoPlaceholder: "off",
+  // dropdownContainer: document.body,
+  // excludeCountries: ["us"],
+  formatOnDisplay: true,
+  // initialCountry: "auto",
+
+  // geoIpLookup: function(success, failure) {
+  //   $.get("https://ipinfo.io", function() {}, "jsonp").always(function(resp) {
+  //     var countryCode = (resp && resp.country) ? resp.country : "us";
+  //     success(countryCode);
+  //   });
+  // },
+  hiddenInput: "full_number",
+  // localizedCountries: { 'de': 'Deutschland' },
+  // nationalMode: true,
+  // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
+  // placeholderNumberType: "MOBILE",
+  // preferredCountries: ['es'],
+  separateDialCode: true,
+  utilsScript:
+    "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.14/js/utils.js",
+});
+var phoneInputIDKYC = "#phoneNumberKYC" ;
+var inputKYC = document.querySelector(phoneInputIDKYC);
+var itiKYC = window.intlTelInput(inputKYC, {
   // allowDropdown: false,
   // autoHideDialCode: false,
   // autoPlaceholder: "off",

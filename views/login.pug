@@ -88,11 +88,17 @@ block content
 						a(href="https://developer.ipification.com/#/")
 							| Developer.ipification
 
-	#input_alert.modal(tabindex="-1" role="dialog")
+	#input_alert.error-popup.modal(tabindex="-1" role="dialog")
 		.modal-dialog
 			.modal-content(style="border-radius: 0px;")
 				.modal-header
 					h6.modal-title Please enter phone number
+
+	#phone_invalid_alert.error-popup.modal(tabindex="-1" role="dialog")
+		.modal-dialog
+			.modal-content(style="border-radius: 0px;")
+				.modal-header
+					h6.modal-title Your phone is invalid
 
 	.wrapper-loader
 		span.loader 

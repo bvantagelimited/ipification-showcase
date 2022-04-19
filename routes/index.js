@@ -8,11 +8,13 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/geoip', async (req, res) => {
-  const ip = req.ip || '206.71.50.230';
+  const ip = req.ip;
+  console.log('client ip', ip);
   geo = geoip.lookup(ip);
 
   res.send({
-    country: (geo ? geo.country : 'us').toLowerCase()
+    country: (geo ? geo.country : 'vn').toLowerCase(),
+    ip
   });
 });
 

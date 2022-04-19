@@ -2,6 +2,26 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
   navigator.userAgent
 );
 
+function initPhoneInput(input){
+   iti = window.intlTelInput(input, {
+    formatOnDisplay: true,
+  
+    initialCountry: "auto",
+    geoIpLookup: function(success, failure) {
+      $.get("/geoip", function(data) {
+        console.log('geoip', data);
+        var countryCode = data ? data.country : "us";
+        success(countryCode);
+      });
+    },
+    hiddenInput: "full_number",
+    separateDialCode: true,
+    utilsScript:
+      "/js/lib/countryLib/js/utils.js",
+  });
+  
+}
+
 function randomstring(L) {
   var s = '';
   var randomchar = function() {
@@ -25,6 +45,12 @@ function choose_option(selector) {
 }
 
 $(document).ready(function () {
+
+  // country phone setting library
+  document.querySelectorAll(".phoneNumber").forEach((el)=> {
+    initPhoneInput(el);
+  })
+
   $(".info-icon").on("click", function () {
     $("#app_info").modal("show");
   });
@@ -32,20 +58,26 @@ $(document).ready(function () {
   $('.btn-user-flow').click(function() {
     var user_flow = $(this).data('user-flow');
     var phone_number;
-    var dailCode;
 
     if (["pvn_ip", "pvn_im", "kyc_phone"].indexOf(user_flow) >= 0) {
       var parent = $(this).closest(".block-button");
       var inputPhone = parent.find("input.phoneNumber");
-      var countryData = iti.getSelectedCountryData();
-      dailCode = countryData.dialCode;
 
       if (inputPhone.length >= 0) {
-        phone_number = inputPhone.val();
+        var iti = window.intlTelInputGlobals.getInstance(inputPhone[0]);
+        phone_number = iti.getNumber(intlTelInputUtils.numberFormat.INTERNATIONAL);
+        phone_number = (phone_number || '').replace(/[ +]/g, '');
+        console.log('phone_number', phone_number);
 
-        if (!phone_number) {
+        if (!phone_number || phone_number == '') {
           $(".wrapper-loader").removeClass("show");
           $("#input_alert").modal("show");
+          return;
+        }
+
+        if (!iti.isValidNumber()) {
+          $(".wrapper-loader").removeClass("show");
+          $("#phone_invalid_alert").modal("show");
           return;
         }
       }
@@ -57,13 +89,9 @@ $(document).ready(function () {
     var params = new URLSearchParams({
       user_flow: user_flow
     });
+
     if (phone_number)
-      params.set(
-        "phone",
-        /^[0][0-9]/.test(phone_number)
-          ? dailCode + Number(phone_number).toString()
-          : dailCode + phone_number
-      );
+      params.set("phone", phone_number);
 
     var redirectURL = base_url + "/auth/start";
 
@@ -196,42 +224,7 @@ function showQrcodeWithLink(title, url, state) {
     },
   });
 }
-// country phone setting library
-var iti
-let ary = Array.prototype.slice.call(document.querySelectorAll(".phoneNumber"));
-ary.forEach((el)=> {
-  initPhoneInput(el);
-})
 
-function initPhoneInput(input){
-   iti = window.intlTelInput(input, {
-    // allowDropdown: false,
-    // autoHideDialCode: false,
-    // autoPlaceholder: "off",
-    // dropdownContainer: document.body,
-    // excludeCountries: ["us"],
-    formatOnDisplay: true,
-  
-    // initialCountry: "auto",
-    // geoIpLookup: function(success, failure) {
-    //   $.get("/geoip", function(data) {
-    //     console.log('geoip', data);
-    //     var countryCode = data ? data.country : "us";
-    //     success(countryCode);
-    //   });
-    // },
-    hiddenInput: "full_number",
-    // localizedCountries: { 'de': 'Deutschland' },
-    // nationalMode: true,
-    // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
-    // placeholderNumberType: "MOBILE",
-    // preferredCountries: ['es'],
-    separateDialCode: true,
-    utilsScript:
-      "/js/lib/countryLib/js/utils.js",
-  });
-  
-}
 
 
 

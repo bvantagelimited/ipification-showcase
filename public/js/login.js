@@ -2,6 +2,26 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
   navigator.userAgent
 );
 
+function initPhoneInput(input){
+   iti = window.intlTelInput(input, {
+    formatOnDisplay: true,
+  
+    initialCountry: "auto",
+    geoIpLookup: function(success, failure) {
+      $.get("/geoip", function(data) {
+        console.log('geoip', data);
+        var countryCode = data ? data.country : "us";
+        success(countryCode);
+      });
+    },
+    hiddenInput: "full_number",
+    separateDialCode: true,
+    utilsScript:
+      "/js/lib/countryLib/js/utils.js",
+  });
+  
+}
+
 function randomstring(L) {
   var s = '';
   var randomchar = function() {
@@ -25,24 +45,39 @@ function choose_option(selector) {
 }
 
 $(document).ready(function () {
+
+  // country phone setting library
+  document.querySelectorAll(".phoneNumber").forEach((el)=> {
+    initPhoneInput(el);
+  })
+
   $(".info-icon").on("click", function () {
     $("#app_info").modal("show");
   });
 
   $('.btn-user-flow').click(function() {
     var user_flow = $(this).data('user-flow');
-    console.log('user_flow', user_flow);
     var phone_number;
 
-    if(['pvn_ip', 'pvn_im', 'kyc_phone'].indexOf(user_flow) >= 0) {
+    if (["pvn_ip", "pvn_im", "kyc_phone"].indexOf(user_flow) >= 0) {
       var parent = $(this).closest(".block-button");
-      var inputPhone = parent.find("input#phoneNumber");
+      var inputPhone = parent.find("input.phoneNumber");
 
-      if(inputPhone.length > 0) {
-        phone_number = inputPhone.val();
-        if (!phone_number) {
+      if (inputPhone.length >= 0) {
+        var iti = window.intlTelInputGlobals.getInstance(inputPhone[0]);
+        phone_number = iti.getNumber(intlTelInputUtils.numberFormat.INTERNATIONAL);
+        phone_number = (phone_number || '').replace(/[ +]/g, '');
+        console.log('phone_number', phone_number);
+
+        if (!phone_number || phone_number == '') {
           $(".wrapper-loader").removeClass("show");
           $("#input_alert").modal("show");
+          return;
+        }
+
+        if (!iti.isValidNumber()) {
+          $(".wrapper-loader").removeClass("show");
+          $("#phone_invalid_alert").modal("show");
           return;
         }
       }
@@ -54,7 +89,9 @@ $(document).ready(function () {
     var params = new URLSearchParams({
       user_flow: user_flow
     });
-    if(phone_number) params.set("phone", phone_number);
+
+    if (phone_number)
+      params.set("phone", phone_number);
 
     var redirectURL = base_url + "/auth/start";
 
@@ -124,7 +161,11 @@ $(document).ready(function () {
   }
 });
 
+console.log('window.hash',window.location.hash)
+
 function select_nav(selector) {
+  $(".phoneNumber").val('')
+  $('.block-button').removeClass('block-active')
   $(".nav-link").removeClass("active");
   $(".nav-link-" + selector).addClass("active");
   $(".block").removeClass("active");
@@ -183,6 +224,7 @@ function showQrcodeWithLink(title, url, state) {
     },
   });
 }
+
 
 
 

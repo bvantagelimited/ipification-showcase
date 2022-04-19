@@ -24,17 +24,6 @@ function choose_option(selector) {
   $(".btn_" + selector).addClass("btn-active");
 }
 
-$('#phoneNumber').keypress(function(e){ 
-  if (this.value.length == 0 && e.which == 48 ){
-   return false;
-   }
-});
-
-$('#phoneNumberKYC').keypress(function(e){ 
-  if (this.value.length == 0 && e.which == 48 ){
-   return false;
-   }
-});
 $(document).ready(function () {
   $(".info-icon").on("click", function () {
     $("#app_info").modal("show");
@@ -43,20 +32,18 @@ $(document).ready(function () {
   $('.btn-user-flow').click(function() {
     var user_flow = $(this).data('user-flow');
     var phone_number;
-    var phone_numberKYC;
+    var dailCode;
 
-    if(['pvn_ip', 'pvn_im', 'kyc_phone'].indexOf(user_flow) >= 0) {
+    if (["pvn_ip", "pvn_im", "kyc_phone"].indexOf(user_flow) >= 0) {
       var parent = $(this).closest(".block-button");
-      // var inputPhone1 = parent.find("input#phoneNumber");
-     
-      var inputPhone= iti.getNumber()
-      var inputPhoneKYC= itiKYC.getNumber()
+      var inputPhone = parent.find("input.phoneNumber");
+      var countryData = iti.getSelectedCountryData();
+      dailCode = countryData.dialCode;
 
-      if(inputPhone.length >= 0 || inputPhoneKYC.length >=0) {
-        // phone_number = inputPhone.val();
-        phone_number = inputPhone.replace('+','')
-        phone_numberKYC = inputPhoneKYC.replace('+','')
-        if (!phone_number && !phone_numberKYC) {
+      if (inputPhone.length >= 0) {
+        phone_number = inputPhone.val();
+
+        if (!phone_number) {
           $(".wrapper-loader").removeClass("show");
           $("#input_alert").modal("show");
           return;
@@ -70,8 +57,13 @@ $(document).ready(function () {
     var params = new URLSearchParams({
       user_flow: user_flow
     });
-    if(phone_number) params.set("phone", phone_number);
-    if(phone_numberKYC) params.set("phone", phone_numberKYC);
+    if (phone_number)
+      params.set(
+        "phone",
+        /^[0][0-9]/.test(phone_number)
+          ? dailCode + Number(phone_number).toString()
+          : dailCode + phone_number
+      );
 
     var redirectURL = base_url + "/auth/start";
 
@@ -141,9 +133,10 @@ $(document).ready(function () {
   }
 });
 
+console.log('window.hash',window.location.hash)
+
 function select_nav(selector) {
-  $("#phoneNumber").val('')
-  $("#phoneNumberKYC").val('')
+  $(".phoneNumber").val('')
   $('.block-button').removeClass('block-active')
   $(".nav-link").removeClass("active");
   $(".nav-link-" + selector).addClass("active");
@@ -203,62 +196,44 @@ function showQrcodeWithLink(title, url, state) {
     },
   });
 }
+// country phone setting library
+var iti
+let ary = Array.prototype.slice.call(document.querySelectorAll(".phoneNumber"));
+ary.forEach((el)=> {
+  initPhoneInput(el);
+})
 
-var phoneInputID = "#phoneNumber" ;
-var input = document.querySelector(phoneInputID);
-var iti = window.intlTelInput(input, {
-  // allowDropdown: false,
-  // autoHideDialCode: false,
-  // autoPlaceholder: "off",
-  // dropdownContainer: document.body,
-  // excludeCountries: ["us"],
-  formatOnDisplay: true,
+function initPhoneInput(input){
+   iti = window.intlTelInput(input, {
+    // allowDropdown: false,
+    // autoHideDialCode: false,
+    // autoPlaceholder: "off",
+    // dropdownContainer: document.body,
+    // excludeCountries: ["us"],
+    formatOnDisplay: true,
+  
+    // initialCountry: "auto",
+    // geoIpLookup: function(success, failure) {
+    //   $.get("/geoip", function(data) {
+    //     console.log('geoip', data);
+    //     var countryCode = data ? data.country : "us";
+    //     success(countryCode);
+    //   });
+    // },
+    hiddenInput: "full_number",
+    // localizedCountries: { 'de': 'Deutschland' },
+    // nationalMode: true,
+    // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
+    // placeholderNumberType: "MOBILE",
+    // preferredCountries: ['es'],
+    separateDialCode: true,
+    utilsScript:
+      "/js/lib/countryLib/js/utils.js",
+  });
+  
+}
 
-  initialCountry: "auto",
-  geoIpLookup: function(success, failure) {
-    $.get("/geoip", function(data) {
-      console.log('geoip', data);
-      var countryCode = data ? data.country : "us";
-      success(countryCode);
-    });
-  },
-  hiddenInput: "full_number",
-  // localizedCountries: { 'de': 'Deutschland' },
-  // nationalMode: true,
-  // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
-  // placeholderNumberType: "MOBILE",
-  // preferredCountries: ['es'],
-  separateDialCode: true,
-  utilsScript:
-    "/js/lib/countryLib/js/utils.js",
-});
-var phoneInputIDKYC = "#phoneNumberKYC" ;
-var inputKYC = document.querySelector(phoneInputIDKYC);
-var itiKYC = window.intlTelInput(inputKYC, {
-  // allowDropdown: false,
-  // autoHideDialCode: false,
-  // autoPlaceholder: "off",
-  // dropdownContainer: document.body,
-  // excludeCountries: ["us"],
-  formatOnDisplay: true,
-  // initialCountry: "auto",
 
-  // geoIpLookup: function(success, failure) {
-  //   $.get("https://ipinfo.io", function() {}, "jsonp").always(function(resp) {
-  //     var countryCode = (resp && resp.country) ? resp.country : "us";
-  //     success(countryCode);
-  //   });
-  // },
-  hiddenInput: "full_number",
-  // localizedCountries: { 'de': 'Deutschland' },
-  // nationalMode: false,
-  // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
-  // placeholderNumberType: "MOBILE",
-  // preferredCountries: ['es'],
-  separateDialCode: true,
-  utilsScript:
-    "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.14/js/utils.js",
-});
 
 
 

@@ -313,7 +313,7 @@ label, h6 {
 				-moz-box-shadow: none;
 				box-shadow: none;
 				color: #B2B2B2;
-				padding: 15px 17px 17px 47px;
+				padding: 17px 17px 17px;
 				font-size: 16px;
 				width: '100%';
 				transition: background-color 0.4s;
@@ -335,7 +335,7 @@ label, h6 {
 			}
 
 			::placeholder {
-				color: #2646FF;
+				color: #2647ff92;
 				font-weight: 300;
 			}
 		}
@@ -370,6 +370,12 @@ label, h6 {
 			.iti--separate-dial-code .iti__selected-dial-code {
 				color: #fff
 			}
+
+			.iti__selected-flag {
+				background-color: #000 !important;
+				transition: background-color 0.4s;
+			}
+
 		}
 
 		&.block-2 {
@@ -980,5 +986,17 @@ button.close:focus {
 }
 
 .iti {
-	display: block!important
-	}
+	display: block !important;
+}
+
+.iti__selected-flag {
+	background-color: #f2f2f6 !important;
+	height: 99% !important;
+	border-radius: 11px;
+	padding: 0 6px 1px 8px!important;
+}
+
+.iti--separate-dial-code .iti__selected-dial-code {
+	color: #2646FF;
+}
+

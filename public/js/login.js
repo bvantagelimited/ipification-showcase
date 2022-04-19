@@ -213,14 +213,15 @@ var iti = window.intlTelInput(input, {
   // dropdownContainer: document.body,
   // excludeCountries: ["us"],
   formatOnDisplay: true,
-  // initialCountry: "auto",
 
-  // geoIpLookup: function(success, failure) {
-  //   $.get("https://ipinfo.io", function() {}, "jsonp").always(function(resp) {
-  //     var countryCode = (resp && resp.country) ? resp.country : "us";
-  //     success(countryCode);
-  //   });
-  // },
+  initialCountry: "auto",
+  geoIpLookup: function(success, failure) {
+    $.get("/geoip", function(data) {
+      console.log('geoip', data);
+      var countryCode = data ? data.country : "us";
+      success(countryCode);
+    });
+  },
   hiddenInput: "full_number",
   // localizedCountries: { 'de': 'Deutschland' },
   // nationalMode: true,
@@ -229,7 +230,7 @@ var iti = window.intlTelInput(input, {
   // preferredCountries: ['es'],
   separateDialCode: true,
   utilsScript:
-    "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.14/js/utils.js",
+    "/js/lib/countryLib/js/utils.js",
 });
 var phoneInputIDKYC = "#phoneNumberKYC" ;
 var inputKYC = document.querySelector(phoneInputIDKYC);

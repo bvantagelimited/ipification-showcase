@@ -16,6 +16,7 @@
     "debug": "^4.3.3",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
+    "geoip-lite": "^1.4.4",
     "html-entities": "^2.3.2",
     "http-errors": "^2.0.0",
     "ioredis": "^4.28.5",

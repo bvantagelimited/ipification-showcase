@@ -13,7 +13,7 @@ router.get('/geoip', async (req, res) => {
   geo = geoip.lookup(ip);
 
   res.send({
-    country: (geo ? geo.country : 'vn').toLowerCase(),
+    country: (geo ? geo.country : 'us').toLowerCase(),
     ip
   });
 });

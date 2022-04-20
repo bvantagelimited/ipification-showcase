@@ -14,6 +14,7 @@ function initPhoneInput(input){
         success(countryCode);
       });
     },
+    preferredCountries: [],
     hiddenInput: "full_number",
     separateDialCode: true,
     utilsScript:

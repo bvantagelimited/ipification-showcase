@@ -65,7 +65,7 @@ $(document).ready(function () {
 
       if (inputPhone.length >= 0) {
         var iti = window.intlTelInputGlobals.getInstance(inputPhone[0]);
-        phone_number = iti.getNumber(intlTelInputUtils.numberFormat.INTERNATIONAL);
+        phone_number = iti.getNumber();
         phone_number = (phone_number || '').replace(/[ +]/g, '');
         console.log('phone_number', phone_number);
 

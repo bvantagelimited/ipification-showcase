@@ -1,0 +1,27 @@
+version: "3.3"
+services:
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - showcase
+  imbox:
+    restart: unless-stopped
+    build:
+      context: .
+    image: "ipification-showcase"
+    environment:
+      PORT: 8080
+      REDIS_URL: redis://redis
+    ports:
+      - 8081:8080
+    links:
+      - redis
+    depends_on:
+      - redis
+    networks:
+      - showcase
+networks:
+  showcase:
+    driver: bridge

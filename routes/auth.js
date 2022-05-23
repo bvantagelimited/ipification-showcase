@@ -43,7 +43,9 @@ router.get('/start', function(req, res) {
     scope: scope,
     state: state,
     nonce: uuidv4(),
-    ui_locales: 'en'
+    ui_locales: 'en',
+    consent_id: 'ip-consent-001-eng',
+    consent_timestamp: Math.floor(Date.now() / 1000)
   };
 	if(channel) params.channel = channel;
 

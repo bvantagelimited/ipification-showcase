@@ -14,7 +14,7 @@ function initPhoneInput(input){
         success(countryCode);
       });
     },
-    preferredCountries: [],
+    preferredCountries: ['rs'],
     hiddenInput: "full_number",
     separateDialCode: true,
     utilsScript:

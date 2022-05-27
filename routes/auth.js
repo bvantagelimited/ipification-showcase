@@ -49,7 +49,7 @@ router.get('/start', function(req, res) {
     state: state,
     nonce: uuidv4(),
     ui_locales: 'en',
-    consent_id: 'ip-consent-001-eng',
+    consent_id: process.env.CONSENT_ID,
     consent_timestamp: Math.floor(Date.now() / 1000)
   };
 	if(channel) params.channel = channel;

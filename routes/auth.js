@@ -114,6 +114,7 @@ router.get('/callback/:userFlow', async function(req, res){
   }
 
   const client = clients.find(item => item.user_flow === userFlow);
+  console.log('client',client)
   if(!client){
     res.send("Client not found");
     return;

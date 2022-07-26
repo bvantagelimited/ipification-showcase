@@ -59,10 +59,14 @@ $(document).ready(function () {
   $('.btn-user-flow').click(function() {
     var user_flow = $(this).data('user-flow');
     var phone_number;
+    console.log('user_flow',user_flow)
+    console.log(["pvn_ip","pnv_ip_plus", "pvn_im", "kyc_phone"].indexOf(user_flow) >= 0)
 
-    if (["pvn_ip", "pvn_im", "kyc_phone"].indexOf(user_flow) >= 0) {
+    if (["pvn_ip","pnv_ip_plus", "pvn_im", "kyc_phone"].indexOf(user_flow) >= 0) {
+    
       var parent = $(this).closest(".block-button");
       var inputPhone = parent.find("input.phoneNumber");
+      console.log('inputPhone',inputPhone)
 
       if (inputPhone.length >= 0) {
         var iti = window.intlTelInputGlobals.getInstance(inputPhone[0]);

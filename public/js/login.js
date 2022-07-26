@@ -64,7 +64,6 @@ $(document).ready(function () {
     
       var parent = $(this).closest(".block-button");
       var inputPhone = parent.find("input.phoneNumber");
-      console.log('inputPhone',inputPhone)
 
       if (inputPhone.length >= 0) {
         var iti = window.intlTelInputGlobals.getInstance(inputPhone[0]);

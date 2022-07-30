@@ -112,15 +112,11 @@ $(document).ready(function () {
     }
   })
 
-  var value = $('#select').attr('value');
-  $("#select option[data-selected="+value+"]").attr('selected','selected');
-
   $('#select').on('change', function () {
     var url = $(this).val();
     if (url) {
-        window.location.href = url; 
+      window.location.href = url; 
     }
-    return false;
   })
 
   $("input[name=phone]").on("input", function (e) {

@@ -13,8 +13,8 @@ block content
 								h3.app-name IPification features showcase									
 
 								select(id="select" value=node_env data-env=node_env)
-									option(data-selected="stage" value="https://test-stage.ipification.com/auth/login") Stage
-									option(data-selected='live' value="https://test-live.ipification.com/auth/login") Live
+									option(data-selected="stage" selected=node_env == "stage" value="https://test-stage.ipification.com/auth/login") Stage
+									option(data-selected='live' selected=node_env == "live" value="https://test-live.ipification.com/auth/login") Live
 					.row.block-page
 						ul.list-tabs.nav.nav-tabs
 							li.nav-item

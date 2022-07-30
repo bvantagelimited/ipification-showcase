@@ -113,6 +113,16 @@ $(document).ready(function () {
     }
   })
 
+  var value = $('#select').attr('value');
+  $("#select option[data-selected="+value+"]").attr('selected','selected');
+
+  $('#select').on('change', function () {
+    var url = $(this).val();
+    if (url) {
+        window.location.href = url; 
+    }
+    return false;
+  })
 
   $("input[name=phone]").on("input", function (e) {
     var phone = $(this)
@@ -175,17 +185,6 @@ function select_nav(selector) {
   $(".block-" + selector).addClass("active");
   localStorage.setItem("selector", selector);
 }
-
-var value = $('#select').attr('value');
-$("#select option[data-selected="+value+"]").attr('selected','selected');
-
-$('#select').on('change', function () {
-  var url = $(this).val();
-  if (url) {
-      window.location.href = url; 
-  }
-  return false;
-})
 
 $("#help").click(() => {
   const desktop = $(window).width() >= 576;

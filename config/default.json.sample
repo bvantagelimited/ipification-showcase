@@ -13,7 +13,7 @@
       "user_flow": "pvn_ip_plus",
       "client_id": "",
       "client_secret": "",
-      "title": "IP Phone Number Verification",
+      "title": "IP+ Phone Number Verification",
       "scope": "openid ip:phone_verify ip:mobile_id"
     },
     {

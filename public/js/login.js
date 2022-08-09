@@ -185,7 +185,7 @@ $("#help").click(() => {
   const desktop = $(window).width() >= 576;
   if (desktop) {
     window.open(
-      "https://www.ipification.com/media/IPification-Showcase-Guide.pdf",
+      "https://www.ipification.com/media/IPification-Showcase-Guide-2.1.pdf",
       "wwww",
       "width=" +
         parseInt(window.innerWidth) * 0.37 +
@@ -195,7 +195,7 @@ $("#help").click(() => {
     );
   } else {
     let newUrl =
-      "https://www.ipification.com/media/IPification-Showcase-Guide.pdf";
+      "https://www.ipification.com/media/IPification-Showcase-Guide-2.1.pdf";
     $("#help").attr("href", newUrl);
     $("#help").attr("target", "_blank");
   }

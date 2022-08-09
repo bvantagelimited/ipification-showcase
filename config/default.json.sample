@@ -29,6 +29,13 @@
       "client_id": "",
       "client_secret": "",
       "title": "IP Login",
+      "scope": "openid ip:phone"
+    },
+    {
+      "user_flow": "login_ip_plus",
+      "client_id": "",
+      "client_secret": "",
+      "title": "IP+ Login",
       "scope": "openid ip:mobile_id ip:phone"
     },
     {

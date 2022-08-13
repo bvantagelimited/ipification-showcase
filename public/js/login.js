@@ -212,12 +212,14 @@ function showQrcodeWithLink(title, url, state) {
     showCloseButton: true,
     heightAuto: false,
     didOpen: () => {
-      new QRCode(document.querySelector(".qr-code-block .qrcode-img"), {
+      var qrCodeElm = document.querySelector(".qr-code-block .qrcode-img");
+      new QRCode(qrCodeElm, {
         text: url,
         width: 212,
         height: 212,
         correctLevel: QRCode.CorrectLevel.L,
       });
+      qrCodeElm.setAttribute('title', '');
     },
   });
 }

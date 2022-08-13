@@ -142,6 +142,7 @@ router.get('/callback/:userFlow', async function(req, res){
     // console.log('tokenInfo', tokenInfo);
 
 		const { data: userInfo } = await axios.post(userUrl, qs.stringify({ access_token: accessToken }), config);
+    console.log('userInfo', userInfo);
 
 		const response = {
 			userInfo: prettyHtml(userInfo), 
@@ -170,7 +171,14 @@ router.get('/callback/:userFlow', async function(req, res){
         event_name: 'url',
         url: auth_complete_url
       });
-      res.redirect('/auth/qrcode/complete');
+
+      if(userInfo.phone_number_verified === 'false') {
+        res.redirect('/auth/qrcode/error');
+      } else {
+        res.redirect('/auth/qrcode/complete');
+      }
+
+      
       return;
     }
 
@@ -209,6 +217,10 @@ router.get('/complete', async (req, res) => {
 
 router.get('/qrcode/complete', async (req, res) => {
   res.render('qr_success');
+})
+
+router.get('/qrcode/error', async (req, res) => {
+  res.render('qr_error');
 })
 
 function delay(time) {

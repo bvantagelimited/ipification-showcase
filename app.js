@@ -57,11 +57,6 @@ app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError.NotFound());
-});
-
 // error handler
 app.use(function(err, req, res, next) {
   next(createError(500, err.message));

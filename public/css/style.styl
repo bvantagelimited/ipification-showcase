@@ -1034,7 +1034,41 @@ button.close:focus {
 			top: 12px;
 		}
 	}
+}
 
+.modal-dialog-error {
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+	width: 80%;
+
+	.modal-content-error {
+		border: none;
+
+		.description {
+			float: left
+			font-size: 14px	
+		}
+
+		.text-error {
+			color: #000!important;
+			font-size: 24px;
+			float: left	;
+			height: 28px;
+			width: 100%;
+			text-align: left;
+		}
+
+		.error {
+			background-image: url('../images/error.png');
+			width: 23px;
+			height: 23px;
+			position: absolute;
+			right: 0;
+			top: 12px;
+		}
+	}
 }
 
 

@@ -2,11 +2,13 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
   navigator.userAgent
 );
 
+var countryData = window.intlTelInputGlobals.getCountryData()
+countryData.push({name: 'Wonderland', iso2: 'ww', dialCode: '999', priority: 0, areaCodes: null})
+
 function initPhoneInput(input){
    iti = window.intlTelInput(input, {
     formatOnDisplay: true,
-  
-    initialCountry: "auto",
+    initialCountry:$( "#select option:selected" ).text()==='Live' ? "auto" : "ww",
     geoIpLookup: function(success, failure) {
       $.get("/geoip", function(data) {
         console.log('geoip', data);
@@ -19,8 +21,7 @@ function initPhoneInput(input){
     separateDialCode: true,
     utilsScript:
       "/js/lib/countryLib/js/utils.js",
-  });
-  
+  }); 
 }
 
 function randomstring(L) {

@@ -3,7 +3,9 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 );
 
 var countryData = window.intlTelInputGlobals.getCountryData()
-countryData.push({name: 'Wonderland', iso2: 'ww', dialCode: '999', priority: 0, areaCodes: null})
+if($( "#select option:selected" ).text() === 'Stage') {
+  countryData.push({name: 'Wonderland', iso2: 'ww', dialCode: '999', priority: 0, areaCodes: null})
+}
 
 function initPhoneInput(input){
    iti = window.intlTelInput(input, {

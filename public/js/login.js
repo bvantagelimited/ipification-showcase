@@ -16,6 +16,9 @@ function initPhoneInput(input){
         success(countryCode);
       });
     },
+    customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+      return selectedCountryData.name === 'Wonderland' ? "123456789" : selectedCountryPlaceholder
+    },
     preferredCountries: ['rs'],
     hiddenInput: "full_number",
     separateDialCode: true,
@@ -65,7 +68,7 @@ $(document).ready(function () {
     
       var parent = $(this).closest(".block-button");
       var inputPhone = parent.find("input.phoneNumber");
-
+    
       if (inputPhone.length >= 0) {
         var iti = window.intlTelInputGlobals.getInstance(inputPhone[0]);
         phone_number = iti.getNumber();
@@ -77,8 +80,8 @@ $(document).ready(function () {
           $("#input_alert").modal("show");
           return;
         }
-
-        if (!iti.isValidNumber()) {
+        
+        if (!iti.isValidNumber() && phone_number.substring(0,3) !== '999') {
           $(".wrapper-loader").removeClass("show");
           $("#phone_invalid_alert").modal("show");
           return;

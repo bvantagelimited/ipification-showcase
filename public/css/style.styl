@@ -92,7 +92,7 @@ label, h6 {
 
 		.nav-item {
 			width: 33.3%;
-			margin-bottom: -2px
+			margin-bottom: -2px;
 
 			.nav-link {
 				border: none;
@@ -366,16 +366,15 @@ label, h6 {
 					-o-background-color: #000;
 				}
 			}
-			
+
 			.iti--separate-dial-code .iti__selected-dial-code {
-				color: #fff
+				color: #fff;
 			}
 
 			.iti__selected-flag {
 				background-color: #000 !important;
 				transition: background-color 0.4s;
 			}
-
 		}
 
 		&.block-2 {
@@ -664,6 +663,7 @@ button.close:focus {
 	padding: 0 18px;
 	font-size: 14px;
 	cursor: pointer;
+
 	&:hover {
 		text-decoration: underline;
 	}
@@ -675,7 +675,7 @@ button.close:focus {
 
 #select {
 	position: absolute;
-	text-align: center
+	text-align: center;
 	right: 0;
 	font-size: 14px;
 	font-weight: bold;
@@ -769,7 +769,7 @@ button.close:focus {
 
 	&.show {
 		display: block;
-		z-index 9;
+		z-index: 9;
 	}
 
 	.loader {
@@ -994,7 +994,7 @@ button.close:focus {
 	background-color: #f2f2f6 !important;
 	height: 98% !important;
 	border-radius: 11px;
-	padding: 0 6px 1px 8px!important;
+	padding: 0 6px 1px 8px !important;
 }
 
 .iti--separate-dial-code .iti__selected-dial-code {
@@ -1003,23 +1003,23 @@ button.close:focus {
 
 .modal-dialog-success {
 	position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 	width: 80%;
 
 	.modal-content-success {
 		border: none;
 
 		.description {
-			float: left
-			font-size: 14px	
+			float: left;
+			font-size: 14px;
 		}
 
 		.text-success {
-			color: #000!important;
+			color: #000 !important;
 			font-size: 24px;
-			float: left	;
+			float: left;
 			height: 28px;
 			width: 100%;
 			text-align: left;
@@ -1038,23 +1038,23 @@ button.close:focus {
 
 .modal-dialog-error {
 	position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 	width: 80%;
 
 	.modal-content-error {
 		border: none;
 
 		.description {
-			float: left
-			font-size: 14px	
+			float: left;
+			font-size: 14px;
 		}
 
 		.text-error {
-			color: #000!important;
+			color: #000 !important;
 			font-size: 24px;
-			float: left	;
+			float: left;
 			height: 28px;
 			width: 100%;
 			text-align: left;
@@ -1071,5 +1071,34 @@ button.close:focus {
 	}
 }
 
+.iti__selected-flag[aria-activedescendant='iti-0__item-ww'], .iti__selected-flag[aria-activedescendant='iti-1__item-ww'] {
+	.iti__flag {
+		background-position: unset !important;
+		background-repeat: unset !important;
+		box-shadow: unset;
+		background-color: unset;
+	}
 
+	.iti__flag.iti__ww {
+		background-image: url('../images/logo.ico');
+		background-size: 21px 21px;
+		height: 20px;
+	}
+}
 
+#iti-0__item-ww, #iti-1__item-ww {
+	.iti__flag-box {
+		.iti__flag {
+			background-position: unset !important;
+			background-repeat: unset !important;
+			box-shadow: unset;
+			background-color: unset;
+		}
+
+		.iti__flag.iti__ww {
+			background-image: url('../images/logo.ico');
+			background-size: 21px 21px;
+			height: 20px;
+		}
+	}
+}

@@ -7,14 +7,34 @@ if($( "#select option:selected" ).text() === 'Stage') {
   countryData.push({name: 'Wonderland', iso2: 'ww', dialCode: '999', priority: 0, areaCodes: null})
 }
 
+function showViettelLegal(code) {
+  if(code == 'vn') {
+    $('.viettel-legal').css("display", "block");
+  } else {
+    $('.viettel-legal').css("display", "none");
+  }
+
+}
+
+function showConsentPage() {
+  Swal.fire({
+    title: "",
+    html: "<div class='consent-page'><iframe src='https://www.ipification.com/consents/vn-viettel-001-vi.html' title=''></iframe></div>",
+    showConfirmButton: false,
+    showCloseButton: true,
+    // heightAuto: false
+  });
+}
+
 function initPhoneInput(input){
-   iti = window.intlTelInput(input, {
+  window.intlTelInput(input, {
     formatOnDisplay: true,
     initialCountry:$( "#select option:selected" ).text()==='Live' ? "auto" : "ww",
     geoIpLookup: function(success, failure) {
       $.get("/geoip", function(data) {
         console.log('geoip', data);
         var countryCode = data ? data.country : "us";
+        showViettelLegal(countryCode);
         success(countryCode);
       });
     },
@@ -26,7 +46,14 @@ function initPhoneInput(input){
     separateDialCode: true,
     utilsScript:
       "/js/lib/countryLib/js/utils.js",
-  }); 
+  });
+
+  input.addEventListener("countrychange", function() {
+    var itic = window.intlTelInputGlobals.getInstance(input);
+    const country = itic.getSelectedCountryData();
+    console.log('country change', country);
+    showViettelLegal(country.iso2);
+  });
 }
 
 function randomstring(L) {
@@ -67,10 +94,10 @@ $(document).ready(function () {
     var phone_number;
 
     if (["pvn_ip","pvn_ip_plus", "pvn_im", "kyc_phone"].indexOf(user_flow) >= 0) {
-    
+
       var parent = $(this).closest(".block-button");
       var inputPhone = parent.find("input.phoneNumber");
-    
+
       if (inputPhone.length >= 0) {
         var iti = window.intlTelInputGlobals.getInstance(inputPhone[0]);
         phone_number = iti.getNumber();
@@ -82,7 +109,7 @@ $(document).ready(function () {
           $("#input_alert").modal("show");
           return;
         }
-        
+
         if (!iti.isValidNumber() && phone_number.substring(0,3) !== '999') {
           $(".wrapper-loader").removeClass("show");
           $("#phone_invalid_alert").modal("show");
@@ -90,7 +117,7 @@ $(document).ready(function () {
         }
       }
     }
-    
+
     localStorage.setItem('selector', location.hash.substring(1));
     var data_title = $(this).attr("data-title");
 
@@ -121,7 +148,7 @@ $(document).ready(function () {
   $('#select').on('change', function () {
     var url = $(this).val();
     if (url) {
-      window.location.href = url; 
+      window.location.href = url;
     }
   })
 

@@ -10,7 +10,7 @@ block content
 					.row.block-header
 						.col-12
 							.row
-								h3.app-name IPification features showcase									
+								h3.app-name IPification features showcase
 
 								select(id="select" value=node_env data-env=node_env)
 									option(data-selected="stage" selected=node_env == "stage" value="https://test-stage.ipification.com/auth/login") Stage
@@ -26,8 +26,8 @@ block content
 
 						.col-12.row-item
 							.block-button.block.block-pnv.block-1.active#pnv
-								p.description_title Phone Number Verification		
-								p.description Verify phone number through IP or IM auth.	
+								p.description_title Phone Number Verification
+								p.description Verify phone number through IP or IM auth.
 								.div(style="margin-top: 15px")
 									.row
 										.col
@@ -40,7 +40,7 @@ block content
 												span.right-icon
 
 							.block-button.block-login.block.block-2#login(class=`block-${index + 2}`)
-								p.description_title Quick Access		
+								p.description_title Quick Access
 								p.description.description_helper Login through IP or IM auth with phone number sharing.
 								button.btn_full_blue.btn_instant.btn-user-flow(type='button' data-title=get_flow_title('login_ip', 'IP Login') data-user-flow='login_ip')
 									span.right-icon
@@ -53,7 +53,7 @@ block content
 									span IM
 
 							.block-button.block.block-identity.block-1#identity
-								p.description_title Mobile ID & Know Your Customer		
+								p.description_title Mobile ID & Know Your Customer
 								p.description.description_helper Identify user with anonymous identity (mobile_id) or obtain user info with KYC.
 								button.btn_full_blue.btn_instant.btn-user-flow(type='button' data-title=get_flow_title('anonymous', 'Anonymous Identity') style="margin-bottom:59px" data-user-flow='anonymous')
 									span.right-icon.right-icon-blue
@@ -64,21 +64,25 @@ block content
 										span.right-icon
 
 		footer(class="mt-auto")
+			.viettel-legal
+				| Please be kindly aware that by operating to initiate and/or access user accounts, you have agreed on entire content set out in the Privacy terms and Conditions of the Service; and Terms of Use by
+				a(href="#" style="margin-left: 4px; margin-right: 4px;" onclick="showConsentPage()") <b>Viettel</b>
+				| in case you are Viettel subscribers.
 			.privacy-link
 				a(href="https://www.ipification.com/legal" target='_blank')
 					| Privacy Policy
 				span.info-icon
 					| About
 				a(href="javascript:void(0)" id="help")
-					| Help	
-			
+					| Help
+
 	#app_info.modal(tabindex="-1" role="dialog")
 		.modal-dialog
 			.modal-content(style="border-radius: 0px;")
 				.modal-header
 					h5.modal-title About this demo
 					button.close(type='button' data-dismiss='modal' aria-label='Close')
-						span(aria-hidden='true').right-icon 
+						span(aria-hidden='true').right-icon
 				.modal-body
 					div.mb-3
 						strong realm
@@ -106,9 +110,9 @@ block content
 					h6.modal-title Your phone is invalid
 
 	.wrapper-loader
-		span.loader 
+		span.loader
 			span.loader-inner
-			
+
 	if error_message
 		#error_alert.modal(tabindex="-1" role="dialog")
 			.modal-dialog

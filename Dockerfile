@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:20-alpine
 RUN apk update && apk add bash redis
 WORKDIR /usr/app
 COPY package.json ./

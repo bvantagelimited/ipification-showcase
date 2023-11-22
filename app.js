@@ -8,9 +8,14 @@ const createError = require('http-errors');
 const config = require('config');
 const redis = require("ioredis");
 const nocache = require("nocache");
-const redisStore = require('connect-redis')(session);
+const RedisStore = require('connect-redis').default;
 
 const redisClient = new redis(process.env.REDIS_URL);
+
+const redisStore = new RedisStore({
+  client: redisClient,
+  ttl: 86400
+})
 
 const app = express();
 
@@ -26,7 +31,7 @@ app.use(session({
   secret: 'secret-session-key',
   resave: false,
   saveUninitialized: true,
-  store: new redisStore({ client: redisClient, ttl: 86400 })
+  store: redisStore
 }));
 
 app.use(express.json());

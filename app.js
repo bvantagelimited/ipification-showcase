@@ -25,6 +25,8 @@ app.use(helmet({
   crossOriginOpenerPolicy: false
 }));
 
+app.disable('server');
+
 app.set('trust proxy', 1);
 app.locals.pretty = true;
 

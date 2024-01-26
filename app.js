@@ -8,6 +8,7 @@ const createError = require('http-errors');
 const config = require('config');
 const redis = require("ioredis");
 const nocache = require("nocache");
+const helmet = require("helmet");
 const RedisStore = require('connect-redis').default;
 
 const redisClient = new redis(process.env.REDIS_URL);
@@ -18,6 +19,11 @@ const redisStore = new RedisStore({
 })
 
 const app = express();
+
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginOpenerPolicy: false
+}));
 
 app.set('trust proxy', 1);
 app.locals.pretty = true;

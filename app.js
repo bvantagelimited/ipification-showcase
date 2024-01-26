@@ -25,8 +25,6 @@ app.use(helmet({
   crossOriginOpenerPolicy: false
 }));
 
-app.disable('server');
-
 app.set('trust proxy', 1);
 app.locals.pretty = true;
 
@@ -59,6 +57,9 @@ app.use((req, res, next) => {
       return client ? client.title : default_title;
     }
   }
+
+  res.setHeader('Server', 'IPification');
+
   next();
 });
 

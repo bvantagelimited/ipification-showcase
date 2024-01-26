@@ -58,7 +58,7 @@ app.use((req, res, next) => {
     }
   }
 
-  res.setHeader('Server', 'IPification');
+  // res.setHeader('Server', 'IPification');
 
   next();
 });

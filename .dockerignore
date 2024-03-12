@@ -5,3 +5,4 @@ package-lock.json
 docker-compose.yml
 Dockerfile
 .tool-versions
+.dockerignore

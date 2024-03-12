@@ -2,3 +2,7 @@
 .gitignore
 node_modules
 package-lock.json
+docker-compose.yml
+Dockerfile
+.tool-versions
+.dockerignore

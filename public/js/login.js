@@ -127,11 +127,11 @@ $(document).ready(function () {
           return;
         }
 
-        // if (!iti.isValidNumber() && phone_number.substring(0,3) !== '999') {
-        //   $(".wrapper-loader").removeClass("show");
-        //   $("#phone_invalid_alert").modal("show");
-        //   return;
-        // }
+        if (!iti.isValidNumber() && phone_number.substring(0,3) !== '999') {
+          $(".wrapper-loader").removeClass("show");
+          $("#phone_invalid_alert").modal("show");
+          return;
+        }
       }
     }
 

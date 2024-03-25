@@ -21,6 +21,7 @@ if(envName === 'stage') {
   });
 
   preferredCountries.push('ww');
+  console.log('countryData',countryData)
 }
 
 function showViettelLegal(code) {
@@ -45,17 +46,15 @@ function showConsentPage() {
 function initPhoneInput(input){
   $.get("/geoip", function(data) {
     var countryCode = data ? data.country : "rs";
-    console.log('countryCode', countryCode);
+
     showViettelLegal(countryCode);
     if(!preferredCountries.includes(countryCode)) preferredCountries.push(countryCode);
 
-    console.log('preferredCountries',preferredCountries)
-
     window.intlTelInput(input, {
       formatOnDisplay: true,
-      initialCountry: "us",
+      // initialCountry: "us",
       showSelectedDialCode:true,
-      // initialCountry: envName === 'live' ? "auto" : "ww",
+      initialCountry: envName === 'live' ? "auto" : "ww",
       geoIpLookup: function(success, failure) {
         success(countryCode);
       },
@@ -65,13 +64,12 @@ function initPhoneInput(input){
       preferredCountries: preferredCountries,
       separateDialCode: true,
       utilsScript:
-        "/js/lib/countryLib/js/utils.js",
+        "/js/lib/intl-tel-input-20.0.5/js/utils.js",
     });
 
     input.addEventListener("countrychange", function() {
       var itic = window.intlTelInputGlobals.getInstance(input);
       const country = itic.getSelectedCountryData();
-      console.log('country change', country);
       showViettelLegal(country.iso2);
     });
   })

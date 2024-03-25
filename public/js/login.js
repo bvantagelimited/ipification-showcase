@@ -10,15 +10,17 @@ console.log('*** envName: ', envName);
 if(envName === 'stage') {
   // add custom country
   const countryData = window.intlTelInputGlobals.getCountryData();
-  countryData.push({
-    name: 'Wonderland',
-    iso2: 'ww',
-    dialCode: '999',
-    priority: 0,
-    areaCodes: null
-  });
 
-  preferredCountries.push('ww');
+  console.log('countryData', countryData[0]);
+  // countryData.push({
+  //   name: 'Wonderland',
+  //   iso2: 'ww',
+  //   dialCode: '999',
+  //   priority: 0,
+  //   areaCodes: null
+  // });
+
+  // preferredCountries.push('ww');
 }
 
 function showViettelLegal(code) {
@@ -42,14 +44,15 @@ function showConsentPage() {
 
 function initPhoneInput(input){
   $.get("/geoip", function(data) {
-    console.log('geoip', data);
     var countryCode = data ? data.country : "rs";
+    console.log('countryCode', countryCode);
     showViettelLegal(countryCode);
     if(!preferredCountries.includes(countryCode)) preferredCountries.push(countryCode);
 
     window.intlTelInput(input, {
       formatOnDisplay: true,
-      initialCountry: envName === 'live' ? "auto" : "ww",
+      initialCountry: "us",
+      // initialCountry: envName === 'live' ? "auto" : "ww",
       geoIpLookup: function(success, failure) {
         success(countryCode);
       },
@@ -57,7 +60,6 @@ function initPhoneInput(input){
         return selectedCountryData.name === 'Wonderland' ? "123456789" : selectedCountryPlaceholder
       },
       preferredCountries: preferredCountries,
-      hiddenInput: "full_number",
       separateDialCode: true,
       utilsScript:
         "/js/lib/countryLib/js/utils.js",

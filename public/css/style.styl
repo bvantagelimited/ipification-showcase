@@ -317,15 +317,18 @@ label, h6 {
 				font-size: 16px;
 				width: '100%';
 				transition: background-color 0.4s;
+
 				&:focus {
 					outline: none;
 					-webkit-box-shadow: none;
 					box-shadow: none;
 				}
+
 				&:hover {
 					background-color: #f2f2f6;
 				}
 			}
+
 			input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
 				-webkit-box-shadow: 0 0 0 30px #000 inset !important;
 				-webkit-text-fill-color: #fff !important;
@@ -348,14 +351,12 @@ label, h6 {
 				}
 			}
 
-
-
 			.iti--separate-dial-code .iti__selected-dial-code {
 				color: #fff;
 			}
 
 			.iti__selected-dial-code {
-					color: #fff;
+				color: #fff;
 			}
 
 			.iti__selected-flag {
@@ -369,6 +370,7 @@ label, h6 {
 				-mox-background-color: #000;
 				-o-background-color: #000;
 				color: white;
+
 				// border-bottom: 2px solid #2646FF;
 				&:hover {
 					background-color: #000;
@@ -1000,11 +1002,11 @@ button.close:focus {
 }
 
 .iti--separate-dial-code .iti__selected-dial-code {
-	color: #2646FF!important;
+	color: #2646FF !important;
 }
 
 .iti__selected-dial-code {
-	color:#2646FF;
+	color: #2646FF;
 }
 
 .modal-dialog-success {
@@ -1077,7 +1079,7 @@ button.close:focus {
 	}
 }
 
-.viettel-legal{
+.viettel-legal {
 	font-size: 12px;
 	max-width: 580px;
 	margin: auto;
@@ -1096,8 +1098,12 @@ button.close:focus {
 		width: 100%;
 		height: 400px;
 		overflow: auto;
-		border: 0px
+		border: 0px;
 	}
+}
+
+.iti__flag-container .iti__selected-flag .iti__flag.iti__ww {
+	box-shadow: unset;
 }
 
 .iti__selected-flag[aria-activedescendant='iti-0__item-ww'], .iti__selected-flag[aria-activedescendant='iti-1__item-ww'] {

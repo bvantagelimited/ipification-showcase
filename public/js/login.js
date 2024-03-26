@@ -21,7 +21,6 @@ if(envName === 'stage') {
   });
 
   preferredCountries.push('ww');
-  console.log('countryData',countryData)
 }
 
 function showViettelLegal(code) {

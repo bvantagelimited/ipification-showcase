@@ -5,7 +5,7 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 const envName = $('#select option:selected').text().toLowerCase();
 const preferredCountries = [''];
 
-console.log('*** envName: ', envName);
+// console.log('*** envName: ', envName);
 
 if (envName === 'stage') {
   // add custom country
@@ -44,7 +44,6 @@ function showConsentPage() {
 function initPhoneInput(input) {
   $.get('/geoip', function (data) {
     var countryCode = data ? data.country : 'rs';
-    console.log('countryCode',countryCode)
     showViettelLegal(countryCode);
     if (!preferredCountries.includes(countryCode)) preferredCountries.push(countryCode);
 
@@ -116,7 +115,7 @@ $(document).ready(function () {
         var iti = window.intlTelInputGlobals.getInstance(inputPhone[0]);
         phone_number = iti.getNumber();
         phone_number = (phone_number || '').replace(/[ +]/g, '');
-        console.log('phone_number', phone_number);
+        // console.log('phone_number', phone_number);
 
         if (!phone_number || phone_number == '') {
           $('.wrapper-loader').removeClass('show');
@@ -146,14 +145,14 @@ $(document).ready(function () {
     if (isMobile || user_flow === 'pvn_im' || user_flow === 'login_im') {
       params.set('state', randomstring(40));
       redirectURL += '?' + params.toString();
-      console.log('redirectURL', redirectURL);
+      // console.log('redirectURL', redirectURL);
       goto_link(redirectURL);
     } else {
       // state format "randomstring-qrcode" and we will know use qr code or not
       var state = randomstring(40) + '-' + 'qrcode';
       params.set('state', state);
       redirectURL += '?' + params.toString();
-      console.log('redirectURL', redirectURL);
+      // console.log('redirectURL', redirectURL);
       showQrcodeWithLink(data_title, redirectURL, state);
     }
   });
@@ -215,7 +214,7 @@ $(document).ready(function () {
   }
 });
 
-console.log('window.hash', window.location.hash);
+// console.log('window.hash', window.location.hash);
 
 function select_nav(selector) {
   $('.phoneNumber').val('');

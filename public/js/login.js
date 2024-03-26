@@ -42,11 +42,9 @@ function showConsentPage() {
 }
 
 function initPhoneInput(input) {
-  console.log('render');
   $.get('/geoip', function (data) {
-    console.log('data', data);
     var countryCode = data ? data.country : 'rs';
-
+    console.log('countryCode',countryCode)
     showViettelLegal(countryCode);
     if (!preferredCountries.includes(countryCode)) preferredCountries.push(countryCode);
 

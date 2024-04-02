@@ -106,6 +106,7 @@ $(document).ready(function () {
   $('.btn-user-flow').click(function () {
     var user_flow = $(this).data('user-flow');
     var phone_number;
+    var dialCode;
 
     if (['pvn_ip', 'pvn_ip_plus', 'pvn_im', 'kyc_phone'].indexOf(user_flow) >= 0) {
       var parent = $(this).closest('.block-button');
@@ -114,8 +115,8 @@ $(document).ready(function () {
       if (inputPhone.length >= 0) {
         var iti = window.intlTelInputGlobals.getInstance(inputPhone[0]);
         phone_number = iti.getNumber();
+        dialCode = iti.getSelectedCountryData().dialCode
         phone_number = (phone_number || '').replace(/[ +]/g, '');
-        // console.log('phone_number', phone_number);
 
         if (!phone_number || phone_number == '') {
           $('.wrapper-loader').removeClass('show');
@@ -123,7 +124,7 @@ $(document).ready(function () {
           return;
         }
 
-        if (!iti.isValidNumber() && phone_number.substring(0, 3) !== '999') {
+        if (!iti.isValidNumber() && dialCode !== '999') {
           $('.wrapper-loader').removeClass('show');
           $('#phone_invalid_alert').modal('show');
           return;
@@ -138,7 +139,7 @@ $(document).ready(function () {
       user_flow: user_flow,
     });
 
-    if (phone_number) params.set('phone', phone_number);
+    if (phone_number) params.set('phone',dialCode + phone_number);
 
     var redirectURL = base_url + '/auth/start';
 

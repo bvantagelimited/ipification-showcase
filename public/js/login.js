@@ -139,7 +139,7 @@ $(document).ready(function () {
       user_flow: user_flow,
     });
 
-    if (phone_number) params.set('phone',dialCode + phone_number);
+    if (phone_number) params.set('phone',dialCode==='999' ? dialCode + phone_number : phone_number);
 
     var redirectURL = base_url + '/auth/start';
 

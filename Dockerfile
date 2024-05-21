@@ -1,5 +1,5 @@
 FROM node:20-alpine
-RUN apk update && apk add bash redis
+
 WORKDIR /usr/app
 COPY package.json ./
 RUN npm install --only=prod

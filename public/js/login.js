@@ -103,6 +103,10 @@ $(document).ready(function () {
     $('#app_info').modal('show');
   });
 
+  $('.btn-open-app').click(function () {
+    window.open('https://play.google.com/store/apps/details?id=com.ipification.showcases&hl=vi&gl=US', '_blank');
+  })
+
   $('.btn-user-flow').click(function () {
     var user_flow = $(this).data('user-flow');
     var phone_number;

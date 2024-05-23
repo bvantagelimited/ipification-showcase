@@ -11,6 +11,8 @@ const nocache = require("nocache");
 const helmet = require("helmet");
 const RedisStore = require('connect-redis').default;
 
+require('dotenv').config()
+
 const redisClient = new redis(process.env.REDIS_URL);
 
 const redisStore = new RedisStore({
@@ -49,6 +51,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
   res.locals = {
     title: 'IPification Showcase',
+    stage_url: process.env.STAGE_URL,
+    live_url: process.env.LIVE_URL,
     ...res.locals,
     ...config,
     baseUrl: `${req.protocol}://${req.headers.host}`,

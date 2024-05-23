@@ -3,3 +3,4 @@ config/default.json
 package-lock.json
 public/css/style.css
 .DS_Store
+.env

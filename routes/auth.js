@@ -27,7 +27,7 @@ router.get('/start', function(req, res) {
   const { clients, auth_server_url, realm, baseUrl } = res.locals;
   const { user_flow: userFlow, phone, state } = req.query || {};
   const client = clients.find(item => item.user_flow === userFlow);
-  
+
   if(!client){
     res.send("Client not found");
     return;
@@ -56,9 +56,9 @@ router.get('/start', function(req, res) {
 
 	if(phone){
 		params.request = jwt.encode({
-			login_hint: phone, 
-			client_id: clientId, 
-			state: state, 
+			login_hint: phone,
+			client_id: clientId,
+			state: state,
 			scope,
 			response_type:'code',
 			redirect_uri: redirectUrl
@@ -74,7 +74,7 @@ router.get('/start', function(req, res) {
   desktop flow
   1. user access home page
   2. generate qrcode "***-qrcode" -> show qrcode
-  
+
   3. user scan qr code from mobile
     - user complete auth process
 
@@ -90,7 +90,7 @@ router.get('/start', function(req, res) {
   mobile web flow
   1. user access home page
   2. user click IM button
-  
+
   3. user complete IM process
 
   4. server side receive callback request
@@ -145,7 +145,7 @@ router.get('/callback/:userFlow', async function(req, res){
     console.log('userInfo', userInfo);
 
 		const response = {
-			userInfo: prettyHtml(userInfo), 
+			userInfo: prettyHtml(userInfo),
 			client_id: clientId,
 			client_title: pageTitle,
 			state
@@ -153,7 +153,7 @@ router.get('/callback/:userFlow', async function(req, res){
 
     console.log(`store state: ${state}, response: ${JSON.stringify(response)}`);
     await jsonCache.set(state, response);
-    const auth_complete_url = `/auth/complete?state=${state}`;
+    const auth_complete_url = `${baseUrl}/auth/complete?state=${state}`;
 
     if(ipBackchannelAuth) {
       console.log('ipBackchannelAuth: true -> render 200');
@@ -163,11 +163,11 @@ router.get('/callback/:userFlow', async function(req, res){
 
     // if check qr code in state and state have qrcode text
     // forward url to desktop browser to continue auth flow and exchange code
-    
+
     if(state.indexOf('-qrcode') >= 0) {
       // emit to desktop browser
       const channel = `auth:${state}`;
-      req.app.get('socket').to(channel).emit('messages', { 
+      req.app.get('socket').to(channel).emit('messages', {
         event_name: 'url',
         url: auth_complete_url
       });
@@ -178,7 +178,7 @@ router.get('/callback/:userFlow', async function(req, res){
         res.redirect('/auth/qrcode/complete');
       }
 
-      
+
       return;
     }
 
@@ -225,6 +225,6 @@ router.get('/qrcode/error', async (req, res) => {
 
 function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
-} 
+}
 
 module.exports = router;

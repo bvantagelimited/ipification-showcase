@@ -5,13 +5,9 @@ const htmlEntities = require('html-entities');
 const qs = require('qs');
 const axios = require("axios");
 const debug = require('debug')('info');
-const jwt = require('jwt-simple');
+const jwt = require('jsonwebtoken');
 const prettyHtml = require('json-pretty-html').default;
-const redis = require('ioredis');
-const JSONCache = require('redis-json');
-
-const redis_client = new redis(process.env.REDIS_URL);
-const jsonCache = new JSONCache(redis_client, {prefix: 'ip-demo:'});
+const dataStore = require('../lib/data_store');
 
 router.get('/login', function(req, res) {
   const error_message = req.session.error_message;
@@ -55,7 +51,7 @@ router.get('/start', function(req, res) {
 	if(channel) params.channel = channel;
 
 	if(phone){
-		params.request = jwt.encode({
+		params.request = jwt.sign({
 			login_hint: phone,
 			client_id: clientId,
 			state: state,
@@ -114,7 +110,6 @@ router.get('/callback/:userFlow', async function(req, res){
   }
 
   const client = clients.find(item => item.user_flow === userFlow);
-  console.log('client',client)
   if(!client){
     res.send("Client not found");
     return;
@@ -152,7 +147,10 @@ router.get('/callback/:userFlow', async function(req, res){
 		}
 
     console.log(`store state: ${state}, response: ${JSON.stringify(response)}`);
-    await jsonCache.set(state, response);
+    // store response for session complete
+    await dataStore.set(state, response);
+    // store user info with state
+    await dataStore.set(`${state}-user-info`, userInfo);
     const auth_complete_url = `${baseUrl}/auth/complete?state=${state}`;
 
     if(ipBackchannelAuth) {
@@ -196,7 +194,7 @@ router.get('/complete', async (req, res) => {
   let response;
 
   while (i <= 4) {
-    response = await jsonCache.get(state || '');
+    response = await dataStore.get(state || '');
     if(response) {
       break;
     } else {
@@ -221,6 +219,18 @@ router.get('/qrcode/complete', async (req, res) => {
 
 router.get('/qrcode/error', async (req, res) => {
   res.render('qr_error');
+})
+
+router.post("/s2s/signin", async (req, res) => {
+  const { state } = req.body || {};
+  const userinfo = await dataStore.get(`${state}-user-info`);
+
+  if(userinfo) {
+    // add your code here to create your app token and response to client
+    res.send(userinfo);
+  } else {
+    res.status(401).send();
+  }
 })
 
 function delay(time) {

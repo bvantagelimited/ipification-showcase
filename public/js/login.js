@@ -153,7 +153,7 @@ $(document).ready(function () {
       var state = randomstring(40) + '-' + 'qrcode';
       params.set('state', state);
       redirectURL += '?' + params.toString();
-      // console.log('redirectURL', redirectURL);
+      console.log('QR URL', redirectURL);
       showQrcodeWithLink(data_title, redirectURL, state);
     }
   });

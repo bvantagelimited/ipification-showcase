@@ -1,6 +1,8 @@
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-  navigator.userAgent,
-);
+// const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+//   navigator.userAgent,
+// );
+
+const isMobile = window.bowser.getParser(navigator.userAgent).getPlatformType() === 'mobile';
 
 const envName = $('#select option:selected').text().toLowerCase();
 const preferredCountries = [''];

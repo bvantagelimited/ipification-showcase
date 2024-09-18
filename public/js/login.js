@@ -2,7 +2,15 @@
 //   navigator.userAgent,
 // );
 
-const isMobile = window.bowser.getParser(navigator.userAgent).getPlatformType() === 'mobile';
+var isMobile;
+
+function updateWindowResize() {
+  isMobile = window.innerWidth <= 768 || window.bowser.getParser(navigator.userAgent).getPlatformType() === 'mobile';
+  console.log('isMobile', isMobile);
+}
+
+window.addEventListener("resize", updateWindowResize);
+updateWindowResize();
 
 const envName = $('#select option:selected').text().toLowerCase();
 const preferredCountries = [''];

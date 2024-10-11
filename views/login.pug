@@ -32,35 +32,35 @@ block content
 									.row
 										.col
 											input.form-control.phoneNumber(type='text' name='phone' id='phone')
-											button.btn_full.btn.btn_phone.btn-active.btnLoginPhone.btn-user-flow(data-title=get_flow_title('pvn_ip', 'IP Phone Number Verification') data-user-flow='pvn_ip') IP
+											button.btn_full.btn.btn_phone.btn-active.btnLoginPhone.btn-user-flow#pvn_ip(data-title=get_flow_title('pvn_ip', 'IP Phone Number Verification') data-user-flow='pvn_ip') IP
 												span.right-icon
-											button.btn_full.btn.btn_phone.btn-active.btnLoginPhone.btn-user-flow(data-title=get_flow_title('pvn_ip_plus', 'IP Phone Number Verification') data-user-flow='pvn_ip_plus') IP+
+											button.btn_full.btn.btn_phone.btn-active.btnLoginPhone.btn-user-flow#pvn_ip_plus(data-title=get_flow_title('pvn_ip_plus', 'IP Phone Number Verification') data-user-flow='pvn_ip_plus') IP+
 												span.right-icon
-											button.btn_full.btn.btn_IM.btnLoginPhone.btn-user-flow(data-title=get_flow_title('pvn_im', 'IM Phone Number Verification') data-user-flow='pvn_im') IM
+											button.btn_full.btn.btn_IM.btnLoginPhone.btn-user-flow#pvn_im(data-title=get_flow_title('pvn_im', 'IM Phone Number Verification') data-user-flow='pvn_im') IM
 												span.right-icon
 
 							.block-button.block-login.block.block-2#login(class=`block-${index + 2}`)
 								p.description_title Quick Access
 								p.description.description_helper Login through IP or IM auth with phone number sharing.
-								button.btn_full_blue.btn_instant.btn-user-flow(type='button' data-title=get_flow_title('login_ip', 'IP Login') data-user-flow='login_ip')
+								button.btn_full_blue.btn_instant.btn-user-flow#login_ip(type='button' data-title=get_flow_title('login_ip', 'IP Login') data-user-flow='login_ip')
 									span.right-icon
 									span IP
-								button.btn_full_blue.btn_instant.btn-user-flow(type='button' data-title=get_flow_title('login_ip_plus', 'IP+ Login') data-user-flow='login_ip_plus')
+								button.btn_full_blue.btn_instant.btn-user-flow#login_ip_plus(type='button' data-title=get_flow_title('login_ip_plus', 'IP+ Login') data-user-flow='login_ip_plus')
 									span.right-icon
 									span IP+
-								button.btn_full_blue.btn-user-flow(type='button' data-title=get_flow_title('login_im', 'IM Login') data-user-flow='login_im')
+								button.btn_full_blue.btn-user-flow#login_im(type='button' data-title=get_flow_title('login_im', 'IM Login') data-user-flow='login_im')
 									span.right-icon
 									span IM
 
 							.block-button.block.block-identity.block-1#identity
 								p.description_title Mobile ID & Know Your Customer
 								p.description.description_helper Identify user with anonymous identity (mobile_id) or obtain user info with KYC.
-								button.btn_full_blue.btn_instant.btn-user-flow(type='button' data-title=get_flow_title('anonymous', 'Anonymous Identity') style="margin-bottom:59px" data-user-flow='anonymous')
+								button.btn_full_blue.btn_instant.btn-user-flow#anonymous(type='button' data-title=get_flow_title('anonymous', 'Anonymous Identity') style="margin-bottom:59px" data-user-flow='anonymous')
 									span.right-icon.right-icon-blue
 									span Anonymous Identity
 								.div
 									input.form-control.phoneNumber(type='text' name='phone_kyc' id='phone_kyc')
-									button.btn_full.btn.btn_kyc.btnLoginPhone.btn-user-flow(data-title=get_flow_title('kyc_phone', 'KYC Data')  type='button' data-user-flow='kyc_phone') KYC
+									button.btn_full.btn.btn_kyc.btnLoginPhone.btn-user-flow#kyc_phone(data-title=get_flow_title('kyc_phone', 'KYC Data')  type='button' data-user-flow='kyc_phone') KYC
 										span.right-icon
 
 		footer(class="mt-auto")

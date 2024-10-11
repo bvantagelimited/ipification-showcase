@@ -1,6 +1,6 @@
 {
   "name": "ipification-demo",
-  "version": "1.0.16",
+  "version": "1.0.17-SNAPSHOT",
   "description": "Ipification Demo",
   "private": false,
   "scripts": {

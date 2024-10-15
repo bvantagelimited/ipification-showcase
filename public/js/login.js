@@ -32,7 +32,7 @@ const preferredCountries = [''];
 
 if (envName === 'stage') {
   // add custom country
-  const countryData = window.intlTelInputGlobals.getCountryData();
+  const countryData = window.intlTelInput.getCountryData();
 
   countryData.push({
     name: 'Wonderland',
@@ -80,11 +80,11 @@ function initPhoneInput(input) {
     },
     preferredCountries: preferredCountries,
     separateDialCode: true,
-    utilsScript: '/js/lib/intl-tel-input-20.0.5/js/utils.js',
+    // utilsScript: '/js/lib/intl-tel-input-20.0.5/js/utils.js',
   });
 
   input.addEventListener('countrychange', function () {
-    var itic = window.intlTelInputGlobals.getInstance(input);
+    var itic = window.intlTelInput.getInstance(input);
     const country = itic.getSelectedCountryData();
     showViettelLegal(country.iso2);
   });
@@ -135,7 +135,7 @@ $(document).ready(function () {
       var inputPhone = parent.find('input.phoneNumber');
 
       if (inputPhone.length >= 0) {
-        var iti = window.intlTelInputGlobals.getInstance(inputPhone[0]);
+        var iti = window.intlTelInput.getInstance(inputPhone[0]);
         phone_number = iti.getNumber();
         dialCode = iti.getSelectedCountryData().dialCode
         phone_number = (phone_number || '').replace(/[ +]/g, '');
@@ -161,7 +161,7 @@ $(document).ready(function () {
       user_flow: user_flow,
     });
 
-    if (phone_number) params.set('phone',dialCode==='999' ? dialCode + phone_number : phone_number);
+    if (phone_number) params.set('phone', phone_number);
 
     var redirectURL = base_url + '/auth/start';
 

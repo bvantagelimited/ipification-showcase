@@ -30,7 +30,7 @@ app.use(helmet({
 app.set('trust proxy', 1);
 app.locals.pretty = true;
 
-app.use(nocache());
+// app.use(nocache());
 app.use(logger('dev'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');

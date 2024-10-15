@@ -3,19 +3,32 @@
 // );
 
 var isMobile;
+var countryCode = 'rs';
+const envName = $('#select option:selected').text().toLowerCase();
+console.log('*** envName: ', envName);
 
 function updateWindowResize() {
   isMobile = window.innerWidth <= 768 || window.bowser.getParser(navigator.userAgent).getPlatformType() === 'mobile';
   console.log('isMobile', isMobile);
 }
 
+function fetchCountryCode(callback) {
+  if(envName == 'live') {
+    $.get('/geoip', function (data) {
+      if(data) countryCode = data.country;
+
+      showViettelLegal(countryCode);
+      callback();
+    })
+  } else {
+    callback();
+  }
+}
+
 window.addEventListener("resize", updateWindowResize);
 updateWindowResize();
 
-const envName = $('#select option:selected').text().toLowerCase();
 const preferredCountries = [''];
-
-// console.log('*** envName: ', envName);
 
 if (envName === 'stage') {
   // add custom country
@@ -52,32 +65,28 @@ function showConsentPage() {
 }
 
 function initPhoneInput(input) {
-  $.get('/geoip', function (data) {
-    var countryCode = data ? data.country : 'rs';
-    showViettelLegal(countryCode);
-    if (!preferredCountries.includes(countryCode)) preferredCountries.push(countryCode);
+  showViettelLegal(countryCode);
+  if (!preferredCountries.includes(countryCode)) preferredCountries.push(countryCode);
 
-    window.intlTelInput(input, {
-      formatOnDisplay: true,
-      // initialCountry: "us",
-      showSelectedDialCode: true,
-      initialCountry: envName === 'live' ? 'auto' : 'ww',
-      geoIpLookup: function (success, failure) {
-        success(countryCode);
-      },
-      customPlaceholder: function (selectedCountryPlaceholder, selectedCountryData) {
-        return selectedCountryData.name === 'Wonderland' ? '123456789' : selectedCountryPlaceholder;
-      },
-      preferredCountries: preferredCountries,
-      separateDialCode: true,
-      utilsScript: '/js/lib/intl-tel-input-20.0.5/js/utils.js',
-    });
+  window.intlTelInput(input, {
+    formatOnDisplay: true,
+    showSelectedDialCode: true,
+    initialCountry: envName === 'live' ? 'auto' : 'ww',
+    geoIpLookup: function (success, failure) {
+      success(countryCode);
+    },
+    customPlaceholder: function (selectedCountryPlaceholder, selectedCountryData) {
+      return selectedCountryData.name === 'Wonderland' ? '123456789' : selectedCountryPlaceholder;
+    },
+    preferredCountries: preferredCountries,
+    separateDialCode: true,
+    utilsScript: '/js/lib/intl-tel-input-20.0.5/js/utils.js',
+  });
 
-    input.addEventListener('countrychange', function () {
-      var itic = window.intlTelInputGlobals.getInstance(input);
-      const country = itic.getSelectedCountryData();
-      showViettelLegal(country.iso2);
-    });
+  input.addEventListener('countrychange', function () {
+    var itic = window.intlTelInputGlobals.getInstance(input);
+    const country = itic.getSelectedCountryData();
+    showViettelLegal(country.iso2);
   });
 }
 
@@ -104,10 +113,13 @@ function choose_option(selector) {
 }
 
 $(document).ready(function () {
-  // country phone setting library
-  document.querySelectorAll('.phoneNumber').forEach((el) => {
-    initPhoneInput(el);
-  });
+  fetchCountryCode(function(){
+    // country phone setting library
+    document.querySelectorAll('.phoneNumber').forEach((el) => {
+      initPhoneInput(el);
+    });
+  })
+
 
   $('.info-icon').on('click', function () {
     $('#app_info').modal('show');

@@ -120,6 +120,10 @@ $(document).ready(function () {
     });
   })
 
+  if(isMobile) {
+    $('#pvn_ipificator').css('display', 'block');
+  }
+
 
   $('.info-icon').on('click', function () {
     $('#app_info').modal('show');
@@ -130,7 +134,7 @@ $(document).ready(function () {
     var phone_number;
     var dialCode;
 
-    if (['pvn_ip', 'pvn_ip_plus', 'pvn_im', 'kyc_phone'].indexOf(user_flow) >= 0) {
+    if (['pvn_ip', 'pvn_ip_plus', 'pvn_im', 'kyc_phone', 'pvn_ipificator'].indexOf(user_flow) >= 0) {
       var parent = $(this).closest('.block-button');
       var inputPhone = parent.find('input.phoneNumber');
 

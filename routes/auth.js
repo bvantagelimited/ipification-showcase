@@ -53,14 +53,15 @@ router.get('/start', function(req, res) {
   params.env = process.env.NODE_ENV || 'development';
 
 	if(phone){
-		params.request = jwt.sign({
-			login_hint: phone,
-			client_id: clientId,
-			state: state,
-			scope,
-			response_type:'code',
-			redirect_uri: redirectUrl
-		}, clientSecret);
+    params.login_hint = phone;
+		// params.request = jwt.sign({
+		// 	login_hint: phone,
+		// 	client_id: clientId,
+		// 	state: state,
+		// 	scope,
+		// 	response_type:'code',
+		// 	redirect_uri: redirectUrl
+		// }, clientSecret);
 	}
   const ip_server_url = client.auth_server_url || auth_server_url;
   let authUrl;

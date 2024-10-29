@@ -63,12 +63,11 @@ router.get('/start', function(req, res) {
 		// 	redirect_uri: redirectUrl
 		// }, clientSecret);
 	}
-  const ip_server_url = client.auth_server_url || auth_server_url;
   let authUrl;
   if(userFlow === 'pvn_ipificator') {
     authUrl = `https://ipificator.ipification.com/api?` + qs.stringify(params);
   } else {
-    authUrl = `${ip_server_url}/realms/${realm}/protocol/openid-connect/auth?` + qs.stringify(params);
+    authUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/auth?` + qs.stringify(params);
   }
 
 	debug(`authUrl: ${authUrl}`);
@@ -126,11 +125,10 @@ router.get('/callback/:userFlow', async function(req, res){
   }
 
   const { client_id: clientId, client_secret: clientSecret, title: pageTitle } = client;
-  const ip_server_url = client.auth_server_url || auth_server_url;
 
   const redirectUri = `${baseUrl}/auth/callback/${userFlow}`;
-  const tokenUrl = `${ip_server_url}/realms/${realm}/protocol/openid-connect/token`;
-  const userUrl = `${ip_server_url}/realms/${realm}/protocol/openid-connect/userinfo`;
+  const tokenUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/token`;
+  const userUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/userinfo`;
 
 	const params = {
 		code: code,

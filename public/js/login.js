@@ -170,13 +170,13 @@ $(document).ready(function () {
     var redirectURL = base_url + '/auth/start';
 
     if (isMobile || user_flow === 'pvn_im' || user_flow === 'login_im') {
-      params.set('state', randomstring(40));
+      params.set('state', randomstring(10));
       redirectURL += '?' + params.toString();
       // console.log('redirectURL', redirectURL);
       goto_link(redirectURL);
     } else {
       // state format "randomstring-qrcode" and we will know use qr code or not
-      var state = randomstring(40) + '-' + 'qrcode';
+      var state = randomstring(10) + '-' + 'qrcode';
       params.set('state', state);
       redirectURL += '?' + params.toString();
       console.log('QR URL', redirectURL);

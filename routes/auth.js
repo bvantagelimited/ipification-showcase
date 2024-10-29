@@ -63,7 +63,13 @@ router.get('/start', function(req, res) {
 		}, clientSecret);
 	}
   const ip_server_url = client.auth_server_url || auth_server_url;
-	const authUrl = `${ip_server_url}/realms/${realm}/protocol/openid-connect/auth?` + qs.stringify(params);
+  let authUrl;
+  if(userFlow === 'pvn_ipificator') {
+    authUrl = `https://ipificator.ipification.com/api?` + qs.stringify(params);
+  } else {
+    authUrl = `${ip_server_url}/realms/${realm}/protocol/openid-connect/auth?` + qs.stringify(params);
+  }
+
 	debug(`authUrl: ${authUrl}`);
 	res.redirect(authUrl);
 });

@@ -5,7 +5,7 @@ const htmlEntities = require('html-entities');
 const qs = require('qs');
 const axios = require("axios");
 const debug = require('debug')('info');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 const prettyHtml = require('json-pretty-html').default;
 const dataStore = require('../lib/data_store');
 
@@ -104,10 +104,8 @@ router.get('/start', function(req, res) {
 */
 
 router.get('/callback/:userFlow', async function(req, res){
-  // console.log('req.headers', req.headers);
-
   const { userFlow } = req.params || {};
-  const { state, code } = req.query || {};
+  const { state = uuidv4(), code } = req.query || {};
   const { clients, auth_server_url, realm, baseUrl } = res.locals;
   const ipBackchannelAuth = req.headers['ip-backchannel-im-auth'] === 'true';
 

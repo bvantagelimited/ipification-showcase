@@ -1,12 +1,9 @@
-version: "3.3"
 services:
   redis:
-    image: 'bitnami/redis:latest'
+    image: 'redis:latest'
     restart: unless-stopped
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-    networks:
-      - showcase
   app:
     restart: unless-stopped
     build:
@@ -16,13 +13,8 @@ services:
       PORT: 8080
       REDIS_URL: redis://redis
     ports:
-      - 8080:8080
+      - 3001:8080
     links:
       - redis
     depends_on:
       - redis
-    networks:
-      - showcase
-networks:
-  app:
-    driver: bridge

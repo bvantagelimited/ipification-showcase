@@ -6,23 +6,22 @@
 
 const app = require('../app');
 const socket = require('../socket');
-const debug = require('debug')('info');
 const http = require('http');
 
 /**
  * Get port from environment and store in Express.
  */
 
- const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
- const server = http.createServer(app);
- const io = socket(server);
- app.set('socket', io);
+const server = http.createServer(app);
+const io = socket(server);
+app.set('socket', io);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -89,5 +88,5 @@ function onListening() {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  console.log('Listening on ' + bind);
 }

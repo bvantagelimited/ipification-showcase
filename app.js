@@ -1,4 +1,3 @@
-
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
@@ -6,18 +5,18 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const createError = require('http-errors');
 const config = require('config');
-const redis = require("ioredis");
-const nocache = require("nocache");
+const Redis = require("ioredis");
 const helmet = require("helmet");
-const RedisStore = require('connect-redis').default;
+const { RedisStore } = require("connect-redis");
 
 require('dotenv').config()
 
-const redisClient = new redis(process.env.REDIS_URL);
+const redisClient = new Redis(process.env.REDIS_URL);
 
 const redisStore = new RedisStore({
   client: redisClient,
-  ttl: 86400
+  prefix: 'showcase:',
+  ttl: 86400,
 })
 
 const app = express();
@@ -78,7 +77,7 @@ app.use('/auth', authRouter);
 app.use('/device', deviceRouter);
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   next(createError(500, err.message));
 });
 

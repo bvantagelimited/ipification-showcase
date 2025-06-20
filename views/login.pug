@@ -15,6 +15,8 @@ block content
 								select(id="select" value=node_env data-env=node_env)
 									option(data-selected="stage" selected=node_env == "stage" value=stage_url) Stage
 									option(data-selected='live' selected=node_env == "live" value=live_url) Live
+									if live_id_url
+										option(data-selected='live_id' selected=node_env == "live_id" value=live_id_url) Live ID
 					.row.block-page
 						ul.list-tabs.nav.nav-tabs
 							li.nav-item

@@ -52,6 +52,7 @@ app.use((req, res, next) => {
     title: 'IPification Showcase',
     stage_url: process.env.STAGE_URL,
     live_url: process.env.LIVE_URL,
+    live_id_url: process.env.LIVE_ID_URL,
     ...res.locals,
     ...config,
     baseUrl: `${req.protocol}://${req.headers.host}`,

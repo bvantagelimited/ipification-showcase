@@ -13,7 +13,7 @@ function updateWindowResize() {
 }
 
 function fetchCountryCode(callback) {
-  if(envName == 'live') {
+  if(envName == 'live' || envName == 'live_id') {
     $.get('/geoip', function (data) {
       if(data) countryCode = data.country;
 
@@ -71,7 +71,7 @@ function initPhoneInput(input) {
   window.intlTelInput(input, {
     formatOnDisplay: true,
     showSelectedDialCode: true,
-    initialCountry: envName === 'live' ? 'auto' : 'ww',
+    initialCountry: envName === 'live' || envName === 'live_id' ? 'auto' : 'ww',
     geoIpLookup: function (success, failure) {
       success(countryCode);
     },

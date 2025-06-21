@@ -5,19 +5,9 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const createError = require('http-errors');
 const config = require('config');
-const Redis = require("ioredis");
 const helmet = require("helmet");
-const { RedisStore } = require("connect-redis");
 
 require('dotenv').config()
-
-const redisClient = new Redis(process.env.REDIS_URL);
-
-const redisStore = new RedisStore({
-  client: redisClient,
-  prefix: 'showcase:',
-  ttl: 86400,
-})
 
 const app = express();
 
@@ -38,7 +28,6 @@ app.use(session({
   secret: 'secret-session-key',
   resave: false,
   saveUninitialized: true,
-  store: redisStore
 }));
 
 app.use(express.json());

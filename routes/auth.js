@@ -190,6 +190,7 @@ router.get('/callback/:userFlow', async function (req, res) {
     res.redirect(auth_complete_url);
   } catch (err) {
     console.log('---> get token error: ', err.message);
+    console.log(err.response.data);
     res.status(400).send(err.message);
   }
 })

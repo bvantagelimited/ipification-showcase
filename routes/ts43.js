@@ -1,0 +1,178 @@
+const express = require('express');
+const axios = require('axios');
+const qs = require('qs');
+const { v4: uuidv4 } = require('uuid');
+
+const router = express.Router();
+
+router.post('/auth', async (req, res) => {
+  const { clients, auth_server_url, realm } = res.locals;
+  const client = clients.find(item => item.user_flow === 'ts43');
+  if (!client) {
+    res.status(401).send("Client not found");
+    return;
+  }
+
+  const { client_id: clientId, client_secret: clientSecret } = client;
+  const { login_hint, carrier_hint } = req.body;
+  try {
+    // CIBA auth endpoint
+    const authUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/ciba/auth`;
+    const ts43_nonce = uuidv4();
+
+    // await dataStore.set(state, response);
+    
+    // Prepare form data
+    const formData = {
+      client_id: clientId,
+      client_secret: clientSecret,
+      login_hint: login_hint,
+      scope: 'openid',
+      ts43_nonce,
+      carrier_hint: carrier_hint
+    };
+
+    // Make the auth request
+    // console.log('authUrl', authUrl);
+    // console.log('formData', formData);
+    const authResponse = await axios.post(authUrl, qs.stringify(formData), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+
+    console.log('Auth response:', authResponse.data);
+
+    // Extract access token from the auth response
+    const authReqId = authResponse.data.auth_req_id;
+    
+    if (!authReqId) {
+      throw new Error('No authReqId received from auth response');
+    }
+
+    // Make the second API call to dcql endpoint
+    const dcqlUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/bc/ts43/dcql`;
+    const dcqlPayload = {
+      operation: "VerifyPhoneNumber"
+    };
+
+    console.log('dcqlUrl', dcqlUrl);
+    console.log('dcqlPayload', dcqlPayload);
+
+    const dcqlResponse = await axios.post(dcqlUrl, dcqlPayload, {
+      headers: {
+        'Authorization': `Bearer ${authReqId}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('DCQL response:', dcqlResponse.data);
+
+    // Return both responses
+    res.json({
+      success: true,
+      data: {
+        auth_req_id: authReqId,
+        digital_request: {
+          protocol: "openid4vp-v1-unsigned",
+          data: {
+            response_type: "vp_token",
+            response_mode: "dc_api",
+            nonce: ts43_nonce,
+            dcql_query: {
+              credentials: [
+                dcqlResponse.data
+              ]
+            }
+          }
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('CIBA Auth Error:', error.message);
+    
+    // Handle error response
+    const errorResponse = {
+      success: false,
+      error: error.message,
+      status: error.response?.status || 500
+    };
+
+    if (error.response?.data) {
+      errorResponse.data = error.response.data;
+    }
+
+    res.status(error.response?.status || 500).json(errorResponse);
+  }
+});
+
+router.post('/token', async (req, res) => {
+  const { clients, auth_server_url, realm } = res.locals;
+  const client = clients.find(item => item.user_flow === 'ts43');
+  if (!client) {
+    res.status(401).send("Client not found");
+    return;
+  }
+
+  const { client_id: clientId, client_secret: clientSecret } = client;
+  const { vp_token: vpToken, auth_req_id: authReqId } = req.body;
+
+  const callbackUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/bc/ts43/callback`;
+  const callbackPayload = {
+    vp_token: vpToken
+  };
+
+  try {
+    console.log('callbackUrl', callbackUrl);
+    console.log('callbackPayload', callbackPayload);
+    const callbackResponse = await axios.post(callbackUrl, callbackPayload, {
+      headers: {
+        'Authorization': `Bearer ${authReqId}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('Callback response:', callbackResponse.data);
+    const tokenUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/token`;
+
+    // Prepare form data
+    const formData = {
+      client_id: clientId,
+      client_secret: clientSecret,
+      grant_type: "urn:openid:params:grant-type:ciba",
+      auth_req_id: authReqId,
+    };
+
+    // Make the auth request
+    console.log('tokenUrl', tokenUrl);
+    console.log('formData', formData);
+    const authResponse = await axios.post(tokenUrl, qs.stringify(formData), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+
+    console.log('Token response:', authResponse.data);
+
+    res.json(authResponse.data);
+  } catch (error) {
+    console.error('Token Auth Error:', error.message);
+    
+    // Handle error response
+    const errorResponse = {
+      success: false,
+      error: error.message,
+      status: error.response?.status || 500
+    };
+
+    if (error.response?.data) {
+      errorResponse.data = error.response.data;
+    }
+
+    res.status(error.response?.status || 500).json(errorResponse);
+  }
+})
+
+module.exports = router;
+

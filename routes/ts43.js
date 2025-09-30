@@ -155,7 +155,10 @@ router.post('/token', async (req, res) => {
 
     console.log('Token response:', authResponse.data);
 
-    res.json(authResponse.data);
+    res.json({
+      success: true,
+      data: authResponse.data
+    });
   } catch (error) {
     console.error('Token Auth Error:', error.message);
     

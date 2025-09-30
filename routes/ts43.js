@@ -13,7 +13,7 @@ router.post('/auth', async (req, res) => {
     return;
   }
 
-  const { client_id: clientId, client_secret: clientSecret } = client;
+  const { client_id: clientId, client_secret: clientSecret, scope: scope } = client;
   const { login_hint, carrier_hint } = req.body;
   try {
     // CIBA auth endpoint
@@ -27,7 +27,7 @@ router.post('/auth', async (req, res) => {
       client_id: clientId,
       client_secret: clientSecret,
       login_hint: login_hint,
-      scope: 'openid',
+      scope: scope || 'openid',
       ts43_nonce,
       carrier_hint: carrier_hint
     };

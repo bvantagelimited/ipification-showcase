@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 
 router.post('/auth', async (req, res) => {
-  const { clients, auth_server_url, realm, client_id: clientId } = res.locals;
+  const { clients, auth_server_url, realm, client_id: clientId, scope: reqScope } = res.locals;
   const client = clients.find(item => item.client_id === clientId);
   if (!client) {
     res.status(401).send("Client not found");
@@ -26,11 +26,17 @@ router.post('/auth', async (req, res) => {
     const formData = {
       client_id: clientId,
       client_secret: clientSecret,
-      login_hint: login_hint,
-      scope: scope || 'openid',
+      scope: reqScope || scope || 'openid',
       ts43_nonce,
-      carrier_hint: carrier_hint
     };
+
+    if(login_hint) {
+      formData.login_hint = login_hint
+    }
+
+    if(carrier_hint) {
+      formData.carrier_hint = carrier_hint
+    }
 
     // Make the auth request
     // console.log('authUrl', authUrl);

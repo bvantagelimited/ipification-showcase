@@ -6,14 +6,14 @@ const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 
 router.post('/auth', async (req, res) => {
-  const { clients, auth_server_url, realm } = res.locals;
-  const client = clients.find(item => item.user_flow === 'ts43');
+  const { clients, auth_server_url, realm, client_id: clientId } = res.locals;
+  const client = clients.find(item => item.client_id === clientId);
   if (!client) {
     res.status(401).send("Client not found");
     return;
   }
 
-  const { client_id: clientId, client_secret: clientSecret, scope: scope } = client;
+  const { client_secret: clientSecret, scope: scope } = client;
   const { login_hint, carrier_hint } = req.body;
   try {
     // CIBA auth endpoint
@@ -70,20 +70,17 @@ router.post('/auth', async (req, res) => {
 
     // Return both responses
     res.json({
-      success: true,
-      data: {
-        auth_req_id: authReqId,
-        digital_request: {
-          protocol: "openid4vp-v1-unsigned",
-          data: {
-            response_type: "vp_token",
-            response_mode: "dc_api",
-            nonce: ts43_nonce,
-            dcql_query: {
-              credentials: [
-                dcqlResponse.data
-              ]
-            }
+      auth_req_id: authReqId,
+      digital_request: {
+        protocol: "openid4vp-v1-unsigned",
+        data: {
+          response_type: "vp_token",
+          response_mode: "dc_api",
+          nonce: ts43_nonce,
+          dcql_query: {
+            credentials: [
+              dcqlResponse.data
+            ]
           }
         }
       }
@@ -108,15 +105,15 @@ router.post('/auth', async (req, res) => {
 });
 
 router.post('/token', async (req, res) => {
+  const { vp_token: vpToken, auth_req_id: authReqId, client_id: clientId  } = req.body;
   const { clients, auth_server_url, realm } = res.locals;
-  const client = clients.find(item => item.user_flow === 'ts43');
+  const client = clients.find(item => item.item.client_id === clientId);
   if (!client) {
     res.status(401).send("Client not found");
     return;
   }
 
-  const { client_id: clientId, client_secret: clientSecret } = client;
-  const { vp_token: vpToken, auth_req_id: authReqId } = req.body;
+  const { client_secret: clientSecret } = client;
 
   const callbackUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/bc/ts43/callback`;
   const callbackPayload = {
@@ -155,10 +152,7 @@ router.post('/token', async (req, res) => {
 
     console.log('Token response:', authResponse.data);
 
-    res.json({
-      success: true,
-      data: authResponse.data
-    });
+    res.json(authResponse.data);
   } catch (error) {
     console.error('Token Auth Error:', error.message);
     

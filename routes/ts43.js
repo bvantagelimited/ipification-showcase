@@ -6,7 +6,8 @@ const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 
 router.post('/auth', async (req, res) => {
-  const { clients, auth_server_url, realm, client_id: clientId, scope: reqScope } = res.locals;
+  const { login_hint, carrier_hint, client_id: clientId } = req.body;
+  const { clients, auth_server_url, realm, scope: reqScope } = res.locals;
   const client = clients.find(item => item.client_id === clientId);
   if (!client) {
     res.status(401).send("Client not found");
@@ -14,7 +15,6 @@ router.post('/auth', async (req, res) => {
   }
 
   const { client_secret: clientSecret, scope: scope } = client;
-  const { login_hint, carrier_hint } = req.body;
   try {
     // CIBA auth endpoint
     const authUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/ciba/auth`;
@@ -39,8 +39,8 @@ router.post('/auth', async (req, res) => {
     }
 
     // Make the auth request
-    // console.log('authUrl', authUrl);
-    // console.log('formData', formData);
+    console.log('authUrl', authUrl);
+    console.log('formData', formData);
     const authResponse = await axios.post(authUrl, qs.stringify(formData), {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'

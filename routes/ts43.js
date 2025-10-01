@@ -113,7 +113,7 @@ router.post('/auth', async (req, res) => {
 router.post('/token', async (req, res) => {
   const { vp_token: vpToken, auth_req_id: authReqId, client_id: clientId  } = req.body;
   const { clients, auth_server_url, realm } = res.locals;
-  const client = clients.find(item => item.item.client_id === clientId);
+  const client = clients.find(item => item.client_id === clientId);
   if (!client) {
     res.status(401).send("Client not found");
     return;

@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 
 router.post('/auth', async (req, res) => {
-  const { login_hint, carrier_hint, client_id: clientId } = req.body;
+  const { login_hint, carrier_hint, client_id: clientId, operation: operation } = req.body;
   const { clients, auth_server_url, realm, scope: reqScope } = res.locals;
   const client = clients.find(item => item.client_id === clientId);
   if (!client) {
@@ -59,7 +59,7 @@ router.post('/auth', async (req, res) => {
     // Make the second API call to dcql endpoint
     const dcqlUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/bc/ts43/dcql`;
     const dcqlPayload = {
-      operation: "VerifyPhoneNumber"
+      operation: operation || "VerifyPhoneNumber"
     };
 
     console.log('dcqlUrl', dcqlUrl);

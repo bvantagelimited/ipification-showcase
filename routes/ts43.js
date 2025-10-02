@@ -129,14 +129,20 @@ router.post('/token', async (req, res) => {
   try {
     console.log('callbackUrl', callbackUrl);
     console.log('callbackPayload', callbackPayload);
-    const callbackResponse = await axios.post(callbackUrl, callbackPayload, {
-      headers: {
-        'Authorization': `Bearer ${authReqId}`,
-        'Content-Type': 'application/json'
-      }
-    });
 
-    console.log('Callback response:', callbackResponse.data);
+    try {
+      const callbackResponse = await axios.post(callbackUrl, callbackPayload, {
+        headers: {
+          'Authorization': `Bearer ${authReqId}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Callback response:', callbackResponse.data);
+    } catch (error) {
+      console.error('Callback Error:', error.message);
+    }
+
     const tokenUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/token`;
 
     // Prepare form data
@@ -158,7 +164,14 @@ router.post('/token', async (req, res) => {
 
     console.log('Token response:', authResponse.data);
 
-    res.json(authResponse.data);
+    const { access_token: accessToken } = authResponse.data;
+    const userUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/userinfo`;
+
+    const { data: userInfo } = await axios.post(userUrl, qs.stringify({ access_token: accessToken }), { 
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+
+    res.json(userInfo);
   } catch (error) {
     console.error('Token Auth Error:', error.message);
     

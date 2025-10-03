@@ -10,37 +10,27 @@ block content
 					.row.block-header
 						.col-12
 							.row
-								h3.app-name IPification features showcase
+								h3.app-name
 
-								select(id="select" value=node_env data-env=node_env)
-									option(data-selected="stage" selected=node_env == "stage" value=stage_url) Stage
-									option(data-selected='live' selected=node_env == "live" value=live_url) Live
-									if live_id_url
-										option(data-selected='live_id' selected=node_env == "live_id" value=live_id_url) Live ID
 					.row.block-page
 						ul.list-tabs.nav.nav-tabs
 							li.nav-item
 								a.nav-link.nav-link-pnv.active(href="#pnv" onClick="select_nav('pnv')") PNV
-							li.nav-item
-								a.nav-link.nav-link-login(href="#login" onClick="select_nav('login')") Login
 							li.nav-item
 								a.nav-link.nav-link-identity(href="#identity" onClick="select_nav('identity')") Identity
 
 						.col-12.row-item
 							.block-button.block.block-pnv.block-1.active#pnv
 								p.description_title Phone Number Verification
-								p.description Verify phone number through IP or IM auth.
+								p.description(style="margin-bottom: 10px") Basic - verify your phone number
+								p.description Advance - verify your phone number with fraud prevention signals
 								.div(style="margin-top: 15px")
 									.row
 										.col
 											input.form-control.phoneNumber(type='text' name='phone' id='phone')
-											button.btn_full.btn.btn_phone.btn-active.btnLoginPhone.btn-user-flow#pvn_ip(data-title=get_flow_title('pvn_ip', 'IP Phone Number Verification') data-user-flow='pvn_ip') IP
+											button.btn_full.btn.btn_phone.btn-active.btnLoginPhone.btn-user-flow#pvn_ip(data-title=get_flow_title('pvn_ip', 'IP Phone Number Verification') data-user-flow='pvn_ip') Basic
 												span.right-icon
-											button.btn_full.btn.btn_phone.btn-active.btnLoginPhone.btn-user-flow#pvn_ip_plus(data-title=get_flow_title('pvn_ip_plus', 'IP Phone Number Verification') data-user-flow='pvn_ip_plus') IP+
-												span.right-icon
-											button.btn_full.btn.btn_IM.btnLoginPhone.btn-user-flow#pvn_im(data-title=get_flow_title('pvn_im', 'IM Phone Number Verification') data-user-flow='pvn_im') IM
-												span.right-icon
-											button.btn_full.btn.btn_IM.btnLoginPhone.btn-user-flow#pvn_ipificator(data-title=get_flow_title('pvn_ipificator', 'IP via App') data-user-flow='pvn_ipificator', style="display: none") IP via App
+											button.btn_full.btn.btn_phone.btn-active.btnLoginPhone.btn-user-flow#pvn_ip_plus(data-title=get_flow_title('pvn_ip_plus', 'IP Phone Number Verification') data-user-flow='pvn_ip_plus') Advance
 												span.right-icon
 
 							.block-button.block-login.block.block-2#login
@@ -52,16 +42,10 @@ block content
 								button.btn_full_blue.btn_instant.btn-user-flow#login_ip_plus(type='button' data-title=get_flow_title('login_ip_plus', 'IP+ Login') data-user-flow='login_ip_plus')
 									span.right-icon
 									span IP+
-								button.btn_full_blue.btn-user-flow#login_im(type='button' data-title=get_flow_title('login_im', 'IM Login') data-user-flow='login_im')
-									span.right-icon
-									span IM
 
 							.block-button.block.block-identity.block-1#identity
-								p.description_title Mobile ID & Know Your Customer
-								p.description.description_helper Identify user with anonymous identity (mobile_id) or obtain user info with KYC.
-								button.btn_full_blue.btn_instant.btn-user-flow#anonymous(type='button' data-title=get_flow_title('anonymous', 'Anonymous Identity') style="margin-bottom:59px" data-user-flow='anonymous')
-									span.right-icon.right-icon-blue
-									span Anonymous Identity
+								p.description_title Know Your Customer
+								p.description(style="margin-bottom: 10px") Obtain user info from VIL subscriber database
 								.div
 									input.form-control.phoneNumber(type='text' name='phone_kyc' id='phone_kyc')
 									button.btn_full.btn.btn_kyc.btnLoginPhone.btn-user-flow#kyc_phone(data-title=get_flow_title('kyc_phone', 'KYC Data')  type='button' data-user-flow='kyc_phone') KYC

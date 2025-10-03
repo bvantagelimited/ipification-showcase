@@ -56,7 +56,8 @@ router.post('/auth', async (req, res) => {
     // Make the second API call to dcql endpoint
     const dcqlUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/bc/ts43/dcql`;
     const dcqlPayload = {
-      operation: operation || "VerifyPhoneNumber"
+      operation: operation || "VerifyPhoneNumber",
+      nonce: ts43_nonce
     };
 
     console.log('dcqlUrl', dcqlUrl);

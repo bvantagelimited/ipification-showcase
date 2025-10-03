@@ -20,14 +20,11 @@ router.post('/auth', async (req, res) => {
     const authUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/ciba/auth`;
     const ts43_nonce = uuidv4();
 
-    // await dataStore.set(state, response);
-    
     // Prepare form data
     const formData = {
       client_id: clientId,
       client_secret: clientSecret,
       scope: reqScope || scope || 'openid',
-      ts43_nonce,
     };
 
     if(login_hint) {

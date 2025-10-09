@@ -76,6 +76,7 @@ router.post('/auth', async (req, res) => {
     // Return both responses
     res.json({
       auth_req_id: authReqId,
+      nonce: ts43_nonce,
       digital_request: {
         protocol: "openid4vp-v1-unsigned",
         data: {
@@ -119,7 +120,7 @@ router.post('/log', async (req, res) => {
 router.post('/token', async (req, res) => {
   console.log('--> token');
   console.log(JSON.stringify(req.body));
-  const { vp_token: vpToken, auth_req_id: authReqId, client_id: clientId  } = req.body;
+  const { vp_token: vpToken, auth_req_id: authReqId, client_id: clientId, nonce: nonce } = req.body;
   const { clients, auth_server_url, realm } = res.locals;
   const client = clients.find(item => item.client_id === clientId);
   if (!client) {
@@ -184,6 +185,7 @@ router.post('/token', async (req, res) => {
       userInfo: prettyHtml(userInfo),
       client_id: clientId,
       client_title: 'SIM',
+      state: nonce,
     }
 
     res.json(userInfo);
@@ -207,6 +209,7 @@ router.post('/token', async (req, res) => {
       userInfo: prettyHtml(errorResponse),
       client_id: clientId,
       client_title: 'SIM',
+      state: nonce,
     }
 
     res.status(error.response?.status || 500).json(errorResponse);

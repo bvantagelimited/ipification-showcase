@@ -234,7 +234,7 @@ $(document).ready(function () {
       }
 
       const body = await response.json();
-      const { auth_req_id, digital_request } = body;
+      const { auth_req_id, digital_request, nonce } = body;
 
       try {
         var credentialResponse  = await navigator.credentials.get({
@@ -242,6 +242,16 @@ $(document).ready(function () {
             requests: [digital_request]
           },
         })
+
+        // var credentialResponse = {
+        //   data: {
+        //     vp_token: {
+        //     'ipification.com': [
+        //       '1234567890'
+        //     ]
+        //   }
+        //   }
+        // }
 
         if(credentialResponse == null) {
             alert('Response is null')
@@ -252,7 +262,8 @@ $(document).ready(function () {
           const dataToken = {
             "vp_token": vp_token['ipification.com'][0],
             "auth_req_id": auth_req_id,
-            "client_id": data.client_id
+            "client_id": data.client_id,
+            "nonce": nonce,
           }
 
           const response = await fetch('/ts43/token', {

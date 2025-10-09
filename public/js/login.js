@@ -272,13 +272,16 @@ $(document).ready(function () {
             data: body,
           });
 
-           // I want show popup with user info
-           Swal.fire({
-             title: 'User Info',
-             html: '<pre style="margin-top: 40px; text-align: left; white-space: pre-wrap; font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 4px; max-height: 400px; overflow-y: auto;">' + JSON.stringify(body, null, 2) + '</pre>',
-             showConfirmButton: true,
-             showCloseButton: true,
-           });
+          if(response.ok) {
+            window.location.href = '/user/info';
+          } else {
+            Swal.fire({
+              title: 'User Info',
+              html: '<pre style="margin-top: 40px; text-align: left; white-space: pre-wrap; font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 4px; max-height: 400px; overflow-y: auto;">' + JSON.stringify(body, null, 2) + '</pre>',
+              showConfirmButton: true,
+              showCloseButton: true,
+            });
+          }
         }
       } catch(error) {
         alert(error.message);

@@ -178,6 +178,9 @@ router.post('/token', async (req, res) => {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
 
+    req.session.isAuthenticated = true;
+    req.session.userData = userInfo;
+
     res.json(userInfo);
   } catch (error) {
     console.error('Token Auth Error:', error.message);

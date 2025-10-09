@@ -108,12 +108,21 @@ router.post('/auth', async (req, res) => {
   }
 });
 
+router.post('/log', async (req, res) => {
+  const { data: data } = req.body;
+  console.log('--> log');
+  console.log(JSON.stringify(data));
+  res.send('OK');
+});
+
 router.post('/token', async (req, res) => {
+  console.log('--> token');
+  console.log(JSON.stringify(req.body));
   const { vp_token: vpToken, auth_req_id: authReqId, client_id: clientId  } = req.body;
   const { clients, auth_server_url, realm } = res.locals;
   const client = clients.find(item => item.client_id === clientId);
   if (!client) {
-    res.status(401).send("Client not found");
+    res.status(401).send({error: "Client not found"});
     return;
   }
 
@@ -183,6 +192,8 @@ router.post('/token', async (req, res) => {
     if (error.response?.data) {
       errorResponse.data = error.response.data;
     }
+
+    console.error('Token Auth errorResponse:', errorResponse);
 
     res.status(error.response?.status || 500).json(errorResponse);
   }

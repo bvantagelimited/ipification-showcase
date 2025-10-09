@@ -1,7 +1,3 @@
-// const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-//   navigator.userAgent,
-// );
-
 var isMobile;
 var countryCode = 'rs';
 const envName = $('#select option:selected').text().toLowerCase();
@@ -249,10 +245,14 @@ $(document).ready(function () {
         if(credentialResponse == null) {
             alert('Response is null')
         } else {
-          const data = credentialResponse.token || credentialResponse.data
-          const { vp_token } = data
+          const credentialData = credentialResponse.token || credentialResponse.data
+          // log_data({
+          //   type: 'credential_response',
+          //   data: credentialData,
+          // });
+          const { vp_token } = credentialData
           const dataToken = {
-            "vp_token": vp_token,
+            "vp_token": vp_token['ipification.com'][0],
             "auth_req_id": auth_req_id,
             "client_id": data.client_id
           }
@@ -265,21 +265,20 @@ $(document).ready(function () {
             body: JSON.stringify(dataToken),
           });
 
-          if(!response.ok) {
-            alert('Token Error: ' + response.statusText);
-            return;
-          }
-
           const body = await response.json();
-          console.log('body', body);
 
-          // I want show popup with user info
-          Swal.fire({
-            title: 'User Info',
-            html: '<pre>' + JSON.stringify(body, null, 2) + '</pre>',
-            showConfirmButton: true,
-            showCloseButton: true,
+          log_data({
+            type: 'get_token_response',
+            data: body,
           });
+
+           // I want show popup with user info
+           Swal.fire({
+             title: 'User Info',
+             html: '<pre style="margin-top: 40px; text-align: left; white-space: pre-wrap; font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 4px; max-height: 400px; overflow-y: auto;">' + JSON.stringify(body, null, 2) + '</pre>',
+             showConfirmButton: true,
+             showCloseButton: true,
+           });
         }
       } catch(error) {
         alert(error.message);
@@ -288,6 +287,16 @@ $(document).ready(function () {
       alert(error.message);
       console.log('error', error.message);
     }
+  }
+
+  async function log_data(data) {
+    await fetch('/ts43/log', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: data }),
+    });
   }
 
   $('#select').on('change', function () {

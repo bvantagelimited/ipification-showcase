@@ -134,7 +134,7 @@ $(document).ready(function () {
     var phone_number;
     var dialCode;
 
-    if (['pvn_ip', 'pvn_ip_plus', 'pvn_im', 'kyc_phone', 'pvn_ipificator'].indexOf(user_flow) >= 0) {
+    if (['pvn_ip', 'pvn_ip_plus', 'pvn_im', 'kyc_phone', 'pvn_ipificator', 'pvn_sim'].indexOf(user_flow) >= 0) {
       var parent = $(this).closest('.block-button');
       var inputPhone = parent.find('input.phoneNumber');
 
@@ -156,6 +156,16 @@ $(document).ready(function () {
           return;
         }
       }
+    }
+
+    if(user_flow === 'pvn_sim') {
+      start_pvn_sim(phone_number);
+      return;
+    }
+
+    if(user_flow === 'login_sim') {
+      start_login_sim();
+      return;
     }
 
     localStorage.setItem('selector', location.hash.substring(1));
@@ -183,6 +193,102 @@ $(document).ready(function () {
       showQrcodeWithLink(data_title, redirectURL, state);
     }
   });
+
+  async function start_pvn_sim(phone_number) {
+    console.log('start_pvn_sim');
+
+    const data = {
+      "login_hint": phone_number,
+      "carrier_hint": 51004,
+      "client_id": "webclient3",
+      "operation": "VerifyPhoneNumber",
+      "scope": "openid ip:phone_verify"
+    }
+
+    start_ts43_flow(data);
+  }
+
+  async function start_login_sim() {
+    console.log('start_login_sim');
+
+    const data = {
+      "login_hint": "anonymous",
+      "carrier_hint": 51004,
+      "client_id": "webclient2",
+      "operation": "GetPhoneNumber",
+      "scope": "openid ip:phone"
+    }
+
+    start_ts43_flow(data);
+  }
+
+  async function start_ts43_flow(data) {
+    try {
+      const response = await fetch('/ts43/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if(!response.ok) {
+        alert('AuthError: ' + response.statusText);
+        return;
+      }
+
+      const body = await response.json();
+      const { auth_req_id, digital_request } = body;
+
+      try {
+        var credentialResponse  = await navigator.credentials.get({
+          digital: {
+            requests: [digital_request]
+          },
+        })
+        if(credentialResponse == null) {
+            alert('Response is null')
+        } else {
+          const data = credentialResponse.token || credentialResponse.data
+          const { vp_token } = data
+          const dataToken = {
+            "vp_token": vp_token,
+            "auth_req_id": auth_req_id,
+            "client_id": data.client_id
+          }
+
+          const response = await fetch('/ts43/token', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToken),
+          });
+
+          if(!response.ok) {
+            alert('Token Error: ' + response.statusText);
+            return;
+          }
+
+          const body = await response.json();
+          console.log('body', body);
+
+          // I want show popup with user info
+          Swal.fire({
+            title: 'User Info',
+            html: '<pre>' + JSON.stringify(body, null, 2) + '</pre>',
+            showConfirmButton: true,
+            showCloseButton: true,
+          });
+        }
+      } catch(error) {
+        alert(error.message);
+      }
+    } catch (error) {
+      alert(error.message);
+      console.log('error', error.message);
+    }
+  }
 
   $('#select').on('change', function () {
     var url = $(this).val();

@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const qs = require('qs');
 const { v4: uuidv4 } = require('uuid');
+const prettyHtml = require('json-pretty-html').default;
 
 const router = express.Router();
 
@@ -179,7 +180,11 @@ router.post('/token', async (req, res) => {
     });
 
     req.session.isAuthenticated = true;
-    req.session.userData = userInfo;
+    req.session.userData = {
+      userInfo: prettyHtml(userInfo),
+      client_id: clientId,
+      client_title: 'SIM',
+    }
 
     res.json(userInfo);
   } catch (error) {
@@ -187,7 +192,6 @@ router.post('/token', async (req, res) => {
     
     // Handle error response
     const errorResponse = {
-      success: false,
       error: error.message,
       status: error.response?.status || 500
     };
@@ -197,6 +201,13 @@ router.post('/token', async (req, res) => {
     }
 
     console.error('Token Auth errorResponse:', errorResponse);
+
+    req.session.isAuthenticated = true;
+    req.session.userData = {
+      userInfo: prettyHtml(errorResponse),
+      client_id: clientId,
+      client_title: 'SIM',
+    }
 
     res.status(error.response?.status || 500).json(errorResponse);
   }

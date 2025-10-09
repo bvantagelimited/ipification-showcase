@@ -5,7 +5,7 @@ const router = express.Router();
 router.get('/info', async (req, res) => {
   
   if(!req.session.isAuthenticated) {
-    res.status(401).send();
+    res.redirect('/');
     return;
   }
 

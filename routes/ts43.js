@@ -54,10 +54,19 @@ router.post('/auth', async (req, res) => {
       throw new Error('No authReqId received from auth response');
     }
 
+    let resolvedOperation;
+    if (operation) {
+      resolvedOperation = operation;
+    } else if (login_hint) {
+      resolvedOperation = "VerifyPhoneNumber";
+    } else {
+      resolvedOperation = "GetPhoneNumber";
+    }
+
     // Make the second API call to dcql endpoint
     const dcqlUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/bc/ts43/dcql`;
     const dcqlPayload = {
-      operation: operation || "VerifyPhoneNumber",
+      operation: resolvedOperation,
       nonce: ts43_nonce
     };
 

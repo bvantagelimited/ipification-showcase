@@ -195,7 +195,7 @@ $(document).ready(function () {
 
     const data = {
       "login_hint": phone_number,
-      "carrier_hint": 51004,
+      "carrier_hint": 51010,
       "client_id": "webclient3",
       "operation": "VerifyPhoneNumber",
       "scope": "openid ip:phone_verify"
@@ -209,7 +209,7 @@ $(document).ready(function () {
 
     const data = {
       "login_hint": "anonymous",
-      "carrier_hint": 51004,
+      "carrier_hint": 51010,
       "client_id": "webclient2",
       "operation": "GetPhoneNumber",
       "scope": "openid ip:phone"

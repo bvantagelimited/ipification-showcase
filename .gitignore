@@ -5,3 +5,5 @@ yarn.lock
 public/css/style.css
 .DS_Store
 .env
+.cursor
+

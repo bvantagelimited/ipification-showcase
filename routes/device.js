@@ -1,9 +1,19 @@
 
-
 const express = require('express');
 const dataStore = require('../lib/data_store');
 const sendNotification = require('../lib/send_notification');
+const { NOTIFICATION_TYPES, ERROR_MESSAGES, HTTP_STATUS, PUSH_NOTIFICATION_MESSAGES } = require('../utils/constants');
 const router = express.Router();
+
+function validateSecretKey(secretKey) {
+  return secretKey === process.env.NOTIFICATION_SECRET_KEY;
+}
+
+function getPushMessage(notificationType) {
+  return notificationType === NOTIFICATION_TYPES.SESSION_COMPLETED
+    ? PUSH_NOTIFICATION_MESSAGES.SESSION_COMPLETED
+    : PUSH_NOTIFICATION_MESSAGES.SESSION_EXPIRED;
+}
 
 // use for s2s flow with ip-backchannel-im-auth = true
 router.post("/register", async (req, res) => {
@@ -14,9 +24,9 @@ router.post("/register", async (req, res) => {
 })
 
 router.post("/notification/:secret_key", async (req, res) => {
-  if(req.params.secret_key !== process.env.NOTIFICATION_SECRET_KEY) {
+  if(!validateSecretKey(req.params.secret_key)) {
     console.log(`[ipification_notification] wrong secret key: ${req.params.secret_key}`);
-    res.status(400).send();
+    res.status(HTTP_STATUS.BAD_REQUEST).send();
     return;
   }
 
@@ -25,13 +35,13 @@ router.post("/notification/:secret_key", async (req, res) => {
 
   if(!device_id) {
     console.log(`[ipification_notification] device_id is required`);
-    res.status(400).send("device_id is required");
+    res.status(HTTP_STATUS.BAD_REQUEST).send(ERROR_MESSAGES.DEVICE_ID_REQUIRED);
     return;
   }
 
   if(!notification_type) {
     console.log(`[ipification_notification] notification_type is required`);
-    res.status(400).send("notification_type is required");
+    res.status(HTTP_STATUS.BAD_REQUEST).send(ERROR_MESSAGES.NOTIFICATION_TYPE_REQUIRED);
     return;
   }
 
@@ -46,17 +56,14 @@ router.post("/notification/:secret_key", async (req, res) => {
 
   try {
     console.log(`[ipification_notification] invoke send_notification`);
-    const push_message = notification_type === 'session_completed' ? 'Verification is successful. please back to your app/website' : 'Your session is expired. Please back into your application';
+    const push_message = getPushMessage(notification_type);
     // send push notification to mobile app
-    await sendNotification(device_info,
-      'Merchant Service',
-      push_message
-    );
+    await sendNotification(device_info, 'Merchant Service', push_message);
 
     res.send();
   } catch (error) {
-    console.log(error);
-    res.status(400).send(error.message);
+    console.error('[ipification_notification] error:', error);
+    res.status(HTTP_STATUS.BAD_REQUEST).send(error.message);
   }
 });
 

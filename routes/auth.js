@@ -3,11 +3,12 @@ const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const htmlEntities = require('html-entities');
 const qs = require('qs');
-const axios = require("axios");
 const debug = require('debug')('info');
-// const jwt = require('jsonwebtoken');
 const prettyHtml = require('json-pretty-html').default;
 const dataStore = require('../lib/data_store');
+const { findClientByUserFlow, findClientByClientId, delay } = require('../utils/helpers');
+const { QR_CODE_SUFFIX, ERROR_MESSAGES, HTTP_STATUS, MAX_RETRY_ATTEMPTS, RETRY_DELAY_MS } = require('../utils/constants');
+const { exchangeCodeAndGetUserInfo } = require('../utils/httpClient');
 
 router.get('/login', function (req, res) {
   const error_message = req.session.error_message;
@@ -19,25 +20,10 @@ router.get('/login', function (req, res) {
   });
 });
 
-router.get('/start', function (req, res) {
-  const { clients, auth_server_url, realm, baseUrl } = res.locals;
-  const { user_flow: userFlow, phone, state } = req.query || {};
-  const client = clients.find(item => item.user_flow === userFlow);
-
-  if (!client) {
-    res.send("Client not found");
-    return;
-  }
-
-  if (!state || state == '') {
-    res.redirect('/auth/login');
-    return;
-  }
-
-  // build auth url
-  const { client_id: clientId, client_secret: clientSecret, scope, channel } = client;
+function buildAuthParams(client, baseUrl, userFlow, state, phone) {
+  const { client_id: clientId, scope, channel } = client;
   const redirectUrl = `${baseUrl}/auth/callback/${userFlow}`;
-  let params = {
+  const params = {
     response_type: 'code',
     client_id: clientId,
     redirect_uri: redirectUrl,
@@ -46,29 +32,40 @@ router.get('/start', function (req, res) {
     nonce: uuidv4(),
     ui_locales: 'en',
     consent_id: process.env.CONSENT_ID,
-    consent_timestamp: Math.floor(Date.now() / 1000)
+    consent_timestamp: Math.floor(Date.now() / 1000),
+    env: process.env.NODE_ENV || 'development'
   };
 
   if (channel) params.channel = channel;
-  params.env = process.env.NODE_ENV || 'development';
+  if (phone) params.login_hint = phone;
 
-  if (phone) {
-    params.login_hint = phone;
-    // params.request = jwt.sign({
-    // 	login_hint: phone,
-    // 	client_id: clientId,
-    // 	state: state,
-    // 	scope,
-    // 	response_type:'code',
-    // 	redirect_uri: redirectUrl
-    // }, clientSecret);
-  }
-  let authUrl;
+  return params;
+}
+
+function buildAuthUrl(userFlow, authServerUrl, realm, params) {
   if (userFlow === 'pvn_ipificator') {
-    authUrl = `https://ipificator.ipification.com/api?` + qs.stringify(params);
-  } else {
-    authUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/auth?` + qs.stringify(params);
+    return `https://ipificator.ipification.com/api?` + qs.stringify(params);
   }
+  return `${authServerUrl}/realms/${realm}/protocol/openid-connect/auth?` + qs.stringify(params);
+}
+
+router.get('/start', function (req, res) {
+  const { clients, auth_server_url, realm, baseUrl } = res.locals;
+  const { user_flow: userFlow, phone, state } = req.query || {};
+  const client = findClientByUserFlow(clients, userFlow);
+
+  if (!client) {
+    res.send(ERROR_MESSAGES.CLIENT_NOT_FOUND);
+    return;
+  }
+
+  if (!state || state === '') {
+    res.redirect('/auth/login');
+    return;
+  }
+
+  const params = buildAuthParams(client, baseUrl, userFlow, state, phone);
+  const authUrl = buildAuthUrl(userFlow, auth_server_url, realm, params);
 
   debug(`authUrl: ${authUrl}`);
   res.redirect(authUrl);
@@ -103,6 +100,24 @@ router.get('/start', function (req, res) {
 
 */
 
+function isQrCodeState(state) {
+  return state.indexOf(QR_CODE_SUFFIX) >= 0;
+}
+
+function handleQrCodeCallback(req, res, state, authCompleteUrl, userInfo) {
+  const channel = `auth:${state}`;
+  req.app.get('socket').to(channel).emit('messages', {
+    event_name: 'url',
+    url: authCompleteUrl
+  });
+
+  if (userInfo.phone_number_verified === 'false') {
+    res.redirect('/auth/qrcode/error');
+  } else {
+    res.redirect('/auth/qrcode/complete');
+  }
+}
+
 router.get('/callback/:userFlow', async function (req, res) {
   const { userFlow } = req.params || {};
   const { state = uuidv4(), code } = req.query || {};
@@ -116,9 +131,9 @@ router.get('/callback/:userFlow', async function (req, res) {
     return;
   }
 
-  const client = clients.find(item => item.user_flow === userFlow);
+  const client = findClientByUserFlow(clients, userFlow);
   if (!client) {
-    res.send("Client not found");
+    res.send(ERROR_MESSAGES.CLIENT_NOT_FOUND);
     return;
   }
 
@@ -137,13 +152,7 @@ router.get('/callback/:userFlow', async function (req, res) {
   };
 
   try {
-    const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-    // console.log('token params', params);
-    const { data: tokenInfo } = await axios.post(tokenUrl, qs.stringify(params), config);
-    const { access_token: accessToken } = tokenInfo;
-    // console.log('tokenInfo', tokenInfo);
-
-    const { data: userInfo } = await axios.post(userUrl, qs.stringify({ access_token: accessToken }), config);
+    const { userInfo } = await exchangeCodeAndGetUserInfo(tokenUrl, userUrl, params);
     console.log('userInfo', userInfo);
 
     const response = {
@@ -151,7 +160,7 @@ router.get('/callback/:userFlow', async function (req, res) {
       client_id: clientId,
       client_title: pageTitle,
       state
-    }
+    };
 
     console.log(`store state: ${state}, response: ${JSON.stringify(response)}`);
     // store response for session complete
@@ -168,51 +177,38 @@ router.get('/callback/:userFlow', async function (req, res) {
 
     // if check qr code in state and state have qrcode text
     // forward url to desktop browser to continue auth flow and exchange code
-
-    if (state.indexOf('-qrcode') >= 0) {
-      // emit to desktop browser
-      const channel = `auth:${state}`;
-      req.app.get('socket').to(channel).emit('messages', {
-        event_name: 'url',
-        url: auth_complete_url
-      });
-
-      if (userInfo.phone_number_verified === 'false') {
-        res.redirect('/auth/qrcode/error');
-      } else {
-        res.redirect('/auth/qrcode/complete');
-      }
-
-
+    if (isQrCodeState(state)) {
+      handleQrCodeCallback(req, res, state, auth_complete_url, userInfo);
       return;
     }
 
     res.redirect(auth_complete_url);
   } catch (err) {
-    console.log('---> get token error: ', err.message);
-    console.log(err.response.data);
-    res.status(400).send(err.message);
+    console.error('---> get token error: ', err.message);
+    if (err.response?.data) {
+      console.error('Error response data:', err.response.data);
+    }
+    res.status(HTTP_STATUS.BAD_REQUEST).send(err.message);
   }
 })
 
 router.get('/complete', async (req, res) => {
   const { state } = req.query || {};
 
-  let i = 0;
   let response;
+  let attempts = 0;
 
-  while (i <= 4) {
+  while (attempts <= MAX_RETRY_ATTEMPTS) {
     response = await dataStore.get(state || '');
     if (response) {
       break;
-    } else {
-      await delay(1000);
     }
-    i += 1
+    await delay(RETRY_DELAY_MS);
+    attempts += 1;
   }
 
   if (response) {
-    // set user is logined in
+    // set user is logged in
     req.session.isAuthenticated = true;
     req.session.userData = response;
     res.redirect('/user/info');
@@ -237,7 +233,7 @@ router.post("/s2s/signin", async (req, res) => {
     // add your code here to create your app token and response to client
     res.send(userinfo);
   } else {
-    res.status(401).send();
+    res.status(HTTP_STATUS.UNAUTHORIZED).send();
   }
 });
 
@@ -246,9 +242,9 @@ router.post('/mobile/login', async (req, res) => {
   const { client_id, code, redirect_uri } = req.body || {};
   const { clients, auth_server_url, realm } = res.locals;
 
-  const client = clients.find(item => item.client_id === client_id);
+  const client = findClientByClientId(clients, client_id);
   if (!client) {
-    res.status(401).send({ error: 'Client not found' });
+    res.status(HTTP_STATUS.UNAUTHORIZED).send({ error: ERROR_MESSAGES.CLIENT_NOT_FOUND });
     return;
   }
 
@@ -264,24 +260,12 @@ router.post('/mobile/login', async (req, res) => {
   };
 
   try {
-    const config = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-    // console.log('token params', params);
-    const { data: tokenInfo } = await axios.post(tokenUrl, qs.stringify(params), config);
-    const { access_token: accessToken } = tokenInfo;
-    // console.log('tokenInfo', tokenInfo);
-
-    const { data: userInfo } = await axios.post(userUrl, qs.stringify({ access_token: accessToken }), config);
-    // console.log('userInfo', userInfo);
-
+    const { userInfo } = await exchangeCodeAndGetUserInfo(tokenUrl, userUrl, params);
     res.send(userInfo);
   } catch (err) {
-    console.log('---> get token error: ', err.message);
-    res.status(401).send({ error: err.message });
+    console.error('---> get token error: ', err.message);
+    res.status(HTTP_STATUS.UNAUTHORIZED).send({ error: err.message });
   }
 });
-
-function delay(time) {
-  return new Promise(resolve => setTimeout(resolve, time));
-}
 
 module.exports = router;

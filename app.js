@@ -10,32 +10,11 @@ const fs = require('fs');
 
 require('dotenv').config()
 
+const { deepMerge } = require('./utils/helpers');
+
 // Load locale.json and merge with locale from default.json if exists
 const localePath = path.join(__dirname, 'config', 'locale.json');
 const defaultLocale = JSON.parse(fs.readFileSync(localePath, 'utf8'));
-
-// Deep merge function for nested objects
-function deepMerge(target, source) {
-  const output = { ...target };
-  if (isObject(target) && isObject(source)) {
-    Object.keys(source).forEach(key => {
-      if (isObject(source[key])) {
-        if (!(key in target)) {
-          Object.assign(output, { [key]: source[key] });
-        } else {
-          output[key] = deepMerge(target[key], source[key]);
-        }
-      } else {
-        Object.assign(output, { [key]: source[key] });
-      }
-    });
-  }
-  return output;
-}
-
-function isObject(item) {
-  return item && typeof item === 'object' && !Array.isArray(item);
-}
 
 const locale = config.locale ? deepMerge(defaultLocale, config.locale) : defaultLocale;
 

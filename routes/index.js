@@ -8,14 +8,22 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/geoip', async (req, res) => {
-  const ip = req.ip;
-  console.log('client ip', ip);
-  geo = geoip.lookup(ip);
+  try {
+    const ip = req.ip;
+    console.log('client ip', ip);
+    const geo = geoip.lookup(ip);
 
-  res.send({
-    country: (geo ? geo.country : 'us').toLowerCase(),
-    ip
-  });
+    res.send({
+      country: (geo ? geo.country : 'us').toLowerCase(),
+      ip
+    });
+  } catch (error) {
+    console.error('GeoIP lookup error:', error);
+    res.send({
+      country: 'us',
+      ip: req.ip
+    });
+  }
 });
 
 module.exports = router;

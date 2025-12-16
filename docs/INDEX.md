@@ -13,6 +13,7 @@ Welcome to the IPification Showcase documentation. This index provides an overvi
 
 - **[API Documentation](API.md)** - Detailed API endpoint reference
 - **[Architecture Documentation](ARCHITECTURE.md)** - System design and architecture details
+- **[Locale Configuration](LOCALE.md)** - Locale strings and customization guide
 
 ## Documentation Structure
 
@@ -21,7 +22,8 @@ docs/
 ├── INDEX.md           # This file - documentation index
 ├── QUICKSTART.md      # Quick start guide
 ├── API.md             # API endpoint documentation
-└── ARCHITECTURE.md    # Architecture and design documentation
+├── ARCHITECTURE.md    # Architecture and design documentation
+└── LOCALE.md          # Locale configuration and customization guide
 
 README.md              # Main project documentation (in root)
 ```
@@ -44,6 +46,9 @@ README.md              # Main project documentation (in root)
 
 **...configure the application**
 → See [Configuration section](../README.md#configuration) in README
+
+**...customize text labels**
+→ Read [Locale Configuration](LOCALE.md)
 
 **...deploy the application**
 → See [Docker Deployment section](../README.md#docker-deployment) in README
@@ -114,6 +119,21 @@ README.md              # Main project documentation (in root)
 - Extension points
 
 **Best for**: Understanding system design, extending the application
+
+---
+
+### Locale Configuration
+
+**File**: `docs/LOCALE.md`
+
+**Contents**:
+- Locale file structure
+- Override mechanism
+- Deep merging behavior
+- Usage examples
+- Troubleshooting guide
+
+**Best for**: Customizing UI text labels, internationalization setup
 
 ## Documentation Conventions
 

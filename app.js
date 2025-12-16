@@ -6,8 +6,38 @@ const logger = require('morgan');
 const createError = require('http-errors');
 const config = require('config');
 const helmet = require("helmet");
+const fs = require('fs');
 
 require('dotenv').config()
+
+// Load locale.json and merge with locale from default.json if exists
+const localePath = path.join(__dirname, 'config', 'locale.json');
+const defaultLocale = JSON.parse(fs.readFileSync(localePath, 'utf8'));
+
+// Deep merge function for nested objects
+function deepMerge(target, source) {
+  const output = { ...target };
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach(key => {
+      if (isObject(source[key])) {
+        if (!(key in target)) {
+          Object.assign(output, { [key]: source[key] });
+        } else {
+          output[key] = deepMerge(target[key], source[key]);
+        }
+      } else {
+        Object.assign(output, { [key]: source[key] });
+      }
+    });
+  }
+  return output;
+}
+
+function isObject(item) {
+  return item && typeof item === 'object' && !Array.isArray(item);
+}
+
+const locale = config.locale ? deepMerge(defaultLocale, config.locale) : defaultLocale;
 
 const app = express();
 
@@ -44,6 +74,7 @@ app.use((req, res, next) => {
     live_id_url: process.env.LIVE_ID_URL,
     ...res.locals,
     ...config,
+    locale: locale,
     baseUrl: `${req.protocol}://${req.headers.host}`,
     get_flow_title: (user_flow, default_title) => {
       const client = config.clients.find(item => item.user_flow === user_flow);

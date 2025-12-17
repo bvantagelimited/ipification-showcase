@@ -2,7 +2,7 @@
   "realm": "ipification",
   "auth_server_url": "",
   "show_env_select": true,
-  "app_logo": "vil",
+  "app_logo_url": "/images/logo/vil.svg",
   "clients": [
     {
       "user_flow": "pvn_ip",

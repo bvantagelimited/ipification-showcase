@@ -9,7 +9,6 @@
     "dev": "nodemon ./bin/www"
   },
   "dependencies": {
-    "@keyv/redis": "^4.4.0",
     "axios": "^1.10.0",
     "cache-manager": "^7.0.0",
     "config": "^4.0.0",

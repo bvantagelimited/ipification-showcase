@@ -18,8 +18,8 @@ block content
 					.row.block-header
 						.col-12
 							.row
-								if app_logo
-									img.app-logo(src=`/images/logo/${app_logo}.svg` alt=locale.app.name)
+								if app_logo_url
+									img.app-logo(src=app_logo_url alt=locale.app.name)
 								else
 									h3.app-name #{locale.app.name}
 

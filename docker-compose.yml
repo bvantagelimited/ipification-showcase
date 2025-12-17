@@ -1,20 +1,12 @@
 services:
-  redis:
-    image: 'redis:latest'
-    restart: unless-stopped
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
   app:
     restart: unless-stopped
     build:
       context: .
     image: "ipification_showcase"
     environment:
-      PORT: 8080
-      REDIS_URL: redis://redis
+      PORT: 3001
     ports:
-      - 3001:8080
-    links:
-      - redis
-    depends_on:
-      - redis
+      - 3001:3001
+    volumes:
+      - ./config/default.json.docker:/usr/app/config/default.json

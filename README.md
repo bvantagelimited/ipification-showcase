@@ -46,6 +46,7 @@ Edit `config/default.json` with your client credentials:
 {
   "realm": "ipification",
   "auth_server_url": "https://api.stage.ipification.com/auth",
+  "app_logo_url": "/images/logo/vil.svg",
   "clients": [
     {
       "user_flow": "pvn_ip",
@@ -57,6 +58,9 @@ Edit `config/default.json` with your client credentials:
   ]
 }
 ```
+
+**Configuration Options**:
+- `app_logo_url`: URL to your application logo image (optional). Can be a relative path like `/images/logo/vil.svg` or an absolute URL like `https://example.com/logo.png`. If not provided, the application name will be displayed as text instead.
 
 See [docs/QUICKSTART.md](docs/QUICKSTART.md) for configuration details.
 

@@ -29,6 +29,7 @@ Edit `config/default.json` and add at least one client configuration:
 {
   "realm": "ipification",
   "auth_server_url": "https://api.stage.ipification.com/auth",
+  "app_logo_url": "/images/logo/vil.svg",
   "clients": [
     {
       "user_flow": "pvn_ip",
@@ -40,6 +41,12 @@ Edit `config/default.json` and add at least one client configuration:
   ]
 }
 ```
+
+**Configuration Options**:
+- `app_logo_url`: URL to your application logo image. Can be:
+  - Relative path: `/images/logo/vil.svg` (for local images)
+  - Absolute URL: `https://example.com/logo.png` (for external images)
+  - If not provided, the application name will be displayed as text instead
 
 ### Step 3: Start the Server
 

@@ -432,9 +432,40 @@ Logging endpoint for TS43 debugging.
 
 ### Utility Endpoints
 
+#### App Config
+
+**GET** `/api/config`
+
+Returns safe application configuration for the frontend (client secrets are removed).
+
+**Response**:
+
+```json
+{
+  "auth_server_url": "https://api.stage.ipification.com/auth",
+  "realm": "ipification",
+  "clients": [
+    {
+      "user_flow": "pvn_ip",
+      "client_id": "your-client-id",
+      "title": "IP Phone Number Verification",
+      "scope": "openid ip:phone_verify"
+    }
+  ]
+}
+```
+
+**Flow**:
+
+1. Reads config from `res.locals`
+2. Strips `client_secret` from each client entry
+3. Returns `auth_server_url`, `realm`, and safe `clients`
+
+---
+
 #### GeoIP Lookup
 
-**GET** `/geoip`
+**GET** `/api/geoip`
 
 Returns country code based on client IP address.
 

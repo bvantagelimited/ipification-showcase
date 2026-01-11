@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
   res.redirect('/auth/login');
 });
 
-router.get('/geoip', async (req, res) => {
+router.get('/api/geoip', async (req, res) => {
   const default_country_code = res.locals.default_country_code || 'rs';
   try {
     const ip = req.ip;

@@ -40,6 +40,21 @@ Each entry defines a user flow and its OAuth client credentials.
 - `scope` (string): Space-separated scopes requested for the flow (for example, `openid ip:phone_verify`).
 - `channel` (string, optional): Channel list for IM flows (space-separated, e.g. `wa viber telegram`).
 
+### Available User Flows
+
+| User Flow       | Description                   | Scope                                 |
+| --------------- | ----------------------------- | ------------------------------------- |
+| `pvn_ip`        | IP Phone Number Verification  | `openid ip:phone_verify`              |
+| `pvn_ip_plus`   | IP+ Phone Number Verification | `openid ip:phone_verify ip:mobile_id` |
+| `pvn_im`        | IM Phone Number Verification  | `openid ip:phone_verify`              |
+| `pvn_sim`       | SIM Phone Number Verification | `openid`                              |
+| `login_ip`      | IP Login                      | `openid ip:phone`                     |
+| `login_ip_plus` | IP+ Login                     | `openid ip:mobile_id ip:phone`        |
+| `login_im`      | IM Login                      | `openid ip:phone`                     |
+| `login_sim`     | SIM Login                     | `openid`                              |
+| `anonymous`     | Anonymous Identity            | `openid ip:mobile_id`                 |
+| `kyc_phone`     | KYC Data                      | `openid ip:profile`                   |
+
 ### `locale` fields
 
 - `locale.app.name` (string): Overrides the application name used in the UI.

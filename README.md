@@ -49,21 +49,6 @@ See [docs/QUICKSTART.md](docs/QUICKSTART.md) for configuration details.
 | `PORT`     | Server port                                             | `3000`        |
 | `NODE_ENV` | Environment (`development`, `stage`, `live`, `live_id`) | `development` |
 
-## Available User Flows
-
-| User Flow       | Description                   | Scope                                 |
-| --------------- | ----------------------------- | ------------------------------------- |
-| `pvn_ip`        | IP Phone Number Verification  | `openid ip:phone_verify`              |
-| `pvn_ip_plus`   | IP+ Phone Number Verification | `openid ip:phone_verify ip:mobile_id` |
-| `pvn_im`        | IM Phone Number Verification  | `openid ip:phone_verify`              |
-| `pvn_sim`       | SIM Phone Number Verification | `openid`                              |
-| `login_ip`      | IP Login                      | `openid ip:phone`                     |
-| `login_ip_plus` | IP+ Login                     | `openid ip:mobile_id ip:phone`        |
-| `login_im`      | IM Login                      | `openid ip:phone`                     |
-| `login_sim`     | SIM Login                     | `openid`                              |
-| `anonymous`     | Anonymous Identity            | `openid ip:mobile_id`                 |
-| `kyc_phone`     | KYC Data                      | `openid ip:profile`                   |
-
 ## Docker Deployment
 
 ```bash

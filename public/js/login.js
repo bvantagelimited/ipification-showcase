@@ -17,7 +17,7 @@ function fetchCountryCode(callback) {
   }
 
   if(app_env !== 'stage') {
-    $.get('/geoip', function (data) {
+    $.get('/api/geoip', function (data) {
       console.log('*** geoip data: ', data);
       if(data) {
         countryCode = data.country;

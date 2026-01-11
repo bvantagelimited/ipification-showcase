@@ -272,7 +272,7 @@ It use on s2s flow.
 
 | Parameter    | Type   | Required | Description                                                    |
 | ------------ | ------ | -------- | -------------------------------------------------------------- |
-| `secret_key` | string | Yes      | Notification secret key (must match `NOTIFICATION_SECRET_KEY`) |
+| `secret_key` | string | Yes      | Notification secret key (must match `notification_secret_key`) |
 
 **Request Body**:
 
@@ -299,7 +299,7 @@ It use on s2s flow.
 
 1. Validates secret key
 2. Retrieves device information using state (device_id)
-3. Sends push notification to device via Firebase Cloud Messaging
+3. Sends push notification to device via Firebase Cloud Messaging (uses `firebase_server_key`)
 4. Returns success response
 
 ---

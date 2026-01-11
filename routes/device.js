@@ -1,12 +1,15 @@
 
 const express = require('express');
+const config = require('config');
 const dataStore = require('../lib/data_store');
 const sendNotification = require('../lib/send_notification');
 const { NOTIFICATION_TYPES, ERROR_MESSAGES, HTTP_STATUS, PUSH_NOTIFICATION_MESSAGES } = require('../utils/constants');
 const router = express.Router();
 
+const notification_secret_key = config.notification_secret_key || process.env.NOTIFICATION_SECRET_KEY;
+
 function validateSecretKey(secretKey) {
-  return secretKey === process.env.NOTIFICATION_SECRET_KEY;
+  return secretKey === notification_secret_key;
 }
 
 function getPushMessage(notificationType) {
@@ -68,4 +71,3 @@ router.post("/notification/:secret_key", async (req, res) => {
 });
 
 module.exports = router;
-

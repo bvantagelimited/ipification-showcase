@@ -24,6 +24,8 @@ This document describes every field in `config/default.json.sample` and how to u
 - `favicon_url` (string): URL to a favicon image (relative or absolute). Leave empty to use the default.
 - `default_country_code` (string): Two-letter country code used when the phone country is not detected (e.g. `vn`).
 - `disabled_select_country` (boolean): When `true`, disables the country selector UI and forces the default country.
+- `notification_secret_key` (string): Secret key for `/device/notification/:secret_key` validation.
+- `firebase_server_key` (string): Firebase Cloud Messaging server key used to send push notifications.
 - `clients` (array): List of client configurations, one per user flow. Each object describes a flow button and its OAuth client.
 - `locale` (object): Optional overrides for UI text. See `docs/LOCALE.md` for full localization options.
 

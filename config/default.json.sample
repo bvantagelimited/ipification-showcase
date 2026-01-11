@@ -11,6 +11,8 @@
   "favicon_url": "",
   "default_country_code": "vn",
   "disabled_select_country": false,
+  "notification_secret_key": "",
+  "firebase_server_key": "",
   "clients": [
     {
       "user_flow": "pvn_ip",

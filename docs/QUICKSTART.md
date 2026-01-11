@@ -45,6 +45,7 @@ Edit `config/default.json` and add at least one client configuration:
 ```
 
 **Configuration Options**:
+
 - `app_logo_url`: URL to your application logo image. Can be:
   - Relative path: `/images/logo/vil.svg` (for local images)
   - Absolute URL: `https://example.com/logo.png` (for external images)
@@ -168,10 +169,9 @@ Create a `.env` file for custom configuration:
 ```bash
 PORT=3000
 NODE_ENV=development
-STAGE_URL=https://api.stage.ipification.com/auth
-LIVE_URL=https://api.ipification.com/auth
-LIVE_ID_URL=https://api.id.ipification.com/auth
 ```
+
+Supported `NODE_ENV` values: `development`, `stage`, `live`, `live_id`.
 
 ## Next Steps
 

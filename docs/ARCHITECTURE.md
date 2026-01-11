@@ -283,7 +283,7 @@ device:{device_id}             { device_token, device_type }
 - **Purpose**: Push notification service
 - **Implementation**: Firebase Cloud Messaging (FCM)
 - **Supports**: Android and iOS devices
-- **Configuration**: Requires `FIREBASE_SERVER_KEY`
+- **Configuration**: Requires `firebase_server_key`
 
 ### Socket Module
 

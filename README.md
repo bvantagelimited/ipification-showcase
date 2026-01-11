@@ -44,15 +44,10 @@ See [docs/QUICKSTART.md](docs/QUICKSTART.md) for configuration details.
 
 ## Environment Variables
 
-| Variable                  | Description                          | Default       |
-| ------------------------- | ------------------------------------ | ------------- |
-| `PORT`                    | Server port                          | `3000`        |
-| `NODE_ENV`                | Environment                          | `development` |
-| `STAGE_URL`               | Stage environment URL                | -             |
-| `LIVE_URL`                | Live environment URL                 | -             |
-| `LIVE_ID_URL`             | Live ID environment URL              | -             |
-| `NOTIFICATION_SECRET_KEY` | Secret key for notification endpoint | -             |
-| `FIREBASE_SERVER_KEY`     | Firebase Cloud Messaging server key  | -             |
+| Variable   | Description                                             | Default       |
+| ---------- | ------------------------------------------------------- | ------------- |
+| `PORT`     | Server port                                             | `3000`        |
+| `NODE_ENV` | Environment (`development`, `stage`, `live`, `live_id`) | `development` |
 
 ## Available User Flows
 

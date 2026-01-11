@@ -27,5 +27,17 @@ router.get('/geoip', async (req, res) => {
   }
 });
 
-module.exports = router;
+router.get('/api/config', (req, res) => {
+  const { auth_server_url, realm, clients } = res.locals;
+  const safeClients = Array.isArray(clients)
+    ? clients.map(({ client_secret, ...client }) => client)
+    : [];
 
+  res.send({
+    auth_server_url,
+    realm,
+    clients: safeClients
+  });
+});
+
+module.exports = router;

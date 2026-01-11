@@ -35,13 +35,14 @@ Initiates the OAuth2/OIDC authentication flow by redirecting to IPification auth
 
 **Query Parameters**:
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `user_flow` | string | Yes | User flow identifier (e.g., `pvn_ip`, `login_ip`) |
-| `phone` | string | No | Phone number in E.164 format (e.g., `+1234567890`) |
-| `state` | string | Yes | State parameter for OAuth flow (used for CSRF protection) |
+| Parameter   | Type   | Required | Description                                               |
+| ----------- | ------ | -------- | --------------------------------------------------------- |
+| `user_flow` | string | Yes      | User flow identifier (e.g., `pvn_ip`, `login_ip`)         |
+| `phone`     | string | No       | Phone number in E.164 format (e.g., `+1234567890`)        |
+| `state`     | string | Yes      | State parameter for OAuth flow (used for CSRF protection) |
 
 **Example Request**:
+
 ```
 GET /auth/start?user_flow=pvn_ip&phone=+1234567890&state=abc123xyz
 ```
@@ -49,6 +50,7 @@ GET /auth/start?user_flow=pvn_ip&phone=+1234567890&state=abc123xyz
 **Response**: HTTP 302 Redirect to IPification authorization server
 
 **Flow**:
+
 1. Validates user flow exists in configuration
 2. Validates state parameter
 3. Builds authorization URL with OAuth2 parameters
@@ -64,31 +66,34 @@ Handles the OAuth2 callback after user authentication.
 
 **Path Parameters**:
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `userFlow` | string | Yes | User flow identifier |
+| Parameter  | Type   | Required | Description          |
+| ---------- | ------ | -------- | -------------------- |
+| `userFlow` | string | Yes      | User flow identifier |
 
 **Query Parameters**:
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `code` | string | Yes | Authorization code from IPification |
-| `state` | string | Yes | State parameter (must match original) |
-| `error` | string | No | Error code if authentication failed |
-| `error_description` | string | No | Error description |
+| Parameter           | Type   | Required | Description                           |
+| ------------------- | ------ | -------- | ------------------------------------- |
+| `code`              | string | Yes      | Authorization code from IPification   |
+| `state`             | string | Yes      | State parameter (must match original) |
+| `error`             | string | No       | Error code if authentication failed   |
+| `error_description` | string | No       | Error description                     |
 
 **Example Request**:
+
 ```
 GET /auth/callback/pvn_ip?code=abc123&state=xyz789
 ```
 
 **Response**:
+
 - Success: HTTP 302 Redirect to `/auth/complete?state=xyz789`
 - QR Code Flow: HTTP 302 Redirect to `/auth/qrcode/complete` or `/auth/qrcode/error`
 - Backchannel Flow: HTTP 200 (empty body)
 - Error: HTTP 302 Redirect to `/auth/login` with error message
 
 **Flow**:
+
 1. Validates authorization code and state
 2. Exchanges authorization code for access token
 3. Retrieves user information using access token
@@ -97,6 +102,7 @@ GET /auth/callback/pvn_ip?code=abc123&state=xyz789
 6. Redirects to completion endpoint
 
 **Headers**:
+
 - `ip-backchannel-im-auth`: Set to `true` for server-to-server IM flows
 
 ---
@@ -109,11 +115,12 @@ Completes the authentication flow and retrieves stored user information.
 
 **Query Parameters**:
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `state` | string | Yes | State parameter |
+| Parameter | Type   | Required | Description     |
+| --------- | ------ | -------- | --------------- |
+| `state`   | string | Yes      | State parameter |
 
 **Example Request**:
+
 ```
 GET /auth/complete?state=xyz789
 ```
@@ -121,6 +128,7 @@ GET /auth/complete?state=xyz789
 **Response**: HTTP 302 Redirect to `/user/info`
 
 **Flow**:
+
 1. Retrieves user information from data store using state
 2. Polls data store (up to 5 attempts with 1-second delay)
 3. Sets session variables (`isAuthenticated`, `userData`)
@@ -176,6 +184,7 @@ Mobile-side login endpoint that exchanges authorization code for user informatio
 ```
 
 **Status Codes**:
+
 - `200`: Success
 - `401`: Client not found or authentication failed
 
@@ -206,6 +215,7 @@ Server-to-server sign-in endpoint for retrieving user information.
 ```
 
 **Status Codes**:
+
 - `200`: Success
 - `401`: User information not found
 
@@ -240,10 +250,12 @@ Registers a device for push notifications (used in server-to-server flows).
 ```
 
 **Device Types**:
+
 - `android`: Android device
 - `ios`: iOS device
 
 **Flow**:
+
 1. Stores device information in data store
 2. Key format: `device:{device_id}`
 
@@ -254,12 +266,13 @@ Registers a device for push notifications (used in server-to-server flows).
 **POST** `/device/notification/:secret_key`
 
 Receives notification from IPification server (server-to-server callback).
+It use on s2s flow.
 
 **Path Parameters**:
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `secret_key` | string | Yes | Notification secret key (must match `NOTIFICATION_SECRET_KEY`) |
+| Parameter    | Type   | Required | Description                                                    |
+| ------------ | ------ | -------- | -------------------------------------------------------------- |
+| `secret_key` | string | Yes      | Notification secret key (must match `NOTIFICATION_SECRET_KEY`) |
 
 **Request Body**:
 
@@ -271,16 +284,19 @@ Receives notification from IPification server (server-to-server callback).
 ```
 
 **Notification Types**:
+
 - `session_completed`: Authentication session completed successfully
 - `session_expired`: Authentication session expired
 
 **Response**: HTTP 200 (empty body)
 
 **Status Codes**:
+
 - `200`: Success
 - `400`: Invalid secret key or missing parameters
 
 **Flow**:
+
 1. Validates secret key
 2. Retrieves device information using state (device_id)
 3. Sends push notification to device via Firebase Cloud Messaging
@@ -310,13 +326,13 @@ Initiates TS43 (SIM-based) authentication flow using CIBA (Client Initiated Back
 
 **Parameters**:
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `login_hint` | string | No | Phone number hint |
-| `carrier_hint` | string | No | Carrier code hint |
-| `client_id` | string | Yes | Client identifier |
-| `operation` | string | No | Operation type (`VerifyPhoneNumber` or `GetPhoneNumber`) |
-| `scope` | string | No | OAuth2 scope (defaults to client scope) |
+| Parameter      | Type   | Required | Description                                              |
+| -------------- | ------ | -------- | -------------------------------------------------------- |
+| `login_hint`   | string | No       | Phone number hint                                        |
+| `carrier_hint` | string | No       | Carrier code hint                                        |
+| `client_id`    | string | Yes      | Client identifier                                        |
+| `operation`    | string | No       | Operation type (`VerifyPhoneNumber` or `GetPhoneNumber`) |
+| `scope`        | string | No       | OAuth2 scope (defaults to client scope)                  |
 
 **Response**:
 
@@ -339,11 +355,13 @@ Initiates TS43 (SIM-based) authentication flow using CIBA (Client Initiated Back
 ```
 
 **Status Codes**:
+
 - `200`: Success
 - `401`: Client not found
 - `500`: Server error
 
 **Flow**:
+
 1. Validates client configuration
 2. Calls CIBA auth endpoint to get `auth_req_id`
 3. Calls DCQL endpoint to get credential query
@@ -379,11 +397,13 @@ Exchanges VP token for access token in TS43 flow.
 ```
 
 **Status Codes**:
+
 - `200`: Success
 - `401`: Client not found
 - `500`: Server error
 
 **Flow**:
+
 1. Validates client configuration
 2. Calls callback endpoint with VP token
 3. Exchanges auth_req_id for access token using CIBA grant type
@@ -428,6 +448,7 @@ Returns country code based on client IP address.
 ```
 
 **Flow**:
+
 1. Extracts client IP from request
 2. Performs GeoIP lookup
 3. Returns country code (lowercase) and IP address
@@ -443,10 +464,12 @@ Displays authenticated user information (requires valid session).
 **Response**: HTML page (Pug template)
 
 **Session Requirements**:
+
 - `isAuthenticated`: Must be `true`
 - `userData`: User data object
 
 **Status Codes**:
+
 - `200`: Success (renders info page)
 - `302`: Redirects to `/` if not authenticated
 
@@ -605,4 +628,3 @@ curl -X POST http://localhost:3000/ts43/token \
     "nonce": "nonce-value"
   }'
 ```
-

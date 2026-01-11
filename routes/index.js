@@ -8,19 +8,20 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/geoip', async (req, res) => {
+  const default_country_code = res.locals.default_country_code || 'rs';
   try {
     const ip = req.ip;
     console.log('client ip', ip);
     const geo = geoip.lookup(ip);
 
     res.send({
-      country: (geo ? geo.country : 'us').toLowerCase(),
+      country: (geo ? geo.country : default_country_code).toLowerCase(),
       ip
     });
   } catch (error) {
     console.error('GeoIP lookup error:', error);
     res.send({
-      country: 'us',
+      country: default_country_code,
       ip: req.ip
     });
   }

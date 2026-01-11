@@ -3,7 +3,7 @@ html(lang="en")
 	head
 		title= title
 		meta(charset='utf-8')
-		link(rel="icon" href=`/images/logo.ico` type="image/x-icon")
+		link(rel="icon" href=favicon_url || "/images/logo.ico" type="image/x-icon")
 		meta(name='viewport' content='width=device-width,initial-scale=1,user-scalable=no, shrink-to-fit=no')
 		meta(name='apple-mobile-web-app-capable' content='yes')
 		meta(name='apple-mobile-web-app-status-bar-style' content='black')
@@ -14,6 +14,10 @@ html(lang="en")
 		link(rel="stylesheet" href="/js/lib/intl-tel-input-24.6.0/css/intlTelInput.min.css")
 	body
 		block content
+		script.
+			var default_country_code = '#{default_country_code}' ;
+			var app_env = '#{app_env}';
+			var disabled_select_country = !{JSON.stringify(!!disabled_select_country)};
 		script(src='/js/lib/code.min.js')
 		script(src='/js/lib/sweetalert.all.min.js')
 		script(src="/js/lib/socket.io.js")

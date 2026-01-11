@@ -47,18 +47,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
   res.locals = {
+    ...res.locals,
     title: 'IPification Showcase',
     stage_url: process.env.STAGE_URL,
     live_url: process.env.LIVE_URL,
     live_id_url: process.env.LIVE_ID_URL,
-    ...res.locals,
     ...config,
     locale: locale,
     baseUrl: `${req.protocol}://${req.headers.host}`,
     get_flow_title: (user_flow, default_title) => {
       const client = config.clients.find(item => item.user_flow === user_flow);
       return client ? client.title : default_title;
-    }
+    },
+    app_env: process.env.NODE_ENV || 'development'
   }
 
   // res.setHeader('Server', 'IPification');

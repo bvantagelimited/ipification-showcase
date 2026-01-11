@@ -13,6 +13,7 @@ Welcome to the IPification Showcase documentation. This index provides an overvi
 
 - **[API Documentation](API.md)** - Detailed API endpoint reference
 - **[Architecture Documentation](ARCHITECTURE.md)** - System design and architecture details
+- **[Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)** - Field-by-field guide to `config/default.json.sample`
 - **[Locale Configuration](LOCALE.md)** - Locale strings and customization guide
 
 ## Documentation Structure
@@ -23,6 +24,7 @@ docs/
 ├── QUICKSTART.md      # Quick start guide
 ├── API.md             # API endpoint documentation
 ├── ARCHITECTURE.md    # Architecture and design documentation
+├── CONFIG_DEFAULT_JSON_SAMPLE.md # Sample config field reference
 └── LOCALE.md          # Locale configuration and customization guide
 
 README.md              # Main project documentation (in root)
@@ -46,6 +48,9 @@ README.md              # Main project documentation (in root)
 
 **...configure the application**
 → See [Configuration section](../README.md#configuration) in README
+
+**...understand the sample config file**
+→ Read [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)
 
 **...customize text labels**
 → Read [Locale Configuration](LOCALE.md)
@@ -122,6 +127,20 @@ README.md              # Main project documentation (in root)
 
 ---
 
+### Sample Config Reference
+
+**File**: `docs/CONFIG_DEFAULT_JSON_SAMPLE.md`
+
+**Contents**:
+- How to copy and apply the sample config
+- Field-by-field descriptions
+- Client flow configuration fields
+- Locale override fields
+
+**Best for**: Understanding and customizing `config/default.json.sample`
+
+---
+
 ### Locale Configuration
 
 **File**: `docs/LOCALE.md`
@@ -177,4 +196,3 @@ For documentation feedback or improvements:
 - Create an issue in the repository
 - Submit a pull request with improvements
 - Contact the development team
-

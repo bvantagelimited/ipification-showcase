@@ -1,7 +1,8 @@
 var isMobile;
-var countryCode = 'rs';
-const envName = $('#select option:selected').text().toLowerCase();
-console.log('*** envName: ', envName);
+var countryCode;
+var disabledSelectCountry = typeof disabled_select_country !== 'undefined' && disabled_select_country;
+console.log('*** app_env: ', app_env);
+console.log('*** default_country_code: ', default_country_code);
 
 function updateWindowResize() {
   isMobile = window.innerWidth <= 768 || window.bowser.getParser(navigator.userAgent).getPlatformType() === 'mobile';
@@ -9,9 +10,19 @@ function updateWindowResize() {
 }
 
 function fetchCountryCode(callback) {
-  if(envName == 'live' || envName == 'live_id') {
+  if(default_country_code && default_country_code !== '') {
+    countryCode = default_country_code;
+    callback();
+    return;
+  }
+
+  if(app_env !== 'stage') {
     $.get('/geoip', function (data) {
-      if(data) countryCode = data.country;
+      console.log('*** geoip data: ', data);
+      if(data) {
+        countryCode = data.country;
+        console.log('*** countryCode: ', countryCode);
+      }
 
       showViettelLegal(countryCode);
       callback();
@@ -26,7 +37,7 @@ updateWindowResize();
 
 const preferredCountries = [''];
 
-if (envName === 'stage') {
+if (app_env === 'stage') {
   // add custom country
   const countryData = window.intlTelInput.getCountryData();
 
@@ -65,12 +76,14 @@ function initPhoneInput(input) {
   if (!preferredCountries.includes(countryCode)) preferredCountries.push(countryCode);
 
   window.intlTelInput(input, {
+    allowDropdown: !disabledSelectCountry,
+    countrySearch: !disabledSelectCountry,
     formatOnDisplay: true,
     showSelectedDialCode: true,
-    initialCountry: envName === 'live' || envName === 'live_id' ? 'auto' : 'ww',
-    geoIpLookup: function (success, failure) {
-      success(countryCode);
-    },
+    initialCountry: app_env === 'stage' ? 'ww' : countryCode,
+    // geoIpLookup: function (success, failure) {
+    //   success(countryCode);
+    // },
     customPlaceholder: function (selectedCountryPlaceholder, selectedCountryData) {
       return selectedCountryData.name === 'Wonderland' ? '123456789' : selectedCountryPlaceholder;
     },
@@ -257,7 +270,7 @@ $(document).ready(function () {
             alert('Response is null')
         } else {
           const credentialData = credentialResponse.token || credentialResponse.data
-          
+
           const { vp_token } = credentialData || {}
           const dataToken = {
             "vp_token": vp_token['ipification.com'][0],

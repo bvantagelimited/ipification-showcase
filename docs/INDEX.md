@@ -47,7 +47,7 @@ README.md              # Main project documentation (in root)
 → Read [Architecture Documentation](ARCHITECTURE.md)
 
 **...configure the application**
-→ See [Configuration section](../README.md#configuration) in README
+→ Read [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)
 
 **...understand the sample config file**
 → Read [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)

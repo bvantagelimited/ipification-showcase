@@ -40,28 +40,6 @@ Access at `http://<your-ip-address>:3000`
 
 ## Configuration
 
-Edit `config/default.json` with your client credentials:
-
-```json
-{
-  "realm": "ipification",
-  "auth_server_url": "https://api.stage.ipification.com/auth",
-  "app_logo_url": "/images/logo/vil.svg",
-  "clients": [
-    {
-      "user_flow": "pvn_ip",
-      "client_id": "your-client-id",
-      "client_secret": "your-client-secret",
-      "title": "IP Phone Number Verification",
-      "scope": "openid ip:phone_verify"
-    }
-  ]
-}
-```
-
-**Configuration Options**:
-- `app_logo_url`: URL to your application logo image (optional). Can be a relative path like `/images/logo/vil.svg` or an absolute URL like `https://example.com/logo.png`. If not provided, the application name will be displayed as text instead.
-
 See [docs/QUICKSTART.md](docs/QUICKSTART.md) for configuration details.
 
 ## Environment Variables

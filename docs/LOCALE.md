@@ -4,7 +4,7 @@ This document explains how to configure and override locale strings (text labels
 
 ## Overview
 
-The application uses a locale system that allows you to customize all text labels displayed in the user interface. Locale strings are stored in `config/locale.json` and can be overridden in `config/default.json` for environment-specific customizations.
+The application uses a locale system that allows you to customize all text labels displayed in the user interface. Locale strings are stored in `config/locale.json` and can be overridden in `config/default.json` for environment-specific customizations. For config field details, see [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md).
 
 ## Locale File Structure
 
@@ -76,7 +76,7 @@ The default locale strings are stored in `config/locale.json`. This file contain
 
 ## Overriding Locale Strings
 
-You can override any locale string by adding a `locale` section to your `config/default.json` file. The override system uses deep merging, which means:
+You can override any locale string by adding a `locale` section to your `config/default.json` file. See [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md) for the full config layout. The override system uses deep merging, which means:
 
 - You can override individual nested properties without replacing entire sections
 - Only the properties you specify will be overridden
@@ -363,11 +363,10 @@ The locale system is implemented in `app.js`:
 
 ## Related Documentation
 
-- [Configuration Guide](../README.md#configuration) - General configuration documentation
+- [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md) - Field-by-field config guide
 - [Architecture Documentation](ARCHITECTURE.md) - System architecture details
 - [Quick Start Guide](QUICKSTART.md) - Setup and configuration guide
 
 ## Examples
 
-See `config/default.json.sample` for example locale override configurations.
-
+See [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md) for example locale override configurations.

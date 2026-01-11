@@ -23,6 +23,8 @@ npm install
 cp config/default.json.sample config/default.json
 ```
 
+For a full field reference, see [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md).
+
 Edit `config/default.json` and add at least one client configuration:
 
 ```json
@@ -47,6 +49,7 @@ Edit `config/default.json` and add at least one client configuration:
   - Relative path: `/images/logo/vil.svg` (for local images)
   - Absolute URL: `https://example.com/logo.png` (for external images)
   - If not provided, the application name will be displayed as text instead
+  - See [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md) for all fields
 
 ### Step 3: Start the Server
 
@@ -121,6 +124,7 @@ Then access: `http://<your-ip>:3001`
 - Verify `config/default.json` exists
 - Check that `user_flow` matches configuration
 - Ensure client credentials are correct
+- Reference [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md) for required fields
 
 ### Cannot Access from Mobile Device
 

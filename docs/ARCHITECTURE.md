@@ -305,6 +305,8 @@ device:{device_id}             { device_token, device_type }
 3. Default values in code
 ```
 
+See [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md) for field descriptions.
+
 ### Configuration Flow
 
 ```
@@ -378,7 +380,7 @@ Error Occurred
 
 ### Adding New User Flows
 
-1. Add client configuration to `config/default.json`
+1. Add client configuration to `config/default.json` (see [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md))
 2. Add UI button in `views/login.pug`
 3. Add JavaScript handler in `public/js/login.js`
 4. Flow automatically handled by existing routes
@@ -427,4 +429,3 @@ Error Occurred
 5. **Testing**: Add unit and integration tests
 6. **Monitoring**: Add application monitoring
 7. **Logging**: Structured logging with correlation IDs
-

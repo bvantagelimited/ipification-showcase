@@ -13,6 +13,7 @@ Welcome to the IPification Showcase documentation. This index provides an overvi
 
 - **[API Documentation](API.md)** - Detailed API endpoint reference
 - **[Architecture Documentation](ARCHITECTURE.md)** - System design and architecture details
+- **[TS43 Route Documentation](TS43.md)** - TS43 router behavior and flow details
 - **[Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)** - Field-by-field guide to `config/default.json.sample`
 - **[Locale Configuration](LOCALE.md)** - Locale strings and customization guide
 
@@ -24,6 +25,7 @@ docs/
 ├── QUICKSTART.md      # Quick start guide
 ├── API.md             # API endpoint documentation
 ├── ARCHITECTURE.md    # Architecture and design documentation
+├── TS43.md            # TS43 route module documentation
 ├── CONFIG_DEFAULT_JSON_SAMPLE.md # Sample config field reference
 └── LOCALE.md          # Locale configuration and customization guide
 
@@ -45,6 +47,9 @@ README.md              # Main project documentation (in root)
 
 **...understand the architecture**
 → Read [Architecture Documentation](ARCHITECTURE.md)
+
+**...understand the TS43 route behavior**
+→ Read [TS43 Route Documentation](TS43.md)
 
 **...configure the application**
 → Read [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)
@@ -124,6 +129,20 @@ README.md              # Main project documentation (in root)
 - Extension points
 
 **Best for**: Understanding system design, extending the application
+
+---
+
+### TS43 Route Documentation
+
+**File**: `docs/TS43.md`
+
+**Contents**:
+- TS43 router responsibilities and flow
+- Endpoint behavior and request/response fields
+- Helper function roles
+- Key code snippet for digital request output
+
+**Best for**: Understanding TS43 flow and router behavior
 
 ---
 

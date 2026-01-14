@@ -54,6 +54,7 @@ router.post('/auth', async (req, res) => {
   const client = findClientByClientId(clients, clientId);
 
   if (!client) {
+    console.log(`client(${clientId}) not found`);
     res.status(HTTP_STATUS.UNAUTHORIZED).send(ERROR_MESSAGES.CLIENT_NOT_FOUND);
     return;
   }

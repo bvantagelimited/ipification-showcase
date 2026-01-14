@@ -140,6 +140,7 @@ $(document).ready(function () {
 
   $('.btn-user-flow').click(function () {
     var user_flow = $(this).data('user-flow');
+    var client_id = $(this).data('client-id');
     var phone_number;
     var dialCode;
 
@@ -168,12 +169,12 @@ $(document).ready(function () {
     }
 
     if(user_flow === 'pvn_sim') {
-      start_pvn_sim(phone_number);
+      start_pvn_sim(client_id, phone_number);
       return;
     }
 
     if(user_flow === 'login_sim') {
-      start_login_sim();
+      start_login_sim(client_id);
       return;
     }
 
@@ -203,13 +204,13 @@ $(document).ready(function () {
     }
   });
 
-  async function start_pvn_sim(phone_number) {
+  async function start_pvn_sim(client_id, phone_number) {
     console.log('start_pvn_sim');
 
     const data = {
       "login_hint": phone_number,
       "carrier_hint": 51010,
-      "client_id": "webclient3",
+      "client_id": client_id,
       "operation": "VerifyPhoneNumber",
       "scope": "openid ip:phone_verify"
     }
@@ -217,13 +218,13 @@ $(document).ready(function () {
     start_ts43_flow(data);
   }
 
-  async function start_login_sim() {
+  async function start_login_sim(client_id) {
     console.log('start_login_sim');
 
     const data = {
       "login_hint": "anonymous",
       "carrier_hint": 51010,
-      "client_id": "webclient2",
+      "client_id": client_id,
       "operation": "GetPhoneNumber",
       "scope": "openid ip:phone"
     }

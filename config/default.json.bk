@@ -1,0 +1,102 @@
+{
+  "realm": "ipification",
+  "auth_server_url": "https://api.stage.ipification.com/auth",
+  "show_env_select": false,
+  "app_logo_url": "/images/logo/vil.svg",
+  "clients": [
+    {
+      "user_flow": "pvn_ip",
+      "client_id": "webclient3",
+      "client_secret": "C77LqK8kQlBEf6kk3frWqGXIXewXuhN8",
+      "title": "IP Phone Number Verification",
+      "scope": "openid ip:phone_verify"
+    },
+    {
+      "user_flow": "pvn_ip_plus",
+      "client_id": "webclient3",
+      "client_secret": "C77LqK8kQlBEf6kk3frWqGXIXewXuhN8",
+      "title": "IP+ Phone Number Verification",
+      "scope": "openid ip:phone_verify ip:mobile_id"
+    },
+    {
+      "user_flow": "pvn_im",
+      "client_id": "webclient5-im-phone-verify",
+      "client_secret": "1954e44d-1617-46e4-82ae-f66eb1a66cc2",
+      "title": "IM Phone Number Verification",
+      "scope": "openid ip:phone_verify",
+      "channel": "wa viber telegram"
+    },
+    {
+      "user_flow": "pvn_ipificator",
+      "client_id": "webclient3",
+      "client_secret": "C77LqK8kQlBEf6kk3frWqGXIXewXuhN8",
+      "title": "IP via App",
+      "scope": "openid ip:phone_verify"
+    },
+    {
+      "user_flow": "login_ip",
+      "client_id": "webclient2",
+      "client_secret": "Pn5r1MTMjpRxHRsOaDBO0KIbAtUR1qCQ",
+      "title": "IP Login",
+      "scope": "openid ip:phone"
+    },
+    {
+      "user_flow": "login_ip_plus",
+      "client_id": "webclient2",
+      "client_secret": "1e274686-a908-4d6a-8b66-dbc5ad367474",
+      "title": "IP+ Login",
+      "scope": "openid ip:mobile_id ip:phone"
+    },
+    {
+      "user_flow": "login_im",
+      "client_id": "webclient4-im",
+      "client_secret": "8a631567-1415-48b8-8e2c-569db7fedf89",
+      "title": "IM Login",
+      "scope": "openid ip:phone",
+      "channel": "wa viber telegram"
+    },
+    {
+      "user_flow": "anonymous",
+      "client_id": "webclient1",
+      "client_secret": "971e11d0-58bb-4374-9bd5-867b34fcde48",
+      "title": "Anonymous Identity",
+      "scope": "openid ip:mobile_id"
+    },
+    {
+      "user_flow": "kyc_phone",
+      "client_id": "webclient3",
+      "client_secret": "C77LqK8kQlBEf6kk3frWqGXIXewXuhN8",
+      "title": "KYC Data",
+      "scope": "openid ip:profile"
+    },
+    {
+      "user_flow": "sample_app_im_backchannel",
+      "client_id": "f6df6456a5224188b2ae869ad839d0a2",
+      "client_secret": "23f3cdc6-767b-4227-855b-fd4b0c3b8496",
+      "title": "IP merchant sample app",
+      "scope": "openid"
+    },
+    {
+      "user_flow": "pvn_sim",
+      "client_id": "webclient3",
+      "client_secret": "",
+      "title": "SIM",
+      "scope": "openid"
+    },
+    {
+      "user_flow": "login_sim",
+      "client_id": "webclient3",
+      "client_secret": "",
+      "title": "SIM",
+      "scope": "openid"
+    }
+  ],
+  "locale": {
+    "sections": {
+      "pnv": {
+        "title": "Phone Number Verification",
+        "description": "Basic - verify your phone number<br/>Advance - verify your phone number with fraud prevention signals"
+      }
+    }
+  }
+}

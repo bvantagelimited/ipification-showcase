@@ -1,0 +1,36 @@
+{
+  "realm": "ipification",
+  "auth_server_url": "https://api.stage.ipification.com/auth",
+  "show_env_select": false,
+  "app_logo_url": "https://assets.telkomsel.com/public/logo-telkomsel.png",
+  "notification_secret_key": "",
+  "firebase_server_key": "",
+  "clients": [
+    {
+      "user_flow": "pvn_ip",
+      "client_id": "webclient3",
+      "client_secret": "C77LqK8kQlBEf6kk3frWqGXIXewXuhN8",
+      "title": "IP Phone Number Verification",
+      "scope": "openid ip:phone_verify"
+    },
+    {
+      "user_flow": "pvn_ip_plus",
+      "client_id": "webclient3",
+      "client_secret": "C77LqK8kQlBEf6kk3frWqGXIXewXuhN8",
+      "title": "IP+ Phone Number Verification",
+      "scope": "openid ip:phone_verify ip:mobile_id"
+    }
+  ],
+  "locale": {
+    "sections": {
+      "pnv": {
+        "title": "Phone Number Verification",
+        "description": "Basic - verify your phone number<br/>Advance - verify your phone number with fraud prevention signals"
+      }
+    },
+    "buttons": {
+      "ip": "Basic",
+      "ip_plus": "Advance"
+    }
+  }
+}

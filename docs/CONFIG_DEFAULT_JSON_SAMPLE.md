@@ -26,6 +26,8 @@ This document describes every field in `config/default.json.sample` and how to u
 - `disabled_select_country` (boolean): When `true`, disables the country selector UI and forces the default country.
 - `notification_secret_key` (string): Secret key for `/device/notification/:secret_key` validation.
 - `firebase_server_key` (string): Firebase Cloud Messaging server key used to send push notifications.
+- `client_id` (string): Default OAuth client ID used as a fallback for client entries in the `clients` array that don't specify their own `client_id`. If a client entry has its own `client_id`, that value takes precedence.
+- `client_secret` (string): Default OAuth client secret used as a fallback for client entries in the `clients` array that don't specify their own `client_secret`. If a client entry has its own `client_secret`, that value takes precedence.
 - `clients` (array): List of client configurations, one per user flow. Each object describes a flow button and its OAuth client.
 - `locale` (object): Optional overrides for UI text. See `docs/LOCALE.md` for full localization options.
 

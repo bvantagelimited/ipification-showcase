@@ -46,6 +46,14 @@ app.use(require('stylus').middleware({ src: __dirname + '/public' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
+
+  const { client_id, client_secret, clients } = config;
+  const customClients = clients.map(client => ({
+    ...client,
+    client_id: client.client_id || client_id,
+    client_secret: client.client_secret || client_secret,
+  }));
+
   res.locals = {
     ...res.locals,
     title: 'IPification Showcase',
@@ -53,6 +61,7 @@ app.use((req, res, next) => {
     live_url: process.env.LIVE_URL,
     live_id_url: process.env.LIVE_ID_URL,
     ...config,
+    clients: customClients,
     locale: locale,
     baseUrl: `${req.protocol}://${req.headers.host}`,
     get_flow_title: (user_flow, default_title) => {

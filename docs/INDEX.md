@@ -15,6 +15,7 @@ Welcome to the IPification Showcase documentation. This index provides an overvi
 - **[Architecture Documentation](ARCHITECTURE.md)** - System design and architecture details
 - **[TS43 Route Documentation](TS43.md)** - TS43 router behavior and flow details
 - **[Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)** - Field-by-field guide to `config/default.json.sample`
+- **[App Config Reference](APP_CONFIG_JSON.md)** - Field-by-field guide to `config/app_config.json`
 - **[Locale Configuration](LOCALE.md)** - Locale strings and customization guide
 
 ## Documentation Structure
@@ -27,6 +28,7 @@ docs/
 ├── ARCHITECTURE.md    # Architecture and design documentation
 ├── TS43.md            # TS43 route module documentation
 ├── CONFIG_DEFAULT_JSON_SAMPLE.md # Sample config field reference
+├── APP_CONFIG_JSON.md # App config field reference
 └── LOCALE.md          # Locale configuration and customization guide
 
 README.md              # Main project documentation (in root)
@@ -56,6 +58,9 @@ README.md              # Main project documentation (in root)
 
 **...understand the sample config file**
 → Read [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)
+
+**...configure app UI/branding/version behavior**
+→ Read [App Config Reference](APP_CONFIG_JSON.md)
 
 **...customize text labels**
 → Read [Locale Configuration](LOCALE.md)
@@ -157,6 +162,20 @@ README.md              # Main project documentation (in root)
 - Locale override fields
 
 **Best for**: Understanding and customizing `config/default.json.sample`
+
+---
+
+### App Config Reference
+
+**File**: `docs/APP_CONFIG_JSON.md`
+
+**Contents**:
+- App UI configuration schema
+- Versioning and maintenance settings
+- Branding, environment labels, and screen text
+- Override examples via `config/default.json`
+
+**Best for**: Customizing `config/app_config.json` and app UI behavior
 
 ---
 

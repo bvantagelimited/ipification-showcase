@@ -1,8 +1,25 @@
-# app_config.json reference
+# app_config.json Reference
 
 This document describes `config/app_config.json`, which defines the default UI configuration returned by `GET /api/config`. The server deep-merges this file with any overrides provided via `config/default.json` (or other `config/*` environment files).
 
-## Load and override order
+## Table of Contents
+
+- [Load and Override Order](#load-and-override-order)
+- [Field Reference](#field-reference)
+  - [Top-level Fields](#top-level-fields)
+  - [app_config](#app_config)
+  - [default_environment](#default_environment)
+  - [branding](#branding)
+  - [main_screen.locale](#main_screenlocale)
+  - [pnv_screen.locale](#pnv_screenlocale)
+  - [ussd_screen](#ussd_screen)
+  - [global_locale](#global_locale)
+- [Examples](#examples)
+- [Related Documentation](#related-documentation)
+
+---
+
+## Load and Override Order
 
 1. The server loads `config/app_config.json` as the baseline.
 2. If `config/default.json` contains an `app_config` block, it is deep-merged into the baseline.
@@ -25,7 +42,9 @@ Example override:
 }
 ```
 
-## Field reference
+---
+
+## Field Reference
 
 ### Top-level fields
 
@@ -36,9 +55,11 @@ Example override:
 - `main_screen` (object): Locale strings for the main screen.
 - `pnv_screen` (object): Locale strings for the Phone Number Verification screen.
 - `ussd_screen` (object): Locale strings and config for USSD verification.
-- `global_locale` (object): Global labels and environment names used in the UI.
+- `global_locale` (object): Global labels used in the UI.
 
-### `app_config`
+---
+
+### app_config
 
 - `min_supported_version` (string): Minimum app version allowed to run. Clients below this should force-update.
 - `latest_version` (string): Latest available version for update prompts.
@@ -47,15 +68,19 @@ Example override:
 - `maintenance_mode` (boolean): When `true`, the app should display maintenance state.
 - `maintenance_message` (string): Message shown during maintenance.
 
-### `default_environment`
+---
 
-Values should match keys under `global_locale.environments`. Common values:
+### default_environment
+
+Specifies the default environment for the application. Common values:
 
 - `sandbox`
 - `production`
-- `custom` (shown as "Live ID" by default)
+- `custom`
 
-### `branding`
+---
+
+### branding
 
 - `app_name` (string): App name displayed in UI.
 - `show_logo` (boolean): Whether to show the logo.
@@ -63,13 +88,17 @@ Values should match keys under `global_locale.environments`. Common values:
 - `primary_color` (string): Primary color hex (e.g. `#1976D2`).
 - `secondary_color` (string): Secondary color hex (e.g. `#424242`).
 
-### `main_screen.locale`
+---
+
+### main_screen.locale
 
 - `title` (string): Main screen title. Supports `\n` for line breaks.
 - `footer.privacy_policy` (string): Privacy policy label.
 - `footer.privacy_policy_url` (string): Privacy policy URL.
 
-### `pnv_screen.locale`
+---
+
+### pnv_screen.locale
 
 - `title` (string): Screen title.
 - `description` (string): Screen description.
@@ -81,7 +110,9 @@ Values should match keys under `global_locale.environments`. Common values:
 - `errors.phone_invalid` (string): Invalid phone error text.
 - `errors.country_code_required` (string): Missing country code error text.
 
-### `ussd_screen`
+---
+
+### ussd_screen
 
 #### `ussd_screen.locale`
 
@@ -102,16 +133,27 @@ Values should match keys under `global_locale.environments`. Common values:
 - `backend_url` (string): Backend URL used for USSD verification.
 - `timeout_ms` (number): Timeout in milliseconds for USSD flow.
 
-### `global_locale`
+---
+
+### global_locale
 
 - `app_name` (string): Global app name shown in shared UI areas.
-- `environments` (object): Environment labels for selectors.
-  - `sandbox` (string): Label for sandbox environment.
-  - `production` (string): Label for production environment.
-  - `custom` (string): Label for custom environment.
 - `common` (object): Shared labels and button texts.
   - `ok` (string)
   - `cancel` (string)
   - `back` (string)
   - `info_title` (string)
 
+---
+
+## Examples
+
+For practical examples of overriding app_config, see the example in [Load and Override Order](#load-and-override-order) section above.
+
+---
+
+## Related Documentation
+
+- [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md): Complete configuration guide
+- [Locale Configuration](LOCALE.md): Text label customization
+- [API Documentation](API.md): API endpoint reference including `/api/config`

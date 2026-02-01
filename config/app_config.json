@@ -68,11 +68,6 @@
   },
   "global_locale": {
     "app_name": "IPification features showcase",
-    "environments": {
-      "sandbox": "Stage",
-      "production": "Live",
-      "custom": "Live ID"
-    },
     "common": {
       "ok": "OK",
       "cancel": "Cancel",

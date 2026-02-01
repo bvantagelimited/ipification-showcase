@@ -11,12 +11,17 @@ const fs = require('fs');
 require('dotenv').config()
 
 const { deepMerge } = require('./utils/helpers');
+const { validateConfig } = require('./utils/validateConfig');
+const { getAuthServer } = require('./utils/authServerHelper');
 
 // Load locale.json and merge with locale from default.json if exists
 const localePath = path.join(__dirname, 'config', 'locale.json');
 const defaultLocale = JSON.parse(fs.readFileSync(localePath, 'utf8'));
 
 const locale = config.locale ? deepMerge(defaultLocale, config.locale) : defaultLocale;
+
+// Validate configuration on startup
+validateConfig(config);
 
 const app = express();
 
@@ -57,9 +62,6 @@ app.use((req, res, next) => {
   res.locals = {
     ...res.locals,
     title: 'IPification Showcase',
-    stage_url: process.env.STAGE_URL,
-    live_url: process.env.LIVE_URL,
-    live_id_url: process.env.LIVE_ID_URL,
     ...config,
     clients: customClients,
     locale: locale,
@@ -68,6 +70,7 @@ app.use((req, res, next) => {
       const client = config.clients.find(item => item.user_flow === user_flow);
       return client ? client.title : default_title;
     },
+    getAuthServer: (serverId) => getAuthServer(config.auth_servers, serverId),
     app_env: process.env.NODE_ENV || 'development'
   }
 

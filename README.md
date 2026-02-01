@@ -44,10 +44,10 @@ See [docs/QUICKSTART.md](docs/QUICKSTART.md) for configuration details.
 
 ## Environment Variables
 
-| Variable   | Description                                             | Default       |
-| ---------- | ------------------------------------------------------- | ------------- |
-| `PORT`     | Server port                                             | `3000`        |
-| `NODE_ENV` | Environment (`development`, `stage`, `live`, `live_id`) | `development` |
+| Variable   | Description                                        | Default       |
+| ---------- | -------------------------------------------------- | ------------- |
+| `PORT`     | Server port                                        | `3000`        |
+| `NODE_ENV` | Environment (`development`, `stage`, `production`) | `development` |
 
 ## Docker Deployment
 

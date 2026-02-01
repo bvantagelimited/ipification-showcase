@@ -20,9 +20,9 @@ router.get('/login', function (req, res) {
   });
 });
 
-function buildAuthParams(client, baseUrl, userFlow, state, phone) {
+function buildAuthParams(client, baseUrl, userFlow, serverId, state, phone) {
   const { client_id: clientId, scope, channel } = client;
-  const redirectUrl = `${baseUrl}/auth/callback/${userFlow}`;
+  const redirectUrl = `${baseUrl}/auth/callback/${userFlow}/${serverId}`;
   const params = {
     response_type: 'code',
     client_id: clientId,
@@ -50,10 +50,19 @@ function buildAuthUrl(userFlow, authServerUrl, realm, params) {
 }
 
 router.get('/start', function (req, res) {
-  const { clients, auth_server_url, realm, baseUrl } = res.locals;
-  const { user_flow: userFlow, phone, state } = req.query || {};
-  const client = findClientByUserFlow(clients, userFlow);
+  const { clients, getAuthServer, realm, baseUrl } = res.locals;
+  const { user_flow: userFlow, phone, state, server_id: serverId } = req.query || {};
+  
+  // Get auth server (defaults to first server if serverId not provided)
+  const authServer = getAuthServer(serverId);
+  if (!authServer) {
+    res.status(HTTP_STATUS.BAD_REQUEST).send(serverId ? `Invalid server_id: '${serverId}'` : 'No auth servers configured');
+    return;
+  }
 
+  const { id: actualServerId, url: authServerUrl } = authServer;
+
+  const client = findClientByUserFlow(clients, userFlow);
   if (!client) {
     res.send(ERROR_MESSAGES.CLIENT_NOT_FOUND);
     return;
@@ -64,10 +73,10 @@ router.get('/start', function (req, res) {
     return;
   }
 
-  const params = buildAuthParams(client, baseUrl, userFlow, state, phone);
-  const authUrl = buildAuthUrl(userFlow, auth_server_url, realm, params);
+  const params = buildAuthParams(client, baseUrl, userFlow, actualServerId, state, phone);
+  const authUrl = buildAuthUrl(userFlow, authServerUrl, realm, params);
 
-  debug(`authUrl: ${authUrl}`);
+  console.log('authUrl: ', authUrl);
   res.redirect(authUrl);
 });
 
@@ -118,10 +127,10 @@ function handleQrCodeCallback(req, res, state, authCompleteUrl, userInfo) {
   }
 }
 
-router.get('/callback/:userFlow', async function (req, res) {
-  const { userFlow } = req.params || {};
+router.get('/callback/:userFlow/:serverId', async function (req, res) {
+  const { userFlow, serverId } = req.params || {};
   const { state = uuidv4(), code } = req.query || {};
-  const { clients, auth_server_url, realm, baseUrl } = res.locals;
+  const { clients, getAuthServer, realm, baseUrl } = res.locals;
   const ipBackchannelAuth = req.headers['ip-backchannel-im-auth'] === 'true';
 
   if (req.query.error || req.query.error_description) {
@@ -131,6 +140,15 @@ router.get('/callback/:userFlow', async function (req, res) {
     return;
   }
 
+  // Get auth server (defaults to first server if serverId not provided)
+  const authServer = getAuthServer(serverId);
+  if (!authServer) {
+    res.status(HTTP_STATUS.BAD_REQUEST).send(serverId ? `Invalid server_id: '${serverId}'` : 'No auth servers configured');
+    return;
+  }
+
+  const { id: actualServerId, url: authServerUrl } = authServer;
+
   const client = findClientByUserFlow(clients, userFlow);
   if (!client) {
     res.send(ERROR_MESSAGES.CLIENT_NOT_FOUND);
@@ -139,9 +157,9 @@ router.get('/callback/:userFlow', async function (req, res) {
 
   const { client_id: clientId, client_secret: clientSecret, title: pageTitle } = client;
 
-  const redirectUri = `${baseUrl}/auth/callback/${userFlow}`;
-  const tokenUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/token`;
-  const userUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/userinfo`;
+  const redirectUri = `${baseUrl}/auth/callback/${userFlow}/${actualServerId}`;
+  const tokenUrl = `${authServerUrl}/realms/${realm}/protocol/openid-connect/token`;
+  const userUrl = `${authServerUrl}/realms/${realm}/protocol/openid-connect/userinfo`;
 
   const params = {
     code: code,
@@ -239,8 +257,17 @@ router.post("/s2s/signin", async (req, res) => {
 
 // support mobile side login and return user info
 router.post('/mobile/login', async (req, res) => {
-  const { client_id, code, redirect_uri } = req.body || {};
-  const { clients, auth_server_url, realm } = res.locals;
+  const { client_id, code, redirect_uri, server_id: serverId } = req.body || {};
+  const { clients, getAuthServer, realm } = res.locals;
+
+  // Get auth server (defaults to first server if serverId not provided)
+  const authServer = getAuthServer(serverId);
+  if (!authServer) {
+    res.status(HTTP_STATUS.BAD_REQUEST).send({ error: serverId ? `Invalid server_id: '${serverId}'` : 'No auth servers configured' });
+    return;
+  }
+
+  const { url: authServerUrl } = authServer;
 
   const client = findClientByClientId(clients, client_id);
   if (!client) {
@@ -248,8 +275,8 @@ router.post('/mobile/login', async (req, res) => {
     return;
   }
 
-  const tokenUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/token`;
-  const userUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/userinfo`;
+  const tokenUrl = `${authServerUrl}/realms/${realm}/protocol/openid-connect/token`;
+  const userUrl = `${authServerUrl}/realms/${realm}/protocol/openid-connect/userinfo`;
 
   const params = {
     code: code,

@@ -1,6 +1,8 @@
 var isMobile;
 var countryCode;
 var disabledSelectCountry = typeof disabled_select_country !== 'undefined' && disabled_select_country;
+var authServers = [];
+var selectedServerId = null;
 console.log('*** app_env: ', app_env);
 console.log('*** default_country_code: ', default_country_code);
 
@@ -59,6 +61,53 @@ function showViettelLegal(code) {
   } else {
     $('.viettel-legal').css('display', 'none');
   }
+}
+
+// Auth Server Management Functions
+function getSelectedServerId() {
+  return $('#select_auth_server').val() || selectedServerId;
+}
+
+function saveSelectedServerId(serverId) {
+  localStorage.setItem('selected_auth_server_id', serverId);
+  selectedServerId = serverId;
+  updateServerInfoDisplay();
+}
+
+function loadSelectedServerId() {
+  const saved = localStorage.getItem('selected_auth_server_id');
+  if (saved && authServers.find(s => s.id === saved)) {
+    return saved;
+  }
+  return authServers.length > 0 ? authServers[0].id : null;
+}
+
+function updateServerInfoDisplay() {
+  const serverId = getSelectedServerId();
+  const server = authServers.find(s => s.id === serverId);
+  if (server) {
+    $('#selected_server_info').text(`${server.id}: ${server.url}`);
+  }
+}
+
+function initAuthServerDropdown() {
+  $.get('/api/config', function(config) {
+    authServers = config.auth_servers || [];
+    console.log('*** Auth servers:', authServers);
+    
+    if (authServers.length > 0) {
+      selectedServerId = loadSelectedServerId();
+      $('#select_auth_server').val(selectedServerId);
+      updateServerInfoDisplay();
+      
+      // Handle dropdown change
+      $('#select_auth_server').on('change', function() {
+        const serverId = $(this).val();
+        console.log('*** Server changed to:', serverId);
+        saveSelectedServerId(serverId);
+      });
+    }
+  });
 }
 
 function showConsentPage() {
@@ -122,6 +171,9 @@ function choose_option(selector) {
 }
 
 $(document).ready(function () {
+  // Initialize auth server dropdown
+  initAuthServerDropdown();
+
   fetchCountryCode(function(){
     // country phone setting library
     document.querySelectorAll('.phoneNumber').forEach((el) => {
@@ -181,8 +233,16 @@ $(document).ready(function () {
     localStorage.setItem('selector', location.hash.substring(1));
     var data_title = $(this).attr('data-title');
 
+    // Get selected server_id
+    var serverId = getSelectedServerId();
+    if (!serverId) {
+      alert('Please select an auth server');
+      return;
+    }
+
     var params = new URLSearchParams({
       user_flow: user_flow,
+      server_id: serverId,
     });
 
     if (phone_number) params.set('phone', phone_number);
@@ -207,12 +267,19 @@ $(document).ready(function () {
   async function start_pvn_sim(client_id, phone_number) {
     console.log('start_pvn_sim');
 
+    const serverId = getSelectedServerId();
+    if (!serverId) {
+      alert('Please select an auth server');
+      return;
+    }
+
     const data = {
       "login_hint": phone_number,
       "carrier_hint": 51010,
       "client_id": client_id,
       "operation": "VerifyPhoneNumber",
-      "scope": "openid ip:phone_verify"
+      "scope": "openid ip:phone_verify",
+      "server_id": serverId
     }
 
     start_ts43_flow(data);
@@ -221,12 +288,19 @@ $(document).ready(function () {
   async function start_login_sim(client_id) {
     console.log('start_login_sim');
 
+    const serverId = getSelectedServerId();
+    if (!serverId) {
+      alert('Please select an auth server');
+      return;
+    }
+
     const data = {
       "login_hint": "anonymous",
       "carrier_hint": 51010,
       "client_id": client_id,
       "operation": "GetPhoneNumber",
-      "scope": "openid ip:phone"
+      "scope": "openid ip:phone",
+      "server_id": serverId
     }
 
     start_ts43_flow(data);
@@ -362,7 +436,7 @@ $(document).ready(function () {
   const item = localStorage.getItem('selector');
 
   if (hash) {
-    localStorage.clear();
+    localStorage.removeItem('selector');
     window.location.href = hash;
     select_nav(hash.substring(1));
   } else if (!item) {

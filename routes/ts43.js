@@ -49,8 +49,18 @@ function buildDigitalRequest(nonce, dcqlData) {
 }
 
 router.post('/auth', async (req, res) => {
-  const { login_hint, carrier_hint, client_id: clientId, operation, scope: reqScope } = req.body;
-  const { clients, auth_server_url, realm } = res.locals;
+  const { login_hint, carrier_hint, client_id: clientId, operation, scope: reqScope, server_id: serverId } = req.body;
+  const { clients, getAuthServer, realm } = res.locals;
+  
+  // Get auth server (defaults to first server if serverId not provided)
+  const authServer = getAuthServer(serverId);
+  if (!authServer) {
+    res.status(HTTP_STATUS.BAD_REQUEST).send({ error: serverId ? `Invalid server_id: '${serverId}'` : 'No auth servers configured' });
+    return;
+  }
+
+  const { url: authServerUrl } = authServer;
+
   const client = findClientByClientId(clients, clientId);
 
   if (!client) {
@@ -63,7 +73,7 @@ router.post('/auth', async (req, res) => {
 
   try {
     // CIBA auth endpoint
-    const authUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/ciba/auth`;
+    const authUrl = `${authServerUrl}/realms/${realm}/protocol/openid-connect/ext/ciba/auth`;
     const ts43_nonce = uuidv4();
 
     const formData = buildCibaAuthFormData(clientId, clientSecret, reqScope, scope, login_hint, carrier_hint);
@@ -83,7 +93,7 @@ router.post('/auth', async (req, res) => {
     const resolvedOperation = resolveOperation(operation, login_hint);
 
     // Make the second API call to dcql endpoint
-    const dcqlUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/bc/ts43/dcql`;
+    const dcqlUrl = `${authServerUrl}/realms/${realm}/protocol/openid-connect/ext/bc/ts43/dcql`;
     const dcqlPayload = {
       operation: resolvedOperation,
       nonce: ts43_nonce
@@ -163,8 +173,18 @@ async function callCallbackEndpoint(callbackUrl, vpToken, authReqId) {
 router.post('/token', async (req, res) => {
   console.log('--> token');
   console.log(JSON.stringify(req.body));
-  const { vp_token: vpToken, auth_req_id: authReqId, client_id: clientId, nonce } = req.body;
-  const { clients, auth_server_url, realm } = res.locals;
+  const { vp_token: vpToken, auth_req_id: authReqId, client_id: clientId, nonce, server_id: serverId } = req.body;
+  const { clients, getAuthServer, realm } = res.locals;
+  
+  // Get auth server (defaults to first server if serverId not provided)
+  const authServer = getAuthServer(serverId);
+  if (!authServer) {
+    res.status(HTTP_STATUS.BAD_REQUEST).send({ error: serverId ? `Invalid server_id: '${serverId}'` : 'No auth servers configured' });
+    return;
+  }
+
+  const { url: authServerUrl } = authServer;
+
   const client = findClientByClientId(clients, clientId);
 
   if (!client) {
@@ -173,12 +193,12 @@ router.post('/token', async (req, res) => {
   }
 
   const { client_secret: clientSecret } = client;
-  const callbackUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/ext/bc/ts43/callback`;
+  const callbackUrl = `${authServerUrl}/realms/${realm}/protocol/openid-connect/ext/bc/ts43/callback`;
 
   try {
     await callCallbackEndpoint(callbackUrl, vpToken, authReqId);
 
-    const tokenUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/token`;
+    const tokenUrl = `${authServerUrl}/realms/${realm}/protocol/openid-connect/token`;
     const formData = {
       client_id: clientId,
       client_secret: clientSecret,
@@ -193,7 +213,7 @@ router.post('/token', async (req, res) => {
     console.log('Token response:', authResponse.data);
 
     const { access_token: accessToken } = authResponse.data;
-    const userUrl = `${auth_server_url}/realms/${realm}/protocol/openid-connect/userinfo`;
+    const userUrl = `${authServerUrl}/realms/${realm}/protocol/openid-connect/userinfo`;
 
     const userInfo = await getUserInfo(userUrl, accessToken);
 

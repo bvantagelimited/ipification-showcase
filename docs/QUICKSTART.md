@@ -2,12 +2,34 @@
 
 This guide will help you get the IPification Showcase application up and running quickly.
 
+## Table of Contents
+
+- [Prerequisites Checklist](#prerequisites-checklist)
+- [5-Minute Setup](#5-minute-setup)
+  - [Step 1: Install Dependencies](#step-1-install-dependencies)
+  - [Step 2: Configure Application](#step-2-configure-application)
+  - [Step 3: Start the Server](#step-3-start-the-server)
+  - [Step 4: Access the Application](#step-4-access-the-application)
+- [Auth Server Selection](#auth-server-selection)
+- [Testing Different Flows](#testing-different-flows)
+  - [Phone Number Verification (PNV)](#phone-number-verification-pnv)
+  - [Quick Access Login](#quick-access-login)
+  - [Identity Services](#identity-services)
+- [Common Issues](#common-issues)
+- [Development Mode](#development-mode)
+- [Environment Variables](#environment-variables)
+- [Next Steps](#next-steps)
+- [Getting Help](#getting-help)
+
+---
+
 ## Prerequisites Checklist
 
 - [ ] Node.js >= 22.x installed
 - [ ] npm installed
 - [ ] IPification account credentials
-- [ ] Access to IPification dashboard
+
+---
 
 ## 5-Minute Setup
 
@@ -25,32 +47,7 @@ cp config/default.json.sample config/default.json
 
 For a full field reference, see [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md).
 
-Edit `config/default.json` and add at least one client configuration:
-
-```json
-{
-  "realm": "ipification",
-  "auth_server_url": "https://api.stage.ipification.com/auth",
-  "app_logo_url": "/images/logo/vil.svg",
-  "clients": [
-    {
-      "user_flow": "pvn_ip",
-      "client_id": "your-client-id",
-      "client_secret": "your-client-secret",
-      "title": "IP Phone Number Verification",
-      "scope": "openid ip:phone_verify"
-    }
-  ]
-}
-```
-
-**Configuration Options**:
-
-- `app_logo_url`: URL to your application logo image. Can be:
-  - Relative path: `/images/logo/vil.svg` (for local images)
-  - Absolute URL: `https://example.com/logo.png` (for external images)
-  - If not provided, the application name will be displayed as text instead
-  - See [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md) for all fields
+Edit `config/default.json` and add client configuration
 
 ### Step 3: Start the Server
 
@@ -60,20 +57,39 @@ npm start
 
 ### Step 4: Access the Application
 
-1. Find your machine's IP address:
-
-   - **macOS/Linux**: `ifconfig` or `ip addr`
-   - **Windows**: `ipconfig`
-
-2. Open browser and navigate to:
+1. Open browser and navigate to:
 
    ```
-   http://<your-ip-address>:3000
+   http://localhost:3000
    ```
 
-3. Select "Stage" environment from dropdown
+2. **Select Auth Server** (if multiple servers configured):
+   - A dropdown appears at the top of the page showing available auth servers (e.g., "stage", "live")
+   - Select the server you want to use for authentication
+   - Your selection is saved and persists across page reloads
 
-4. Click "IP" button in PNV tab to test authentication
+3. Click "IP" button in PNV tab to test authentication
+
+---
+
+## Auth Server Selection
+
+If you configured multiple auth servers in `config/default.json`, you can switch between them:
+
+1. **Dropdown Location**: Top of the login page, next to the logo
+2. **Selection Persistence**: Your choice is saved to browser localStorage
+3. **Reload Behavior**: The selected server remains active after page reload
+4. **Per-Request**: Each authentication request uses your selected server
+
+**Example Use Cases**:
+
+- **Testing**: Switch between `stage` and `live` servers without config changes
+- **Development**: Test against different environments easily
+- **Demo**: Show different server behaviors to clients
+
+**Single Server**: If only one server is configured, no dropdown appears - the app uses that server automatically.
+
+---
 
 ## Testing Different Flows
 
@@ -102,6 +118,8 @@ npm start
 2. For **Anonymous Identity**: Click button directly
 3. For **KYC Data**: Enter phone number, then click "KYC"
 
+---
+
 ## Common Issues
 
 ### Port Already in Use
@@ -117,6 +135,14 @@ PORT=3001 npm start
 Then access: `http://<your-ip>:3001`
 
 ### Configuration Error
+
+**Error**: `Configuration error: auth_servers must be defined as an array in config`
+
+**Solution**:
+
+- Ensure `auth_servers` array is defined in `config/default.json`
+- Must contain at least one server with `id` and `url` fields
+- See [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md) for proper format
 
 **Error**: `Client not found`
 
@@ -145,12 +171,19 @@ Then access: `http://<your-ip>:3001`
 **Solutions**:
 
 1. Verify `redirect_uri` in IPification dashboard matches:
+
    ```
-   http://<your-ip>:3000/auth/callback/<user_flow>
+   http://localhost:3000/auth/callback/<user_flow>/<server_id>
    ```
+
+   Example: `http://localhost:3000/auth/callback/pvn_ip/stage`
+
 2. Check client_id and client_secret are correct
 3. Verify scope permissions match client configuration
 4. Ensure phone number format is E.164 (e.g., `+1234567890`)
+5. Confirm the selected auth server is accessible and properly configured
+
+---
 
 ## Development Mode
 
@@ -171,7 +204,9 @@ PORT=3000
 NODE_ENV=development
 ```
 
-Supported `NODE_ENV` values: `development`, `stage`, `live`, `live_id`.
+Supported `NODE_ENV` values: `development`, `stage`, `production`.
+
+---
 
 ## Next Steps
 
@@ -179,6 +214,8 @@ Supported `NODE_ENV` values: `development`, `stage`, `live`, `live_id`.
 - Check [API.md](API.md) for API endpoint details
 - Review [ARCHITECTURE.md](ARCHITECTURE.md) for system design
 - Explore different user flows in the application
+
+---
 
 ## Getting Help
 

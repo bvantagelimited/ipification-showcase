@@ -1,19 +1,166 @@
 # API Documentation
 
-This document provides detailed API endpoint documentation for the IPification Showcase application.
+Quick reference for API endpoints and usage patterns.
 
-## Base URL
+## Table of Contents
 
-- Development: `http://localhost:3000`
-- Production: Configure via environment variables
+- [Quick Start](#quick-start)
+- [Common Use Cases](#common-use-cases)
+- [Essential Endpoints](#essential-endpoints)
+  - [Start Authentication](#start-authentication)
+  - [Handle Callback](#handle-callback)
+  - [Get User Info](#get-user-info)
+- [Mobile Integration](#mobile-integration)
+- [TS43/SIM Integration](#ts43sim-integration)
+- [Configuration API](#configuration-api)
+- [Error Handling](#error-handling)
+- [Advanced Details](#advanced-details)
 
-## Authentication
+---
 
-Most endpoints use session-based authentication. The application uses `express-session` for session management.
+## Quick Start
 
-## Endpoints
+**Base URL**: `http://localhost:3000` (development)
 
-### Authentication Endpoints
+**Most Common Flow**:
+
+1. User clicks button → Redirects to `/auth/start`
+2. User authenticates → IPification redirects to `/auth/callback`
+3. App redirects to `/user/info` → Shows user data
+
+**Authentication**: Session-based (handled automatically)
+
+---
+
+## Common Use Cases
+
+### I want to add authentication to my web app
+
+→ Use `/auth/start` → user authenticates → handle `/auth/callback`
+
+### I want to integrate with mobile app
+
+→ Use `/auth/mobile/login` with authorization code
+
+### I want to use SIM-based verification
+
+→ Use `/ts43/auth` → `/ts43/token` flow (see [TS43 Guide](TS43.md))
+
+### I want to get app configuration
+
+→ Call `/api/config` to get auth_servers, clients, etc.
+
+---
+
+## Essential Endpoints
+
+### Start Authentication
+
+**GET** `/auth/start?user_flow=pvn_ip&server_id=stage&state=abc123`
+
+Starts OAuth flow and redirects user to IPification.
+
+**Required**:
+
+- `user_flow`: Which flow to use (`pvn_ip`, `login_ip`, etc.)
+- `state`: Random string for security
+
+**Optional**:
+
+- `server_id`: Which auth server (`stage`, `live`). Defaults to first server
+- `phone`: Pre-fill phone number
+
+---
+
+### Handle Callback
+
+**GET** `/auth/callback/:userFlow/:serverId?`
+
+IPification redirects here after authentication. Your app handles this automatically.
+
+**Example**: `/auth/callback/pvn_ip/stage?code=xyz&state=abc`
+
+---
+
+### Get User Info
+
+**GET** `/user/info`
+
+Shows authenticated user information (requires valid session).
+
+---
+
+## Mobile Integration
+
+### POST /auth/mobile/login
+
+Exchange authorization code for user info (for mobile apps).
+
+**Request**:
+
+```json
+{
+  "client_id": "your_client_id",
+  "code": "auth_code",
+  "redirect_uri": "your_callback_url",
+  "server_id": "stage"
+}
+```
+
+**Response**: User information JSON
+
+---
+
+## TS43/SIM Integration
+
+For SIM-based verification, see dedicated [TS43 Guide](TS43.md).
+
+**Quick overview**:
+
+1. POST `/ts43/auth` → get digital_request
+2. Call Credential Manager
+3. POST `/ts43/token` → get user info
+
+---
+
+## Configuration API
+
+### GET /api/config
+
+Get application configuration (auth servers, clients, etc.)
+
+**Response**:
+
+```json
+{
+  "auth_servers": [
+    {"id": "stage", "url": "https://..."}
+  ],
+  "realm": "ipification",
+  "clients": [...]
+}
+```
+
+---
+
+## Error Handling
+
+**Common Errors**:
+
+| Error                            | Cause                | Solution                        |
+| -------------------------------- | -------------------- | ------------------------------- |
+| `Invalid server_id`              | Server not in config | Check auth_servers in config    |
+| `Client not found`               | Invalid user_flow    | Check clients array in config   |
+| `server_id not found in session` | Session expired      | User needs to restart auth flow |
+
+---
+
+## Advanced Details
+
+<details>
+<summary>Click to expand detailed endpoint specifications</summary>
+
+#### Detailed Authentication Endpoints
 
 #### Login Page
 
@@ -35,40 +182,53 @@ Initiates the OAuth2/OIDC authentication flow by redirecting to IPification auth
 
 **Query Parameters**:
 
-| Parameter   | Type   | Required | Description                                               |
-| ----------- | ------ | -------- | --------------------------------------------------------- |
-| `user_flow` | string | Yes      | User flow identifier (e.g., `pvn_ip`, `login_ip`)         |
-| `phone`     | string | No       | Phone number in E.164 format (e.g., `+1234567890`)        |
-| `state`     | string | Yes      | State parameter for OAuth flow (used for CSRF protection) |
+| Parameter   | Type   | Required | Description                                                      |
+| ----------- | ------ | -------- | ---------------------------------------------------------------- |
+| `user_flow` | string | Yes      | User flow identifier (e.g., `pvn_ip`, `login_ip`)                |
+| `server_id` | string | No       | Auth server ID (e.g., `stage`, `live`). Defaults to first server |
+| `phone`     | string | No       | Phone number in E.164 format (e.g., `+1234567890`)               |
+| `state`     | string | Yes      | State parameter for OAuth flow (used for CSRF protection)        |
 
 **Example Request**:
 
 ```
-GET /auth/start?user_flow=pvn_ip&phone=+1234567890&state=abc123xyz
+GET /auth/start?user_flow=pvn_ip&server_id=stage&phone=+1234567890&state=abc123xyz
 ```
 
 **Response**: HTTP 302 Redirect to IPification authorization server
 
 **Flow**:
 
-1. Validates user flow exists in configuration
-2. Validates state parameter
-3. Builds authorization URL with OAuth2 parameters
-4. Redirects user to IPification authorization server
+1. Validates `server_id` and resolves to auth server URL (defaults to first server if not provided)
+2. Validates user flow exists in configuration
+3. Validates state parameter
+4. Builds authorization URL with OAuth2 parameters
+5. Redirects user to IPification authorization server
+
+**Callback URL Format**:
+The redirect_uri sent to auth server will be: `/auth/callback/{user_flow}/{server_id}`
+
+**Error Responses**:
+
+| Status Code | Error Message                | Cause                         |
+| ----------- | ---------------------------- | ----------------------------- |
+| 400         | `Invalid server_id: 'xyz'`   | Server ID not found in config |
+| 400         | `No auth servers configured` | auth_servers array is empty   |
 
 ---
 
 #### OAuth Callback
 
-**GET** `/auth/callback/:userFlow`
+**GET** `/auth/callback/:userFlow/:serverId?`
 
 Handles the OAuth2 callback after user authentication.
 
 **Path Parameters**:
 
-| Parameter  | Type   | Required | Description          |
-| ---------- | ------ | -------- | -------------------- |
-| `userFlow` | string | Yes      | User flow identifier |
+| Parameter  | Type   | Required | Description                                                      |
+| ---------- | ------ | -------- | ---------------------------------------------------------------- |
+| `userFlow` | string | Yes      | User flow identifier (e.g., `pvn_ip`, `login_ip`)                |
+| `serverId` | string | No       | Auth server ID (e.g., `stage`, `live`). Defaults to first server |
 
 **Query Parameters**:
 
@@ -79,10 +239,15 @@ Handles the OAuth2 callback after user authentication.
 | `error`             | string | No       | Error code if authentication failed   |
 | `error_description` | string | No       | Error description                     |
 
-**Example Request**:
+**Example Requests**:
 
 ```
-GET /auth/callback/pvn_ip?code=abc123&state=xyz789
+GET /auth/callback/pvn_ip/stage?code=abc123&state=xyz789
+```
+
+```
+GET /auth/callback/login_ip?code=abc123&state=xyz789
+(Uses default/first server when serverId not in URL)
 ```
 
 **Response**:
@@ -94,16 +259,25 @@ GET /auth/callback/pvn_ip?code=abc123&state=xyz789
 
 **Flow**:
 
-1. Validates authorization code and state
-2. Exchanges authorization code for access token
-3. Retrieves user information using access token
-4. Stores user information in data store
-5. For QR code flows, emits Socket.io event to desktop browser
-6. Redirects to completion endpoint
+1. Extracts `serverId` from URL path (or defaults to first server)
+2. Resolves auth server URL from `serverId`
+3. Validates authorization code and state
+4. Exchanges authorization code for access token (using same auth server)
+5. Retrieves user information using access token
+6. Stores user information in data store
+7. For QR code flows, emits Socket.io event to desktop browser
+8. Redirects to completion endpoint
 
 **Headers**:
 
 - `ip-backchannel-im-auth`: Set to `true` for server-to-server IM flows
+
+**Error Responses**:
+
+| Status Code | Error Message                | Cause                         |
+| ----------- | ---------------------------- | ----------------------------- |
+| 400         | `Invalid server_id: 'xyz'`   | Server ID not found in config |
+| 400         | `No auth servers configured` | auth_servers array is empty   |
 
 ---
 
@@ -160,15 +334,31 @@ Displays error page if QR code authentication failed.
 
 **POST** `/auth/mobile/login`
 
-Mobile-side login endpoint that exchanges authorization code for user information.
+Mobile-specific endpoint for exchanging authorization code for user information.
+
+**Request Headers**:
+
+```
+Content-Type: application/json
+```
 
 **Request Body**:
+
+| Field          | Type   | Required | Description                                                      |
+| -------------- | ------ | -------- | ---------------------------------------------------------------- |
+| `client_id`    | string | Yes      | OAuth client ID                                                  |
+| `code`         | string | Yes      | Authorization code                                               |
+| `redirect_uri` | string | Yes      | Callback URL (must match OAuth redirect)                         |
+| `server_id`    | string | No       | Auth server ID (e.g., `stage`, `live`). Defaults to first server |
+
+**Example Request**:
 
 ```json
 {
   "client_id": "webclient2",
   "code": "authorization-code",
-  "redirect_uri": "https://example.com/callback"
+  "redirect_uri": "https://example.com/auth/callback/pvn_ip/stage",
+  "server_id": "stage"
 }
 ```
 
@@ -178,14 +368,14 @@ Mobile-side login endpoint that exchanges authorization code for user informatio
 {
   "sub": "user-id",
   "phone_number": "+1234567890",
-  "phone_number_verified": "true",
-  ...
+  "phone_number_verified": "true"
 }
 ```
 
 **Status Codes**:
 
-- `200`: Success
+- `200`: Success - Returns user information
+- `400`: Invalid server_id or missing required fields
 - `401`: Client not found or authentication failed
 
 ---
@@ -218,6 +408,8 @@ Server-to-server sign-in endpoint for retrieving user information.
 
 - `200`: Success
 - `401`: User information not found
+
+---
 
 ---
 
@@ -301,6 +493,8 @@ It use on s2s flow.
 2. Retrieves device information using state (device_id)
 3. Sends push notification to device via Firebase Cloud Messaging (uses `firebase_server_key`)
 4. Returns success response
+
+---
 
 ---
 
@@ -430,6 +624,8 @@ Logging endpoint for TS43 debugging.
 
 ---
 
+---
+
 ### Utility Endpoints
 
 #### App Config
@@ -442,8 +638,13 @@ Returns safe application configuration for the frontend (client secrets are remo
 
 ```json
 {
-  "auth_server_url": "https://api.stage.ipification.com/auth",
   "realm": "ipification",
+  "auth_servers": [
+    {
+      "id": "stage",
+      "url": "https://api.stage.ipification.com/auth"
+    }
+  ],
   "clients": [
     {
       "user_flow": "pvn_ip",
@@ -459,7 +660,7 @@ Returns safe application configuration for the frontend (client secrets are remo
 
 1. Reads config from `res.locals`
 2. Strips `client_secret` from each client entry
-3. Returns `auth_server_url`, `realm`, and safe `clients`
+3. Returns `auth_servers`, `realm`, and safe `clients`
 
 ---
 
@@ -503,6 +704,8 @@ Displays authenticated user information (requires valid session).
 
 - `200`: Success (renders info page)
 - `302`: Redirects to `/` if not authenticated
+
+---
 
 ---
 
@@ -561,6 +764,8 @@ Displays authenticated user information (requires valid session).
 ```
 
 **Description**: Sent when QR code authentication completes. Desktop browser should navigate to the provided URL.
+
+---
 
 ---
 
@@ -659,3 +864,5 @@ curl -X POST http://localhost:3000/ts43/token \
     "nonce": "nonce-value"
   }'
 ```
+
+</details>

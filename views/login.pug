@@ -23,12 +23,12 @@ block content
 								else
 									h3.app-name #{locale.app.name}
 
-								if show_env_select !== false
-									select(id="select" value=node_env data-env=node_env)
-										option(data-selected="stage" selected=node_env == "stage" value=stage_url) #{locale.environments.stage}
-										option(data-selected='live' selected=node_env == "live" value=live_url) #{locale.environments.live}
-										if live_id_url
-											option(data-selected='live_id' selected=node_env == "live_id" value=live_id_url) #{locale.environments.live_id}
+					if auth_servers.length > 1
+						.row.auth-server-selector
+							.col-12.row-item
+								select.form-control(id="select_auth_server")
+									each auth_server in auth_servers
+										option(value=auth_server.id) #{auth_server.id}
 					.row.block-page
 						ul.list-tabs.nav.nav-tabs
 							if hasPvnButtons
@@ -132,10 +132,7 @@ block content
 				.modal-body
 					div.mb-3
 						strong #{locale.modals.server_label}
-						p #{auth_server_url}
-					div.mb-3
-						strong #{locale.modals.state_label}
-						p #{state}
+						p#selected_server_info -
 					.developer-link
 						a(href="https://developer.ipification.com/#/")
 							| #{locale.modals.developer_link}

@@ -1,80 +1,121 @@
 # Documentation Index
 
-Welcome to the IPification Showcase documentation. This index provides an overview of all available documentation.
+Welcome! Find what you need quickly.
 
-## Documentation Overview
+## 🚀 Start Here
 
-### Getting Started
+**New to the project?**  
+→ [Quick Start Guide](QUICKSTART.md) - Be running in 5 minutes
 
-- **[Quick Start Guide](QUICKSTART.md)** - Get up and running in 5 minutes
-- **[README.md](../README.md)** - Complete project documentation and reference
+**Want to understand the project?**  
+→ [README.md](../README.md) - Complete overview
 
-### Technical Documentation
+**Need to configure something?**  
+→ [Configuration Guide](CONFIG_DEFAULT_JSON_SAMPLE.md) - All config fields explained
 
-- **[API Documentation](API.md)** - Detailed API endpoint reference
-- **[Architecture Documentation](ARCHITECTURE.md)** - System design and architecture details
-- **[TS43 Route Documentation](TS43.md)** - TS43 router behavior and flow details
-- **[Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)** - Field-by-field guide to `config/default.json.sample`
-- **[App Config Reference](APP_CONFIG_JSON.md)** - Field-by-field guide to `config/app_config.json`
-- **[Locale Configuration](LOCALE.md)** - Locale strings and customization guide
+---
+
+## 📚 Documentation by Goal
+
+### I want to...
+
+**...set up the project quickly**  
+→ [Quick Start](QUICKSTART.md) - 5-minute setup
+
+**...configure auth servers**  
+→ [Config Guide - auth_servers](CONFIG_DEFAULT_JSON_SAMPLE.md#auth_servers-fields)
+
+**...customize UI text**  
+→ [Locale Guide](LOCALE.md) - Text labels and translations
+
+**...understand authentication flows**  
+→ [Architecture](ARCHITECTURE.md) - How authentication works
+
+**...integrate with the API**  
+→ [API Reference](API.md) - Endpoint documentation
+
+**...use SIM verification (TS43)**  
+→ [TS43 Guide](TS43.md) - SIM-based auth
+
+**...customize app behavior**  
+→ [App Config](APP_CONFIG_JSON.md) - UI and versioning settings
+
+---
+
+## 📖 All Documentation Files
+
+### User Guides
+
+- **[Quick Start](QUICKSTART.md)** - Fast setup with examples
+- **[Configuration](CONFIG_DEFAULT_JSON_SAMPLE.md)** - All config fields
+- **[Locale](LOCALE.md)** - Customize UI text
+
+### Feature Guides
+
+- **[TS43 SIM Verification](TS43.md)** - Use SIM-based auth
+- **[Multi-Server Setup](CONFIG_DEFAULT_JSON_SAMPLE.md#auth_servers-fields)** - Configure multiple auth servers
+
+### Reference
+
+- **[API](API.md)** - Endpoint reference
+- **[Architecture](ARCHITECTURE.md)** - System overview
+- **[App Config](APP_CONFIG_JSON.md)** - App settings
+
+---
 
 ## Documentation Structure
 
 ```
 docs/
-├── INDEX.md           # This file - documentation index
-├── QUICKSTART.md      # Quick start guide
-├── API.md             # API endpoint documentation
-├── ARCHITECTURE.md    # Architecture and design documentation
-├── TS43.md            # TS43 route module documentation
-├── CONFIG_DEFAULT_JSON_SAMPLE.md # Sample config field reference
-├── APP_CONFIG_JSON.md # App config field reference
-└── LOCALE.md          # Locale configuration and customization guide
-
-README.md              # Main project documentation (in root)
+├── INDEX.md           ← You are here
+├── QUICKSTART.md      ← Start here for setup
+├── CONFIG_DEFAULT_JSON_SAMPLE.md  ← Config reference
+├── LOCALE.md          ← UI text customization
+├── TS43.md            ← SIM verification guide
+├── API.md             ← API endpoint reference
+├── ARCHITECTURE.md    ← System overview
+└── APP_CONFIG_JSON.md ← App behavior settings
 ```
 
-## Quick Navigation
+---
 
-### I want to...
+## Need Help?
 
-**...get started quickly**
-→ Read [Quick Start Guide](QUICKSTART.md)
+### Common Questions
 
-**...understand the project**
-→ Read [README.md](../README.md)
+**Q: How do I start the app?**  
+A: See [Quick Start](QUICKSTART.md)
 
-**...integrate with the API**
-→ Read [API Documentation](API.md)
+**Q: How do I add another auth server?**  
+A: Edit `auth_servers` array in config - [Guide](CONFIG_DEFAULT_JSON_SAMPLE.md#auth_servers-fields)
 
-**...understand the architecture**
-→ Read [Architecture Documentation](ARCHITECTURE.md)
+**Q: How do I change button labels?**  
+A: Edit `locale` in config - [Guide](LOCALE.md)
 
-**...understand the TS43 route behavior**
-→ Read [TS43 Route Documentation](TS43.md)
+**Q: How do I enable SIM verification?**  
+A: Add `pvn_sim` to clients - [TS43 Guide](TS43.md)
 
-**...configure the application**
-→ Read [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)
+**Q: Where are the API endpoints?**  
+A: See [API Documentation](API.md)
 
-**...understand the sample config file**
-→ Read [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md)
+### Resources
 
-**...configure app UI/branding/version behavior**
-→ Read [App Config Reference](APP_CONFIG_JSON.md)
+- **IPification Developer Portal**: https://developer.ipification.com/
+- **IPification Website**: https://www.ipification.com/
 
-**...customize text labels**
-→ Read [Locale Configuration](LOCALE.md)
+---
 
-**...deploy the application**
-→ See [Docker Deployment section](../README.md#docker-deployment) in README
+## File Descriptions
 
-## Documentation Details
+<details>
+<summary>Click to see detailed description of each documentation file</summary>
 
 ### Quick Start Guide
 
 **File**: `docs/QUICKSTART.md`
 
 **Contents**:
+
 - 5-minute setup instructions
 - Prerequisites checklist
 - Common issues and solutions
@@ -89,6 +130,7 @@ README.md              # Main project documentation (in root)
 **File**: `README.md` (root directory)
 
 **Contents**:
+
 - Project overview
 - Features list
 - Installation instructions
@@ -108,6 +150,7 @@ README.md              # Main project documentation (in root)
 **File**: `docs/API.md`
 
 **Contents**:
+
 - Detailed endpoint documentation
 - Request/response formats
 - Query parameters
@@ -125,6 +168,7 @@ README.md              # Main project documentation (in root)
 **File**: `docs/ARCHITECTURE.md`
 
 **Contents**:
+
 - System architecture diagrams
 - Component structure
 - Data flow diagrams
@@ -142,6 +186,7 @@ README.md              # Main project documentation (in root)
 **File**: `docs/TS43.md`
 
 **Contents**:
+
 - TS43 router responsibilities and flow
 - Endpoint behavior and request/response fields
 - Helper function roles
@@ -156,12 +201,21 @@ README.md              # Main project documentation (in root)
 **File**: `docs/CONFIG_DEFAULT_JSON_SAMPLE.md`
 
 **Contents**:
+
 - How to copy and apply the sample config
-- Field-by-field descriptions
-- Client flow configuration fields
+- Required vs optional configuration fields
+- Auth servers configuration (multi-server support)
+- Client flow configuration with credential override mechanism
 - Locale override fields
+- Configuration examples and troubleshooting
 
 **Best for**: Understanding and customizing `config/default.json.sample`
+
+**Key Features**:
+
+- Multi auth server support with dropdown selection
+- Credential fallback mechanism (root vs per-client)
+- Complete field validation on startup
 
 ---
 
@@ -170,6 +224,7 @@ README.md              # Main project documentation (in root)
 **File**: `docs/APP_CONFIG_JSON.md`
 
 **Contents**:
+
 - App UI configuration schema
 - Versioning and maintenance settings
 - Branding, environment labels, and screen text
@@ -184,6 +239,7 @@ README.md              # Main project documentation (in root)
 **File**: `docs/LOCALE.md`
 
 **Contents**:
+
 - Locale file structure
 - Override mechanism
 - Deep merging behavior
@@ -197,6 +253,7 @@ README.md              # Main project documentation (in root)
 ### Code Examples
 
 All code examples use:
+
 - **bash** for shell commands
 - **json** for configuration files
 - **javascript** for code snippets
@@ -224,13 +281,16 @@ When updating documentation:
 
 **Last Updated**: [Current Date]
 
-**Version**: 1.1.17-SNAPSHOT
+**Version**: 1.1.27-SNAPSHOT
 
 **Maintainer**: Development Team
 
 ## Feedback
 
 For documentation feedback or improvements:
+
 - Create an issue in the repository
 - Submit a pull request with improvements
 - Contact the development team
+
+</details>

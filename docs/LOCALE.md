@@ -2,9 +2,28 @@
 
 This document explains how to configure and override locale strings (text labels) in the IPification Showcase application.
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Locale File Structure](#locale-file-structure)
+- [Default Locale File](#default-locale-file)
+- [Overriding Locale Strings](#overriding-locale-strings)
+- [Deep Merging Behavior](#deep-merging-behavior)
+- [Using Locale in Views](#using-locale-in-views)
+- [Locale Structure Reference](#locale-structure-reference)
+- [Best Practices](#best-practices)
+- [Troubleshooting](#troubleshooting)
+- [Implementation Details](#implementation-details)
+- [Related Documentation](#related-documentation)
+- [Examples](#examples)
+
+---
+
 ## Overview
 
 The application uses a locale system that allows you to customize all text labels displayed in the user interface. Locale strings are stored in `config/locale.json` and can be overridden in `config/default.json` for environment-specific customizations. For config field details, see [Sample Config Reference](CONFIG_DEFAULT_JSON_SAMPLE.md).
+
+---
 
 ## Locale File Structure
 
@@ -23,15 +42,26 @@ The locale system is organized into logical sections:
   "sections": {
     "pnv": {
       "title": "Section title",
-      "description": "Section description text"
+      "description": "Section description text",
+      "button_ip_label": "Optional: Override IP button label for PNV",
+      "button_ip_plus_label": "Optional: Override IP+ button label for PNV",
+      "button_im_label": "Optional: Override IM button label for PNV",
+      "button_sim_label": "Optional: Override SIM button label for PNV",
+      "button_ip_via_app_label": "Optional: Override IP via App button label for PNV"
     },
     "login": {
       "title": "Section title",
-      "description": "Section description text"
+      "description": "Section description text",
+      "button_ip_label": "Optional: Override IP button label for Login",
+      "button_ip_plus_label": "Optional: Override IP+ button label for Login",
+      "button_im_label": "Optional: Override IM button label for Login",
+      "button_sim_label": "Optional: Override SIM button label for Login"
     },
     "identity": {
       "title": "Section title",
-      "description": "Section description text"
+      "description": "Section description text",
+      "button_anonymous_identity_label": "Optional: Override Anonymous Identity button label",
+      "button_kyc_label": "Optional: Override KYC button label"
     }
   },
   "buttons": {
@@ -42,11 +72,6 @@ The locale system is organized into logical sections:
     "ip_via_app": "IP via App button label",
     "anonymous_identity": "Anonymous Identity button label",
     "kyc": "KYC button label"
-  },
-  "environments": {
-    "stage": "Stage environment label",
-    "live": "Live environment label",
-    "live_id": "Live ID environment label"
   },
   "footer": {
     "viettel_legal": "Legal disclaimer text",
@@ -66,6 +91,8 @@ The locale system is organized into logical sections:
 }
 ```
 
+---
+
 ## Default Locale File
 
 The default locale strings are stored in `config/locale.json`. This file contains all the standard English text labels used throughout the application.
@@ -73,6 +100,8 @@ The default locale strings are stored in `config/locale.json`. This file contain
 **Location**: `config/locale.json`
 
 **Purpose**: Base locale strings that are used by default.
+
+---
 
 ## Overriding Locale Strings
 
@@ -95,7 +124,7 @@ You can override any locale string by adding a `locale` section to your `config/
 ```json
 {
   "realm": "ipification",
-  "auth_server_url": "https://api.stage.ipification.com/auth",
+  "auth_servers": [...],
   "clients": [...],
   "locale": {
     "app": {
@@ -183,6 +212,8 @@ You can override any locale string by adding a `locale` section to your `config/
 }
 ```
 
+---
+
 ## Deep Merging Behavior
 
 The locale override system uses deep merging, which means:
@@ -194,6 +225,7 @@ The locale override system uses deep merging, which means:
 ### Deep Merge Example
 
 **Base locale.json:**
+
 ```json
 {
   "sections": {
@@ -206,6 +238,7 @@ The locale override system uses deep merging, which means:
 ```
 
 **Override in default.json:**
+
 ```json
 {
   "locale": {
@@ -219,6 +252,7 @@ The locale override system uses deep merging, which means:
 ```
 
 **Result:**
+
 ```json
 {
   "sections": {
@@ -247,16 +281,19 @@ button #{locale.buttons.ip}
 Some locale fields support HTML tags for formatting. Use `!{}` instead of `#{}` to render HTML:
 
 **Escaped (default)** - Use `#{}` for plain text:
+
 ```pug
 p.description #{locale.sections.pnv.title}
 ```
 
 **Unescaped (HTML)** - Use `!{}` for HTML content:
+
 ```pug
 p.description !{locale.sections.pnv.description}
 ```
 
 **Supported HTML tags:**
+
 - `<br/>` or `<br>` - Line breaks
 - `<b>`, `<strong>` - Bold text
 - `<i>`, `<em>` - Italic text
@@ -264,6 +301,7 @@ p.description !{locale.sections.pnv.description}
 - Other HTML tags as needed
 
 **Example with HTML:**
+
 ```json
 {
   "sections": {
@@ -280,21 +318,45 @@ p.description !{locale.sections.pnv.description}
 ## Locale Structure Reference
 
 ### App Section
+
 - `app.name` - Application name displayed in the header
 
 ### Tabs Section
+
 - `tabs.pnv` - PNV tab label
 - `tabs.login` - Login tab label
 - `tabs.identity` - Identity tab label
 
 ### Sections Section
-Each section contains:
-- `sections.{section}.title` - Section title
-- `sections.{section}.description` - Section description
 
-Available sections: `pnv`, `login`, `identity`
+#### PNV Section
+
+- `sections.pnv.title` - PNV section title
+- `sections.pnv.description` - PNV section description
+- `sections.pnv.button_ip_label` - Optional: Override IP button label for PNV section
+- `sections.pnv.button_ip_plus_label` - Optional: Override IP+ button label for PNV section
+- `sections.pnv.button_im_label` - Optional: Override IM button label for PNV section
+- `sections.pnv.button_sim_label` - Optional: Override SIM button label for PNV section
+- `sections.pnv.button_ip_via_app_label` - Optional: Override IP via App button label for PNV section
+
+#### Login Section
+
+- `sections.login.title` - Login section title
+- `sections.login.description` - Login section description
+- `sections.login.button_ip_label` - Optional: Override IP button label for Login section
+- `sections.login.button_ip_plus_label` - Optional: Override IP+ button label for Login section
+- `sections.login.button_im_label` - Optional: Override IM button label for Login section
+- `sections.login.button_sim_label` - Optional: Override SIM button label for Login section
+
+#### Identity Section
+
+- `sections.identity.title` - Identity section title
+- `sections.identity.description` - Identity section description
+- `sections.identity.button_anonymous_identity_label` - Optional: Override Anonymous Identity button label
+- `sections.identity.button_kyc_label` - Optional: Override KYC button label
 
 ### Buttons Section
+
 - `buttons.ip` - IP button label
 - `buttons.ip_plus` - IP+ button label
 - `buttons.im` - IM button label
@@ -303,12 +365,8 @@ Available sections: `pnv`, `login`, `identity`
 - `buttons.anonymous_identity` - Anonymous Identity button label
 - `buttons.kyc` - KYC button label
 
-### Environments Section
-- `environments.stage` - Stage environment label
-- `environments.live` - Live environment label
-- `environments.live_id` - Live ID environment label
-
 ### Footer Section
+
 - `footer.viettel_legal` - Legal disclaimer text
 - `footer.viettel` - Viettel brand name
 - `footer.privacy_policy` - Privacy Policy link text
@@ -316,6 +374,7 @@ Available sections: `pnv`, `login`, `identity`
 - `footer.help` - Help link text
 
 ### Modals Section
+
 - `modals.about_title` - About modal title
 - `modals.server_label` - Server label in about modal
 - `modals.state_label` - State label in about modal

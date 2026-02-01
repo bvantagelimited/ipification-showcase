@@ -1,85 +1,71 @@
 {
   "realm": "ipification",
   "title": "IPification Showcase",
-  "auth_server_url": "",
-  "show_env_select": true,
-  "stage_url": "https://test.ipification.com",
-  "live_url": "https://showcase.ipification.com",
-  "live_id_url": "https://showcase.id.ipification.com",
-  "app_logo_url": "/images/logo/vil.svg",
-  "app_logo_style": "width: 50px; height: 50px;",
-  "favicon_url": "",
-  "default_country_code": "vn",
-  "disabled_select_country": false,
-  "notification_secret_key": "",
-  "firebase_server_key": "",
+  "auth_servers": [
+    {
+      "id": "stage",
+      "url": "https://api.stage.ipification.com/auth"
+    }
+  ],
+  "client_id": "",
+  "client_secret": "",
   "clients": [
     {
       "user_flow": "pvn_ip",
-      "client_id": "",
-      "client_secret": "",
       "title": "IP Phone Number Verification",
       "scope": "openid ip:phone_verify"
     },
       {
       "user_flow": "pvn_ip_plus",
-      "client_id": "",
-      "client_secret": "",
       "title": "IP+ Phone Number Verification",
       "scope": "openid ip:phone_verify ip:mobile_id"
     },
     {
       "user_flow": "pvn_im",
-      "client_id": "",
-      "client_secret": "",
       "title": "IM Phone Number Verification",
       "scope": "openid ip:phone_verify",
       "channel": "wa viber telegram"
     },
     {
+      "user_flow": "pvn_ipificator",
+      "title": "IP via App",
+      "scope": "openid ip:phone_verify"
+    },
+    {
+      "user_flow": "pvn_sim",
+      "title": "SIM Verification",
+      "scope": "openid ip:phone_verify"
+    },
+    {
       "user_flow": "login_ip",
-      "client_id": "",
-      "client_secret": "",
       "title": "IP Login",
       "scope": "openid ip:phone"
     },
     {
       "user_flow": "login_ip_plus",
-      "client_id": "",
-      "client_secret": "",
       "title": "IP+ Login",
       "scope": "openid ip:mobile_id ip:phone"
     },
     {
       "user_flow": "login_im",
-      "client_id": "",
-      "client_secret": "",
       "title": "IM Login",
       "scope": "openid ip:phone",
       "channel": "wa viber telegram"
     },
     {
+      "user_flow": "login_sim",
+      "title": "SIM Login",
+      "scope": "openid ip:phone"
+    },
+    {
       "user_flow": "anonymous",
-      "client_id": "",
-      "client_secret": "",
       "title": "Anonymous Identity",
       "scope": "openid ip:mobile_id"
     },
     {
       "user_flow": "kyc_phone",
-      "client_id": "",
-      "client_secret": "",
       "title": "KYC Data",
       "scope": "openid ip:profile"
     }
-  ],
-  "locale": {
-    "app": {
-      "name": "Custom App Name"
-    },
-    "tabs": {
-      "pnv": "Custom PNV",
-      "login": "Custom Login"
-    }
-  }
+  ]
 }

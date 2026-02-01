@@ -30,11 +30,6 @@
     "anonymous_identity": "Anonymous Identity",
     "kyc": "KYC"
   },
-  "environments": {
-    "stage": "Stage",
-    "live": "Live",
-    "live_id": "Live ID"
-  },
   "footer": {
     "viettel_legal": "Please be kindly aware that by operating to initiate and/or access user accounts, you have agreed on entire content set out in the Privacy terms and Conditions of the Service; and Terms of Use by",
     "viettel": "Viettel",

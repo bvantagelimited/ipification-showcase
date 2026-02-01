@@ -8,7 +8,7 @@ const router = express.Router();
 
 const { deepMerge } = require('../utils/helpers');
 
-// add loading app_locale.json and merge with app_locale from default.json if exists
+// Load app_config.json and merge with app_config from default.json if exists
 const appConfigPath = path.join(__dirname, '..', 'config', 'app_config.json');
 const defaultAppConfig = JSON.parse(fs.readFileSync(appConfigPath, 'utf8'));
 
@@ -39,7 +39,7 @@ router.get('/api/geoip', async (req, res) => {
 });
 
 router.get('/api/config', (req, res) => {
-  const { auth_server_url, realm, clients, baseUrl } = res.locals;
+  const { auth_servers, realm, clients, baseUrl } = res.locals;
   const safeClients = Array.isArray(clients)
     ? clients.map(({ client_secret, ...client }) => ({
       ...client,
@@ -48,7 +48,7 @@ router.get('/api/config', (req, res) => {
     : [];
 
   res.send({
-    auth_server_url,
+    auth_servers,
     realm,
     clients: safeClients,
     app_config: appConfig

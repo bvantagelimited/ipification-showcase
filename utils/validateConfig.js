@@ -10,10 +10,12 @@
  */
 function validateAuthServers(authServers) {
   if (!authServers || !Array.isArray(authServers)) {
+    console.log('auth_servers', authServers);
     throw new Error('Configuration error: auth_servers must be defined as an array in config');
   }
 
   if (authServers.length === 0) {
+    console.log('auth_servers', authServers);
     throw new Error('Configuration error: auth_servers must contain at least one server');
   }
 
@@ -97,11 +99,11 @@ function validateCredentials(config) {
   if (!config.client_id || typeof config.client_id !== 'string') {
     throw new Error('Configuration error: client_id must be defined as a string');
   }
-  
+
   if (!config.client_secret || typeof config.client_secret !== 'string') {
     throw new Error('Configuration error: client_secret must be defined as a string');
   }
-  
+
   console.log('✓ Credentials configured');
 }
 
@@ -113,12 +115,12 @@ function validateCredentials(config) {
  */
 function validateConfig(config) {
   console.log('\n=== Validating Configuration ===');
-  
+
   validateRealm(config.realm);
   validateAuthServers(config.auth_servers);
   validateClients(config.clients);
   validateCredentials(config);
-  
+
   console.log('=== Configuration Valid ✓ ===\n');
 }
 

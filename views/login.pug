@@ -16,19 +16,18 @@ block content
 				div.form-login
 					.clearfix
 					.row.block-header
-						.col-12
+						.col.col-sm-6.col-md-8
 							.row
 								if app_logo_url
 									img.app-logo(src=app_logo_url alt=locale.app.name style=app_logo_style || 'max-width: 100%')
 								else
 									h3.app-name #{locale.app.name}
-
-					if auth_servers.length > 1
-						.row.auth-server-selector
-							.col-12.row-item
-								select.form-control(id="select_auth_server")
-									each auth_server in auth_servers
-										option(value=auth_server.id) #{auth_server.id}
+						.col.col-sm-6.col-md-4
+							if auth_servers.length > 1
+								.row.auth-server-selector
+									select.form-control(id="select_auth_server")
+										each auth_server in auth_servers
+											option(value=auth_server.id) #{auth_server.id}
 					.row.block-page
 						ul.list-tabs.nav.nav-tabs
 							if hasPvnButtons

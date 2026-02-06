@@ -17,6 +17,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
+    "firebase-admin": "^12.4.1",
     "geoip-lite": "^1.4.10",
     "helmet": "^8.1.0",
     "html-entities": "^2.6.0",

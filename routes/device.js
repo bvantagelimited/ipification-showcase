@@ -49,7 +49,7 @@ router.post("/notification/:secret_key", async (req, res) => {
   }
 
   const device_info = await dataStore.get(`device:${device_id}`);
-  console.log(`[ipification_notification] device_id: ${device_id}, device_info: ${JSON.stringify(device_info)}`);
+  console.log(`[ipification_notification] device_id: ${device_id}, notification_type: ${notification_type}, device_info: ${JSON.stringify(device_info)}`);
 
   if(!device_info) {
     console.log(`[ipification_notification] device not found`);

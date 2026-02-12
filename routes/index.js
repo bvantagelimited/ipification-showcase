@@ -3,6 +3,7 @@ const geoip = require('geoip-lite');
 const path = require('path');
 const fs = require('fs');
 const config = require('config');
+const logger = require('../utils/logger');
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ router.get('/api/geoip', async (req, res) => {
   const default_country_code = res.locals.default_country_code || 'rs';
   try {
     const ip = req.ip;
-    console.log('client ip', ip);
+    logger.log('client ip', ip);
     const geo = geoip.lookup(ip);
 
     res.send({
@@ -30,7 +31,7 @@ router.get('/api/geoip', async (req, res) => {
       ip
     });
   } catch (error) {
-    console.error('GeoIP lookup error:', error);
+    logger.error('GeoIP lookup error:', error);
     res.send({
       country: default_country_code,
       ip: req.ip

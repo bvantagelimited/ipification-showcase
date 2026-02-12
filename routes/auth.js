@@ -6,6 +6,7 @@ const qs = require('qs');
 const debug = require('debug')('info');
 const prettyHtml = require('json-pretty-html').default;
 const dataStore = require('../lib/data_store');
+const logger = require('../utils/logger');
 const { findClientByUserFlow, findClientByClientId, delay } = require('../utils/helpers');
 const { QR_CODE_SUFFIX, ERROR_MESSAGES, HTTP_STATUS, MAX_RETRY_ATTEMPTS, RETRY_DELAY_MS } = require('../utils/constants');
 const { exchangeCodeAndGetUserInfo } = require('../utils/httpClient');
@@ -52,7 +53,7 @@ function buildAuthUrl(userFlow, authServerUrl, realm, params) {
 router.get('/start', function (req, res) {
   const { clients, getAuthServer, realm, baseUrl } = res.locals;
   const { user_flow: userFlow, phone, state, server_id: serverId } = req.query || {};
-  
+
   // Get auth server (defaults to first server if serverId not provided)
   const authServer = getAuthServer(serverId);
   if (!authServer) {
@@ -76,7 +77,7 @@ router.get('/start', function (req, res) {
   const params = buildAuthParams(client, baseUrl, userFlow, actualServerId, state, phone);
   const authUrl = buildAuthUrl(userFlow, authServerUrl, realm, params);
 
-  console.log('authUrl: ', authUrl);
+  logger.log('authUrl:', authUrl);
   res.redirect(authUrl);
 });
 
@@ -171,7 +172,8 @@ router.get('/callback/:userFlow/:serverId', async function (req, res) {
 
   try {
     const { userInfo } = await exchangeCodeAndGetUserInfo(tokenUrl, userUrl, params);
-    console.log('userInfo', userInfo);
+    logger.log(`state: ${state}`);
+    logger.log(`userInfo: ${JSON.stringify(userInfo)}`);
 
     const response = {
       userInfo: prettyHtml(userInfo),
@@ -180,7 +182,6 @@ router.get('/callback/:userFlow/:serverId', async function (req, res) {
       state
     };
 
-    console.log(`store state: ${state}, response: ${JSON.stringify(response)}`);
     // store response for session complete
     await dataStore.set(state, response);
     // store user info with state
@@ -188,7 +189,7 @@ router.get('/callback/:userFlow/:serverId', async function (req, res) {
     const auth_complete_url = `${baseUrl}/auth/complete?state=${state}`;
 
     if (ipBackchannelAuth) {
-      console.log('ipBackchannelAuth: true -> render 200');
+      logger.log('ipBackchannelAuth: true -> render 200');
       res.send();
       return;
     }
@@ -202,9 +203,9 @@ router.get('/callback/:userFlow/:serverId', async function (req, res) {
 
     res.redirect(auth_complete_url);
   } catch (err) {
-    console.error('---> get token error: ', err.message);
+    logger.error('---> get token error:', err.message);
     if (err.response?.data) {
-      console.error('Error response data:', err.response.data);
+      logger.error('Error response data:', err.response.data);
     }
     res.status(HTTP_STATUS.BAD_REQUEST).send(err.message);
   }
@@ -263,7 +264,9 @@ router.post('/mobile/login', async (req, res) => {
   // Get auth server (defaults to first server if serverId not provided)
   const authServer = getAuthServer(serverId);
   if (!authServer) {
-    res.status(HTTP_STATUS.BAD_REQUEST).send({ error: serverId ? `Invalid server_id: '${serverId}'` : 'No auth servers configured' });
+    const error_message = serverId ? `Invalid server_id: '${serverId}'` : 'No auth servers configured';
+    logger.error(error_message);
+    res.status(HTTP_STATUS.BAD_REQUEST).send({ error: error_message });
     return;
   }
 
@@ -271,6 +274,7 @@ router.post('/mobile/login', async (req, res) => {
 
   const client = findClientByClientId(clients, client_id);
   if (!client) {
+    logger.error(ERROR_MESSAGES.CLIENT_NOT_FOUND);
     res.status(HTTP_STATUS.UNAUTHORIZED).send({ error: ERROR_MESSAGES.CLIENT_NOT_FOUND });
     return;
   }
@@ -288,9 +292,11 @@ router.post('/mobile/login', async (req, res) => {
 
   try {
     const { userInfo } = await exchangeCodeAndGetUserInfo(tokenUrl, userUrl, params);
+    logger.log(userInfo);
     res.send(userInfo);
   } catch (err) {
-    console.error('---> get token error: ', err.message);
+    logger.error(`code: ${code}, redirect_uri: ${redirect_uri}`);
+    logger.error('---> get token error:', err.message);
     res.status(HTTP_STATUS.UNAUTHORIZED).send({ error: err.message });
   }
 });

@@ -25,6 +25,7 @@ block content
 						.col.col-sm-6.col-md-4
 							if auth_servers.length > 1
 								.row.auth-server-selector
+									.label Site
 									select.form-control(id="select_auth_server")
 										each auth_server in auth_servers
 											option(value=auth_server.id) #{auth_server.id}

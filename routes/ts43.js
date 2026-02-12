@@ -3,6 +3,7 @@ const axios = require('axios');
 const qs = require('qs');
 const { v4: uuidv4 } = require('uuid');
 const prettyHtml = require('json-pretty-html').default;
+const logger = require('../utils/logger');
 const { findClientByClientId } = require('../utils/helpers');
 const { ERROR_MESSAGES, HTTP_STATUS } = require('../utils/constants');
 const { getFormUrlEncodedConfig, getJsonConfig, getUserInfo } = require('../utils/httpClient');
@@ -64,7 +65,7 @@ router.post('/auth', async (req, res) => {
   const client = findClientByClientId(clients, clientId);
 
   if (!client) {
-    console.log(`client(${clientId}) not found`);
+    logger.log(`client(${clientId}) not found`);
     res.status(HTTP_STATUS.UNAUTHORIZED).send(ERROR_MESSAGES.CLIENT_NOT_FOUND);
     return;
   }
@@ -78,11 +79,11 @@ router.post('/auth', async (req, res) => {
 
     const formData = buildCibaAuthFormData(clientId, clientSecret, reqScope, scope, login_hint, carrier_hint);
 
-    console.log('authUrl', authUrl);
-    console.log('formData', formData);
+    logger.log('authUrl', authUrl);
+    logger.log('formData', formData);
 
     const authResponse = await axios.post(authUrl, qs.stringify(formData), getFormUrlEncodedConfig());
-    console.log('Auth response:', authResponse.data);
+    logger.log('Auth response:', authResponse.data);
 
     const authReqId = authResponse.data.auth_req_id;
 
@@ -99,8 +100,8 @@ router.post('/auth', async (req, res) => {
       nonce: ts43_nonce
     };
 
-    console.log('dcqlUrl', dcqlUrl);
-    console.log('dcqlPayload', dcqlPayload);
+    logger.log('dcqlUrl', dcqlUrl);
+    logger.log('dcqlPayload', dcqlPayload);
 
     const dcqlResponse = await axios.post(dcqlUrl, dcqlPayload, {
       headers: {
@@ -109,7 +110,7 @@ router.post('/auth', async (req, res) => {
       }
     });
 
-    console.log('DCQL response:', dcqlResponse.data);
+    logger.log('DCQL response:', dcqlResponse.data);
 
     // Return both responses
     res.json({
@@ -119,7 +120,7 @@ router.post('/auth', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('CIBA Auth Error:', error.message);
+    logger.error('CIBA Auth Error:', error.message);
 
     const errorResponse = {
       success: false,
@@ -137,8 +138,8 @@ router.post('/auth', async (req, res) => {
 
 router.post('/log', async (req, res) => {
   const { data: data } = req.body;
-  console.log('--> log');
-  console.log(JSON.stringify(data));
+  logger.log('--> log');
+  logger.log(JSON.stringify(data));
   res.send('OK');
 });
 
@@ -154,8 +155,8 @@ function buildSessionUserData(userInfo, clientId, nonce) {
 async function callCallbackEndpoint(callbackUrl, vpToken, authReqId) {
   try {
     const callbackPayload = { vp_token: vpToken };
-    console.log('callbackUrl', callbackUrl);
-    console.log('callbackPayload', callbackPayload);
+    logger.log('callbackUrl', callbackUrl);
+    logger.log('callbackPayload', callbackPayload);
 
     const callbackResponse = await axios.post(callbackUrl, callbackPayload, {
       headers: {
@@ -164,15 +165,15 @@ async function callCallbackEndpoint(callbackUrl, vpToken, authReqId) {
       }
     });
 
-    console.log('Callback response:', callbackResponse.data);
+    logger.log('Callback response:', callbackResponse.data);
   } catch (error) {
-    console.error('Callback Error:', error.message);
+    logger.error('Callback Error:', error.message);
   }
 }
 
 router.post('/token', async (req, res) => {
-  console.log('--> token');
-  console.log(JSON.stringify(req.body));
+  logger.log('--> token');
+  logger.log(JSON.stringify(req.body));
   const { vp_token: vpToken, auth_req_id: authReqId, client_id: clientId, nonce, server_id: serverId } = req.body;
   const { clients, getAuthServer, realm } = res.locals;
   
@@ -206,11 +207,11 @@ router.post('/token', async (req, res) => {
       auth_req_id: authReqId,
     };
 
-    console.log('tokenUrl', tokenUrl);
-    console.log('formData', formData);
+    logger.log('tokenUrl', tokenUrl);
+    logger.log('formData', formData);
 
     const authResponse = await axios.post(tokenUrl, qs.stringify(formData), getFormUrlEncodedConfig());
-    console.log('Token response:', authResponse.data);
+    logger.log('Token response:', authResponse.data);
 
     const { access_token: accessToken } = authResponse.data;
     const userUrl = `${authServerUrl}/realms/${realm}/protocol/openid-connect/userinfo`;
@@ -222,7 +223,7 @@ router.post('/token', async (req, res) => {
 
     res.json(userInfo);
   } catch (error) {
-    console.error('Token Auth Error:', error.message);
+    logger.error('Token Auth Error:', error.message);
 
     const errorResponse = {
       error: error.message,
@@ -233,7 +234,7 @@ router.post('/token', async (req, res) => {
       errorResponse.data = error.response.data;
     }
 
-    console.error('Token Auth errorResponse:', errorResponse);
+    logger.error('Token Auth errorResponse:', errorResponse);
 
     req.session.isAuthenticated = true;
     req.session.userData = buildSessionUserData(errorResponse, clientId, nonce);
@@ -243,4 +244,3 @@ router.post('/token', async (req, res) => {
 })
 
 module.exports = router;
-

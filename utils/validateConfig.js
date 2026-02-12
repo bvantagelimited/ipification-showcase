@@ -2,6 +2,7 @@
  * Configuration validation module
  * Validates application configuration on startup
  */
+const logger = require('./logger');
 
 /**
  * Validate auth_servers configuration
@@ -10,12 +11,12 @@
  */
 function validateAuthServers(authServers) {
   if (!authServers || !Array.isArray(authServers)) {
-    console.log('auth_servers', authServers);
+    logger.log('auth_servers', authServers);
     throw new Error('Configuration error: auth_servers must be defined as an array in config');
   }
 
   if (authServers.length === 0) {
-    console.log('auth_servers', authServers);
+    logger.log('auth_servers', authServers);
     throw new Error('Configuration error: auth_servers must contain at least one server');
   }
 
@@ -42,7 +43,7 @@ function validateAuthServers(authServers) {
     throw new Error(`Configuration error: Duplicate auth server IDs found: ${duplicates.join(', ')}`);
   }
 
-  console.log(`✓ Auth servers configured: ${authServers.map(s => s.id).join(', ')}`);
+  logger.log(`✓ Auth servers configured: ${authServers.map(s => s.id).join(', ')}`);
 }
 
 /**
@@ -75,7 +76,7 @@ function validateClients(clients) {
     throw new Error(`Configuration error: Duplicate user_flow found: ${duplicates.join(', ')}`);
   }
 
-  console.log(`✓ Clients configured: ${clients.length} client(s)`);
+  logger.log(`✓ Clients configured: ${clients.length} client(s)`);
 }
 
 /**
@@ -87,7 +88,7 @@ function validateRealm(realm) {
   if (!realm || typeof realm !== 'string') {
     throw new Error('Configuration error: realm must be defined as a string in config');
   }
-  console.log(`✓ Realm configured: ${realm}`);
+  logger.log(`✓ Realm configured: ${realm}`);
 }
 
 /**
@@ -104,7 +105,7 @@ function validateCredentials(config) {
     throw new Error('Configuration error: client_secret must be defined as a string');
   }
 
-  console.log('✓ Credentials configured');
+  logger.log('✓ Credentials configured');
 }
 
 /**
@@ -114,9 +115,9 @@ function validateCredentials(config) {
  * @throws {Error} If any validation fails
  */
 function validateConfig(config) {
-  console.log('\n=== Validating Configuration ===');
+  logger.log('\n=== Validating Configuration ===');
   if(process.env.NODE_ENV === 'stage') {
-    console.log('config', config);
+    logger.log('config', config);
   }
 
   validateRealm(config.realm);
@@ -124,7 +125,7 @@ function validateConfig(config) {
   validateClients(config.clients);
   validateCredentials(config);
 
-  console.log('=== Configuration Valid ✓ ===\n');
+  logger.log('=== Configuration Valid ✓ ===\n');
 }
 
 module.exports = {

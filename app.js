@@ -34,7 +34,15 @@ app.set('trust proxy', 1);
 app.locals.pretty = true;
 
 // app.use(nocache());
-app.use(logger('dev'));
+logger.token('isoDate', () => new Date().toISOString());
+const isAssetRequest = (req) => {
+  const assetExtensions = /\.(css|js|map|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot)$/i;
+  return req.path.startsWith('/public/') || assetExtensions.test(req.path);
+};
+
+app.use(logger(':isoDate :method :url :status :response-time ms - :res[content-length]', {
+  skip: (req) => isAssetRequest(req)
+}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 

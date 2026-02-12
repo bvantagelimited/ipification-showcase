@@ -90,13 +90,11 @@ app.use((req, res, next) => {
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user');
 const authRouter = require('./routes/auth');
-const deviceRouter = require('./routes/device');
 const ts43Router = require('./routes/ts43');
 
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
-app.use('/device', deviceRouter);
 app.use('/ts43', ts43Router);
 
 // error handler

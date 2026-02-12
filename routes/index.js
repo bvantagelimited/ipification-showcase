@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const config = require('config');
 const logger = require('../utils/logger');
+const { version } = require('../package.json');
 
 const router = express.Router();
 
@@ -49,6 +50,7 @@ router.get('/api/config', (req, res) => {
     : [];
 
   res.send({
+    version,
     auth_servers,
     realm,
     clients: safeClients,

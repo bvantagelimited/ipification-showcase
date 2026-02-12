@@ -85,10 +85,6 @@ These fields are optional and have sensible defaults or can be left empty.
 
 - `disabled_select_country` (boolean): When `true`, disables the country selector UI and forces the default country. Default: `false`.
 
-- `notification_secret_key` (string): Secret key for `/device/notification/:secret_key` validation. Required only if using device notification features.
-
-- `firebase_server_key` (string): Firebase Cloud Messaging server key used to send push notifications. Required only if using Firebase push notifications.
-
 - `locale` (object): Optional overrides for UI text. See `docs/LOCALE.md` for full localization options. If not specified, uses default English locale.
 
 ---

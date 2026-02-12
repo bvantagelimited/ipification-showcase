@@ -172,15 +172,15 @@ See [CONFIG_DEFAULT_JSON_SAMPLE.md](CONFIG_DEFAULT_JSON_SAMPLE.md) for details.
 │  │              │  │              │  │   (Pug)       │      │
 │  │ - auth.js    │  │ - Session    │  │ - login.pug  │      │
 │  │ - user.js    │  │ - Helmet    │  │ - info.pug   │      │
-│  │ - device.js  │  │ - Logger    │  │ - qr_*.pug   │      │
-│  │ - ts43.js    │  │ - Parser    │  │              │      │
+│  │ - ts43.js    │  │ - Logger    │  │ - qr_*.pug   │      │
+│  │              │  │ - Parser    │  │              │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
 │                                                               │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
 │  │   Services   │  │   Libraries  │  │   Socket.io   │      │
 │  │              │  │              │  │              │      │
 │  │ - DataStore  │  │ - Axios      │  │ - Real-time  │      │
-│  │ - Notify     │  │ - GeoIP     │  │   Events     │      │
+│  │              │  │ - GeoIP      │  │   Events     │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
 │                                                               │
 └─────────────────────────────────────────────────────────────┘
@@ -277,41 +277,6 @@ See [CONFIG_DEFAULT_JSON_SAMPLE.md](CONFIG_DEFAULT_JSON_SAMPLE.md) for details.
      │<───────────────┤                 │                 │
 ```
 
-### Server-to-Server Flow (Backchannel)
-
-```
-┌──────────┐      ┌──────────┐      ┌──────────┐      ┌──────────┐
-│ Mobile   │      │ Express  │      │IPification│     │  FCM     │
-│  App     │      │  Server  │      │   API     │     │          │
-└────┬─────┘      └────┬─────┘      └────┬─────┘     └────┬─────┘
-     │                 │                 │                 │
-     │ POST /device/register             │                 │
-     ├───────────────>│                 │                 │
-     │                 │                 │                 │
-     │ Device Registered                 │                 │
-     │<───────────────┤                 │                 │
-     │                 │                 │                 │
-     │                 │                 │ User Auth       │
-     │                 │                 │<────────────────┤
-     │                 │                 │                 │
-     │                 │ Notification    │                 │
-     │                 │<────────────────┤                 │
-     │                 │                 │                 │
-     │                 │ Send Push       │                 │
-     │                 │──────────────────────────────────>│
-     │                 │                 │                 │
-     │ Push Notification                  │                 │
-     │<───────────────────────────────────────────────────┤
-     │                 │                 │                 │
-     │ POST /auth/s2s/signin              │                 │
-     ├───────────────>│                 │                 │
-     │                 │                 │                 │
-     │ User Info       │                 │                 │
-     │<───────────────┤                 │                 │
-```
-
----
-
 ## Data Flow
 
 ### Session Management
@@ -343,7 +308,6 @@ Key Format:                    Value:
 ─────────────────────────────────────────────────────────────
 {state}                        { userInfo, client_id, ... }
 {state}-user-info              { raw user info object }
-device:{device_id}             { device_token, device_type }
 ```
 
 ---
@@ -407,13 +371,6 @@ device:{device_id}             { device_token, device_type }
 - **Key Functions**:
   - `GET /user/info`: Display authenticated user info
 
-#### `routes/device.js`
-
-- **Purpose**: Device registration and push notifications
-- **Key Functions**:
-  - `POST /device/register`: Register device for push
-  - `POST /device/notification/:secret_key`: Receive IPification notifications
-
 #### `routes/ts43.js`
 
 - **Purpose**: TS43 protocol implementation
@@ -430,13 +387,6 @@ device:{device_id}             { device_token, device_type }
 - **Implementation**: In-memory cache using `cache-manager`
 - **TTL**: 60 minutes
 - **Usage**: Store authentication state and user information
-
-#### `lib/send_notification.js`
-
-- **Purpose**: Push notification service
-- **Implementation**: Firebase Cloud Messaging (FCM)
-- **Supports**: Android and iOS devices
-- **Configuration**: Requires `firebase_server_key`
 
 ### Utility Modules
 

@@ -246,6 +246,7 @@ router.get('/qrcode/error', async (req, res) => {
 
 router.post("/s2s/signin", async (req, res) => {
   const { state } = req.body || {};
+  logger.log(`body: ${JSON.stringify(req.body || {})}`);
   const userinfo = await dataStore.get(`${state}-user-info`);
 
   if (userinfo) {
@@ -259,6 +260,8 @@ router.post("/s2s/signin", async (req, res) => {
 // support mobile side login and return user info
 router.post('/mobile/login', async (req, res) => {
   const { client_id, code, redirect_uri, server_id: serverId } = req.body || {};
+  logger.log(`body: ${JSON.stringify(req.body || {})}`);
+
   const { clients, getAuthServer, realm } = res.locals;
 
   // Get auth server (defaults to first server if serverId not provided)
@@ -295,7 +298,6 @@ router.post('/mobile/login', async (req, res) => {
     logger.log(userInfo);
     res.send(userInfo);
   } catch (err) {
-    logger.error(`code: ${code}, redirect_uri: ${redirect_uri}`);
     logger.error('---> get token error:', err.message);
     res.status(HTTP_STATUS.UNAUTHORIZED).send({ error: err.message });
   }

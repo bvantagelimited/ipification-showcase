@@ -296,7 +296,13 @@ router.post('/mobile/login', async (req, res) => {
   try {
     const { userInfo } = await exchangeCodeAndGetUserInfo(tokenUrl, userUrl, params);
     logger.log(userInfo);
-    res.send(userInfo);
+
+    const tokenResponse = {
+      auth_server: authServer,
+      ...userInfo,
+    }
+
+    res.send(tokenResponse);
   } catch (err) {
     logger.error('---> get token error:', err.message);
     res.status(HTTP_STATUS.UNAUTHORIZED).send({ error: err.message });

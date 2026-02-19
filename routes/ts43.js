@@ -52,7 +52,7 @@ function buildDigitalRequest(nonce, dcqlData) {
 router.post('/auth', async (req, res) => {
   const { login_hint, carrier_hint, client_id: clientId, operation, scope: reqScope, server_id: serverId } = req.body;
   const { clients, getAuthServer, realm } = res.locals;
-  
+
   // Get auth server (defaults to first server if serverId not provided)
   const authServer = getAuthServer(serverId);
   if (!authServer) {
@@ -114,6 +114,7 @@ router.post('/auth', async (req, res) => {
 
     // Return both responses
     res.json({
+      auth_server: authServer,
       auth_req_id: authReqId,
       nonce: ts43_nonce,
       digital_request: buildDigitalRequest(ts43_nonce, dcqlResponse.data)
@@ -176,7 +177,7 @@ router.post('/token', async (req, res) => {
   logger.log(JSON.stringify(req.body));
   const { vp_token: vpToken, auth_req_id: authReqId, client_id: clientId, nonce, server_id: serverId } = req.body;
   const { clients, getAuthServer, realm } = res.locals;
-  
+
   // Get auth server (defaults to first server if serverId not provided)
   const authServer = getAuthServer(serverId);
   if (!authServer) {
@@ -221,7 +222,12 @@ router.post('/token', async (req, res) => {
     req.session.isAuthenticated = true;
     req.session.userData = buildSessionUserData(userInfo, clientId, nonce);
 
-    res.json(userInfo);
+    const tokenResponse = {
+      auth_server: authServer,
+      ...userInfo,
+    }
+
+    res.json(tokenResponse);
   } catch (error) {
     logger.error('Token Auth Error:', error.message);
 

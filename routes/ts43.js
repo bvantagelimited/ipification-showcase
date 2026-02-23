@@ -124,6 +124,7 @@ router.post('/auth', async (req, res) => {
     logger.error('CIBA Auth Error:', error.message);
 
     const errorResponse = {
+      auth_server: authServer,
       success: false,
       error: error.message,
       status: error.response?.status || HTTP_STATUS.INTERNAL_SERVER_ERROR

@@ -170,6 +170,38 @@ function choose_option(selector) {
   $('.btn_' + selector).addClass('btn-active');
 }
 
+function attachWebOtpToInput(getInput, onCodeReceived) {
+  if (!window.isSecureContext || !('OTPCredential' in window) || !('credentials' in navigator)) {
+    return null;
+  }
+
+  const ac = new AbortController();
+
+  navigator.credentials.get({
+    otp: { transport: ['sms'] },
+    signal: ac.signal
+  }).then((otp) => {
+    const input = getInput();
+    if (!input || !otp || !otp.code) {
+      return;
+    }
+
+    input.value = otp.code;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    onCodeReceived(otp.code);
+  }).catch((error) => {
+    if (error && error.name !== 'AbortError') {
+      console.log('WebOTP error', error.message || error);
+    }
+  });
+
+  return ac;
+}
+
+function sanitizeOtpValue(value) {
+  return (value || '').replace(/\D/g, '');
+}
+
 $(document).ready(function () {
   // Initialize auth server dropdown
   initAuthServerDropdown();
@@ -420,6 +452,7 @@ $(document).ready(function () {
 
       const body = await response.json();
       const { auth_req_id, nonce } = body;
+      let otpAbortController = null;
 
       const otpResult = await Swal.fire({
         title: 'Enter OTP code',
@@ -440,18 +473,46 @@ $(document).ready(function () {
           cancelButton: 'sms-otp-cancel',
         },
         inputAttributes: {
+          autocomplete: 'one-time-code',
           autocapitalize: 'off',
           autocorrect: 'off',
-          inputmode: 'numeric'
+          inputmode: 'numeric',
+          pattern: '[0-9]*'
+        },
+        didOpen: () => {
+          const input = Swal.getInput();
+          if (input) {
+            input.addEventListener('input', function () {
+              const sanitizedValue = sanitizeOtpValue(this.value);
+              if (this.value !== sanitizedValue) {
+                this.value = sanitizedValue;
+              }
+            });
+          }
+
+          otpAbortController = attachWebOtpToInput(
+            () => Swal.getInput(),
+            () => {
+              if (!Swal.isLoading()) {
+                Swal.clickConfirm();
+              }
+            }
+          );
+        },
+        willClose: () => {
+          if (otpAbortController) {
+            otpAbortController.abort();
+          }
         },
         inputValidator: (value) => {
-          if (!value || !value.trim()) {
+          const sanitizedValue = sanitizeOtpValue(value);
+          if (!sanitizedValue) {
             return 'Please enter OTP code';
           }
         },
         preConfirm: async (otpCode) => {
           const dataToken = {
-            "code": otpCode.trim(),
+            "code": sanitizeOtpValue(otpCode),
             "auth_req_id": auth_req_id,
             "client_id": data.client_id,
             "nonce": nonce,

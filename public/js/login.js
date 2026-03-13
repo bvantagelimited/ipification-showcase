@@ -94,12 +94,12 @@ function initAuthServerDropdown() {
   $.get('/api/config', function(config) {
     authServers = config.auth_servers || [];
     console.log('*** Auth servers:', authServers);
-    
+
     if (authServers.length > 0) {
       selectedServerId = loadSelectedServerId();
       $('#select_auth_server').val(selectedServerId);
       updateServerInfoDisplay();
-      
+
       // Handle dropdown change
       $('#select_auth_server').on('change', function() {
         const serverId = $(this).val();
@@ -196,7 +196,7 @@ $(document).ready(function () {
     var phone_number;
     var dialCode;
 
-    if (['pvn_ip', 'pvn_ip_plus', 'pvn_im', 'kyc_phone', 'pvn_ipificator', 'pvn_sim'].indexOf(user_flow) >= 0) {
+    if (['pvn_ip', 'pvn_ip_plus', 'pvn_im', 'kyc_phone', 'pvn_ipificator', 'pvn_sim', 'pvn_sms'].indexOf(user_flow) >= 0) {
       var parent = $(this).closest('.block-button');
       var inputPhone = parent.find('input.phoneNumber');
 
@@ -222,6 +222,11 @@ $(document).ready(function () {
 
     if(user_flow === 'pvn_sim') {
       start_pvn_sim(client_id, phone_number);
+      return;
+    }
+
+    if(user_flow === 'pvn_sms') {
+      start_pvn_sms(client_id, phone_number);
       return;
     }
 
@@ -277,12 +282,30 @@ $(document).ready(function () {
       "login_hint": phone_number,
       "carrier_hint": 51010,
       "client_id": client_id,
-      "operation": "VerifyPhoneNumber",
       "scope": "openid ip:phone_verify",
       "server_id": serverId
     }
 
     start_ts43_flow(data);
+  }
+
+  async function start_pvn_sms(client_id, phone_number) {
+    console.log('start_pvn_sms');
+
+    const serverId = getSelectedServerId();
+    if (!serverId) {
+      alert('Please select an auth server');
+      return;
+    }
+
+    const data = {
+      "login_hint": phone_number,
+      "client_id": client_id,
+      "scope": "openid ip:phone_verify",
+      "server_id": serverId
+    }
+
+    start_sms_flow(data);
   }
 
   async function start_login_sim(client_id) {
@@ -380,8 +403,113 @@ $(document).ready(function () {
     }
   }
 
+  async function start_sms_flow(data) {
+    try {
+      const response = await fetch('/sms/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if(!response.ok) {
+        alert('AuthError: ' + response.statusText);
+        return;
+      }
+
+      const body = await response.json();
+      const { auth_req_id, nonce } = body;
+
+      const otpResult = await Swal.fire({
+        title: 'Enter OTP code',
+        input: 'text',
+        inputPlaceholder: 'OTP code',
+        confirmButtonText: 'Enter',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        heightAuto: false,
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+        customClass: {
+          popup: 'sms-otp-popup',
+          title: 'sms-otp-title',
+          input: 'sms-otp-input',
+          actions: 'sms-otp-actions',
+          confirmButton: 'sms-otp-confirm',
+          cancelButton: 'sms-otp-cancel',
+        },
+        inputAttributes: {
+          autocapitalize: 'off',
+          autocorrect: 'off',
+          inputmode: 'numeric'
+        },
+        inputValidator: (value) => {
+          if (!value || !value.trim()) {
+            return 'Please enter OTP code';
+          }
+        },
+        preConfirm: async (otpCode) => {
+          const dataToken = {
+            "code": otpCode.trim(),
+            "auth_req_id": auth_req_id,
+            "client_id": data.client_id,
+            "nonce": nonce,
+            "server_id": data.server_id,
+          };
+
+          try {
+            const tokenResponse = await fetch('/sms/token', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(dataToken),
+            });
+
+            const tokenBody = await tokenResponse.json();
+
+            await log_sms_data({
+              type: 'get_token_response',
+              data: tokenBody,
+            });
+
+            if (!tokenResponse.ok) {
+              Swal.showValidationMessage(tokenBody.data?.error_description || tokenBody.error || 'Unable to verify OTP code');
+              return false;
+            }
+
+            return tokenBody;
+          } catch (error) {
+            Swal.showValidationMessage(error.message || 'Unable to verify OTP code');
+            return false;
+          }
+        }
+      });
+
+      if (!otpResult.isConfirmed) {
+        return;
+      }
+
+      window.location.href = '/user/info';
+    } catch (error) {
+      alert(error.message);
+      console.log('error', error.message);
+    }
+  }
+
   async function log_data(data) {
     await fetch('/ts43/log', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: data }),
+    });
+  }
+
+  async function log_sms_data(data) {
+    await fetch('/sms/log', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -488,6 +616,9 @@ function showQrcodeWithLink(title, url, state) {
     showConfirmButton: false,
     showCloseButton: true,
     heightAuto: false,
+    customClass: {
+      popup: 'qrcode-popup',
+    },
     didOpen: () => {
       var qrCodeElm = document.querySelector('.qr-code-block .qrcode-img');
       new QRCode(qrCodeElm, {

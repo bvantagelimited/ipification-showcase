@@ -2,7 +2,7 @@
 extends layout
 
 block content
-	- const pvnFlows = ['pvn_ip', 'pvn_ip_plus', 'pvn_im', 'pvn_ipificator', 'pvn_sim'];
+	- const pvnFlows = ['pvn_ip', 'pvn_ip_plus', 'pvn_im', 'pvn_ipificator', 'pvn_sim', 'pvn_sms'];
 	- const loginFlows = ['login_ip', 'login_ip_plus', 'login_im', 'login_sim'];
 	- const identityFlows = ['anonymous', 'kyc_phone'];
 	- const hasPvnButtons = pvnFlows.some(flow => clients.find(c => c.user_flow === flow));
@@ -67,6 +67,9 @@ block content
 																span.right-icon
 														else if flow === 'pvn_sim'
 															button.btn_full.btn.btn_IM.btnLoginPhone.btn-user-flow#pvn_sim(data-title=get_flow_title('pvn_sim', locale.sections.pnv.title) data-user-flow='pvn_sim' data-client-id=client.client_id) #{locale.sections.pnv.button_sim_label || locale.buttons.sim}
+																span.right-icon
+														else if flow === 'pvn_sms'
+															button.btn_full.btn.btn_sms.btnLoginPhone.btn-user-flow#pvn_sms(data-title=get_flow_title('pvn_sms', locale.sections.pnv.title) data-user-flow='pvn_sms' data-client-id=client.client_id) #{locale.sections.pnv.button_sms_label || locale.buttons.sms}
 																span.right-icon
 
 							if hasLoginButtons

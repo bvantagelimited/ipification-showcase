@@ -946,7 +946,7 @@ button.close:focus {
 }
 
 // qrcode
-.swal2-container.swal2-center>.swal2-popup {
+.swal2-container.swal2-center>.swal2-popup.qrcode-popup {
 	width: 630px;
 	height: 545px;
 	border-radius: 0;
@@ -964,7 +964,7 @@ button.close:focus {
 	color: #1A1A1A;
 }
 
-.swal2-html-container {
+.qrcode-popup .swal2-html-container {
 	margin-top: -60px !important;
 }
 
@@ -992,7 +992,7 @@ button.close:focus {
 	}
 }
 
-.swal2-title {
+.qrcode-popup .swal2-title {
 	color: #1A1A1A !important;
 	padding: 0 !important;
 	height: 50px;
@@ -1000,6 +1000,92 @@ button.close:focus {
 	top: 30px;
 	left: 26px;
 	font-size: 20px !important;
+}
+
+.swal2-container.swal2-center>.swal2-popup.sms-otp-popup {
+	width: 460px;
+	max-width: 92vw;
+	height: auto;
+	border-radius: 0;
+	border: 1px solid #000;
+	padding: 28px 28px 24px;
+	top: unset;
+	grid-row: unset !important;
+}
+
+.sms-otp-popup .swal2-title {
+	position: static !important;
+	height: auto;
+	padding: 0 !important;
+	margin: 0 0 18px !important;
+	font-size: 20px !important;
+	line-height: 1.2;
+	color: #1A1A1A !important;
+	text-align: left;
+}
+
+.sms-otp-popup .swal2-html-container {
+	margin: 0 !important;
+}
+
+.sms-otp-popup .swal2-input {
+	width: 100% !important;
+	margin: 0 !important;
+	height: 56px;
+	border: none;
+	border-bottom: 2px solid #2646ff;
+	border-radius: 9px 9px 0 0;
+	background-color: #f2f2f6;
+	box-shadow: none !important;
+	color: #1A1A1A;
+	font-size: 16px;
+	padding: 0 18px;
+}
+
+.sms-otp-popup .swal2-input:focus {
+	border-bottom-color: #2646ff;
+	box-shadow: none !important;
+}
+
+.sms-otp-popup .swal2-actions {
+	width: 100%;
+	margin: 24px 0 0 !important;
+	justify-content: flex-end;
+	gap: 12px;
+}
+
+.sms-otp-popup .swal2-styled {
+	margin: 0 !important;
+	padding: 14px 26px;
+	border-radius: 0;
+	font-size: 16px;
+	font-weight: 700;
+	box-shadow: none !important;
+}
+
+.sms-otp-popup .swal2-confirm {
+	background-color: #2646ff !important;
+}
+
+.sms-otp-popup .swal2-cancel {
+	background-color: #7d8793 !important;
+}
+
+@media (max-width: 576px) {
+	.swal2-container.swal2-center>.swal2-popup.qrcode-popup {
+		width: calc(100vw - 24px);
+		height: auto;
+		top: unset;
+		padding-bottom: 32px;
+	}
+
+	.sms-otp-popup .swal2-actions {
+		justify-content: stretch;
+	}
+
+	.sms-otp-popup .swal2-styled {
+		flex: 1 1 0;
+	}
 }
 
 .iti {

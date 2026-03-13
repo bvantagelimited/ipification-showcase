@@ -37,6 +37,9 @@ Welcome! Find what you need quickly.
 **...use SIM verification (TS43)**  
 → [TS43 Guide](TS43.md) - SIM-based auth
 
+**...use SMS OTP verification**  
+→ [SMS Flow Guide](SMS.md) - SMS-based phone verification
+
 **...customize app behavior**  
 → [App Config](APP_CONFIG_JSON.md) - UI and versioning settings
 
@@ -53,6 +56,7 @@ Welcome! Find what you need quickly.
 ### Feature Guides
 
 - **[TS43 SIM Verification](TS43.md)** - Use SIM-based auth
+- **[SMS Verification Flow](SMS.md)** - Use SMS OTP for phone verification
 - **[Multi-Server Setup](CONFIG_DEFAULT_JSON_SAMPLE.md#auth_servers-fields)** - Configure multiple auth servers
 
 ### Reference
@@ -72,6 +76,7 @@ docs/
 ├── CONFIG_DEFAULT_JSON_SAMPLE.md  ← Config reference
 ├── LOCALE.md          ← UI text customization
 ├── TS43.md            ← SIM verification guide
+├── SMS.md             ← SMS OTP verification guide
 ├── API.md             ← API endpoint reference
 ├── ARCHITECTURE.md    ← System overview
 └── APP_CONFIG_JSON.md ← App behavior settings
@@ -94,6 +99,9 @@ A: Edit `locale` in config - [Guide](LOCALE.md)
 
 **Q: How do I enable SIM verification?**  
 A: Add `pvn_sim` to clients - [TS43 Guide](TS43.md)
+
+**Q: How do I enable SMS OTP verification?**  
+A: Add `pvn_sms` to clients - [SMS Flow Guide](SMS.md)
 
 **Q: Where are the API endpoints?**  
 A: See [API Documentation](API.md)
@@ -193,6 +201,23 @@ A: See [API Documentation](API.md)
 - Key code snippet for digital request output
 
 **Best for**: Understanding TS43 flow and router behavior
+
+---
+
+### SMS Flow Documentation
+
+**File**: `docs/SMS.md`
+
+**Contents**:
+
+- SMS OTP verification flow (CIBA with channel sms)
+- Quick setup and configuration
+- Frontend integration (login button, start_pvn_sms, start_sms_flow)
+- API endpoints: `/sms/auth`, `/sms/token`, `/sms/log`
+- Backend → auth server: CIBA auth, SMS callback, token exchange
+- Troubleshooting
+
+**Best for**: Implementing or debugging SMS phone verification
 
 ---
 

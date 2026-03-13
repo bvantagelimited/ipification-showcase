@@ -46,6 +46,10 @@ Quick reference for API endpoints and usage patterns.
 
 → Use `/ts43/auth` → `/ts43/token` flow (see [TS43 Guide](TS43.md))
 
+### I want to use SMS OTP verification
+
+→ Use `/sms/auth` → user enters OTP → `/sms/token` flow (see [SMS Flow Guide](SMS.md))
+
 ### I want to get app configuration
 
 → Call `/api/config` to get auth_servers, clients, etc.
@@ -536,6 +540,30 @@ Logging endpoint for TS43 debugging.
 **Response**: `"OK"`
 
 ---
+
+### SMS Flow Endpoints
+
+See [SMS Flow Guide](SMS.md) for full documentation.
+
+#### POST /sms/auth
+
+Starts CIBA with SMS channel. Auth server sends OTP to the given phone.
+
+**Request Body**: `client_id`, `server_id` (optional), `login_hint` (phone), `scope` (optional)
+
+**Response**: `auth_server`, `auth_req_id`, `nonce`
+
+#### POST /sms/token
+
+Submits user-entered OTP to auth server callback, then exchanges for token and user info.
+
+**Request Body**: `code` (OTP), `auth_req_id`, `client_id`, `nonce`, `server_id` (optional)
+
+**Response**: User info (e.g. `sub`, `phone_number`, `phone_number_verified`) and `auth_server`
+
+#### POST /sms/log
+
+Optional logging for SMS flow debugging. **Request Body**: `{ "data": {...} }`. **Response**: `"OK"`
 
 ---
 

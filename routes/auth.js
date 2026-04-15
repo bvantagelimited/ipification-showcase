@@ -13,10 +13,13 @@ const { exchangeCodeAndGetUserInfo } = require('../utils/httpClient');
 
 router.get('/login', function (req, res) {
   const error_message = req.session.error_message;
-  req.session.error_message = null;
+  const error_state = req.session.error_state;
 
+  req.session.error_message = null;
+  req.session.error_state = null;
   res.render('login', {
     error_message: htmlEntities.encode(error_message),
+    error_state: error_state,
     node_env: process.env.NODE_ENV
   });
 });
@@ -137,6 +140,7 @@ router.get('/callback/:userFlow/:serverId', async function (req, res) {
   if (req.query.error || req.query.error_description) {
     const error_message = req.query.error_description || req.query.error;
     req.session.error_message = error_message;
+    req.session.error_state = req.query?.state || '';
     res.redirect(`/auth/login`);
     return;
   }

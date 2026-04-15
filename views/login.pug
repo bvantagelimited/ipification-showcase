@@ -161,7 +161,12 @@ block content
 			.modal-dialog
 				.modal-content(style="border-radius: 0px;")
 					.modal-header
-						h6.modal-title #{error_message}
+						h6.modal-title
+							| #{error_message}
+							if error_state
+								br
+								strong
+									| State: #{error_state}
 
 block head_scripts
 	script(type="text/javascript").

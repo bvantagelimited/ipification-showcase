@@ -30,6 +30,15 @@ function createPlayIntegrityRouter({ verify, requestIdFactory = uuidv4 }) {
     }
   });
 
+  router.use((error, req, res, next) => {
+    if (error?.type === 'entity.parse.failed' || error?.type === 'entity.too.large') {
+      res.status(400).json(createUnavailableResponse(requestIdFactory(), 'INVALID_REQUEST'));
+      return;
+    }
+
+    next(error);
+  });
+
   return router;
 }
 

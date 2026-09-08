@@ -1,17 +1,23 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const { PlayIntegrityUnavailableError } = require('../services/playIntegrityService');
+const { canonicalJson } = require('../utils/canonicalJson');
 
-function createPlayIntegrityRouter({ verify, requestIdFactory = uuidv4 }) {
+function createPlayIntegrityRouter({
+  verify,
+  requestIdFactory = uuidv4,
+  logCompletion = defaultLogCompletion,
+}) {
   const router = express.Router();
 
   router.use(express.json({ limit: '16kb' }));
   router.post('/verify', async (req, res) => {
+    const startedAt = Date.now();
     const requestId = requestIdFactory();
     const { integrityToken, action, payload } = req.body || {};
 
     if (!isValidRequest({ integrityToken, action, payload })) {
-      res.status(400).json(createUnavailableResponse(requestId, 'INVALID_REQUEST'));
+      respond(res, 400, createResponse(requestId, 'deny', 'INVALID_REQUEST'), startedAt, logCompletion);
       return;
     }
 
@@ -19,20 +25,39 @@ function createPlayIntegrityRouter({ verify, requestIdFactory = uuidv4 }) {
       const result = await verify({ integrityToken, action, payload, requestId });
       const normalizedResult = normalizeResult(result, requestId);
 
-      res.status(normalizedResult.decision === 'allow' ? 200 : 403).json(normalizedResult);
+      respond(
+        res,
+        normalizedResult.decision === 'allow' ? 200 : 403,
+        normalizedResult,
+        startedAt,
+        logCompletion,
+      );
     } catch (error) {
       if (error instanceof PlayIntegrityUnavailableError) {
-        res.status(503).json(createUnavailableResponse(requestId, error.reasonCode));
+        respond(
+          res,
+          503,
+          createResponse(requestId, 'unavailable', error.reasonCode),
+          startedAt,
+          logCompletion,
+        );
         return;
       }
 
-      res.status(500).json(createUnavailableResponse(requestId, 'VERIFICATION_FAILED'));
+      respond(res, 500, createResponse(requestId, 'deny', 'VERIFICATION_FAILED'), startedAt, logCompletion);
     }
   });
 
   router.use((error, req, res, next) => {
     if (error?.type === 'entity.parse.failed' || error?.type === 'entity.too.large') {
-      res.status(400).json(createUnavailableResponse(requestIdFactory(), 'INVALID_REQUEST'));
+      const startedAt = Date.now();
+      respond(
+        res,
+        400,
+        createResponse(requestIdFactory(), 'deny', 'INVALID_REQUEST'),
+        startedAt,
+        logCompletion,
+      );
       return;
     }
 
@@ -48,7 +73,17 @@ function isValidRequest({ integrityToken, action, payload }) {
     && typeof action === 'string'
     && action.trim().length > 0
     && action.length <= 128
-    && isPlainObject(payload);
+    && isPlainObject(payload)
+    && isCanonicalizable(payload);
+}
+
+function isCanonicalizable(payload) {
+  try {
+    canonicalJson(payload);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function isPlainObject(value) {
@@ -75,14 +110,36 @@ function normalizeResult(result, requestId) {
   };
 }
 
-function createUnavailableResponse(requestId, reasonCode) {
+function createResponse(requestId, decision, reasonCode) {
   return {
     requestId,
-    decision: 'deny',
+    decision,
     reasonCodes: [reasonCode],
     requestHashMatched: false,
     verdict: null,
   };
+}
+
+function respond(res, status, response, startedAt, logCompletion) {
+  logCompletionSafely(logCompletion, {
+    requestId: response.requestId,
+    decision: response.decision,
+    reasonCodes: response.reasonCodes,
+    duration: Date.now() - startedAt,
+  });
+  res.status(status).json(response);
+}
+
+function logCompletionSafely(logCompletion, event) {
+  try {
+    logCompletion(event);
+  } catch {
+    // Completion logging must not change the endpoint's response.
+  }
+}
+
+function defaultLogCompletion(event) {
+  console.info(JSON.stringify(event));
 }
 
 module.exports = { createPlayIntegrityRouter };

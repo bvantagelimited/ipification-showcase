@@ -92,12 +92,24 @@ const userRouter = require('./routes/user');
 const authRouter = require('./routes/auth');
 const ts43Router = require('./routes/ts43');
 const smsRouter = require('./routes/sms');
+const { createPlayIntegrityService } = require('./services/playIntegrityService');
+const { createPlayIntegrityRouter } = require('./routes/playIntegrity');
 
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/ts43', ts43Router);
 app.use('/sms', smsRouter);
+
+if (process.env.PLAY_INTEGRITY_ENABLED === 'true') {
+  const { verify } = createPlayIntegrityService({
+    packageName: process.env.PLAY_INTEGRITY_PACKAGE_NAME,
+    requireLicensedApp: process.env.PLAY_INTEGRITY_REQUIRE_LICENSED_APP === 'true',
+    timeoutMs: 10_000,
+  });
+
+  app.use('/api/play-integrity', createPlayIntegrityRouter({ verify }));
+}
 
 // error handler
 app.use(function (err, req, res, next) {

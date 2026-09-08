@@ -23,6 +23,7 @@ Access at `http://<your-ip-address>:3000`
 - [Quick Start Guide](docs/QUICKSTART.md) - Get started in 5 minutes
 - [API Documentation](docs/API.md) - Complete API reference
 - [Architecture](docs/ARCHITECTURE.md) - System design and architecture
+- [Play Integrity backend demo](docs/PLAY_INTEGRITY.md) - Google Play Integrity setup and verification flow
 
 ## Features
 
@@ -68,6 +69,7 @@ npm run dev  # Start with auto-reload
 - **[Quick Start](docs/QUICKSTART.md)** - Setup guide and common issues
 - **[API Reference](docs/API.md)** - Complete endpoint documentation
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and components
+- **[Play Integrity backend demo](docs/PLAY_INTEGRITY.md)** - Backend verification setup, request hashing, and Android checklist
 - **[Documentation Index](docs/INDEX.md)** - Documentation overview
 
 ## Support

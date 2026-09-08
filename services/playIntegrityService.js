@@ -65,7 +65,7 @@ async function decodeIntegrityToken({ httpClient, packageName, integrityToken, a
     );
     return response.data;
   } catch (error) {
-    const reasonCode = error?.code === 'ECONNABORTED'
+    const reasonCode = ['ECONNABORTED', 'ETIMEDOUT'].includes(error?.code)
       ? 'GOOGLE_DECODE_TIMEOUT'
       : 'GOOGLE_DECODE_FAILED';
     throw new PlayIntegrityUnavailableError(reasonCode, error);

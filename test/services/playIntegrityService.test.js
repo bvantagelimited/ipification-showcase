@@ -169,3 +169,15 @@ test('maps decode timeout failures to unavailable timeout errors', async () => {
       && error.reasonCode === 'GOOGLE_DECODE_TIMEOUT',
   );
 });
+
+test('maps ETIMEDOUT decode failures to unavailable timeout errors', async () => {
+  const timeoutError = new Error('request timed out');
+  timeoutError.code = 'ETIMEDOUT';
+  const { service } = createService({ httpError: timeoutError });
+
+  await assert.rejects(
+    service.verify(validInput),
+    (error) => error instanceof PlayIntegrityUnavailableError
+      && error.reasonCode === 'GOOGLE_DECODE_TIMEOUT',
+  );
+});

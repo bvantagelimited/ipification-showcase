@@ -5,6 +5,7 @@
   "private": false,
   "scripts": {
     "version": "echo $npm_package_version",
+    "test": "node --test",
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www"
   },

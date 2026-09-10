@@ -13,6 +13,7 @@ require('dotenv').config()
 const { deepMerge } = require('./utils/helpers');
 const { validateConfig } = require('./utils/validateConfig');
 const { getAuthServer } = require('./utils/authServerHelper');
+const { createTs43AuthRateLimiter } = require('./middleware/ts43RateLimit');
 
 // Load locale.json and merge with locale from default.json if exists
 const localePath = path.join(__dirname, 'config', 'locale.json');
@@ -96,6 +97,7 @@ const smsRouter = require('./routes/sms');
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
+app.use('/ts43/auth', createTs43AuthRateLimiter());
 app.use('/ts43', ts43Router);
 app.use('/sms', smsRouter);
 

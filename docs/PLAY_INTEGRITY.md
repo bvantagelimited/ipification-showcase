@@ -221,10 +221,16 @@ application.
 - [ ] Confirm the Android package name equals `PLAY_INTEGRITY_PACKAGE_NAME`.
 - [ ] Warm the Android provider and renew it when the SDK reports invalid or
       expired state.
-- [ ] Submit a token whose request hash matches the documented action and
-      payload; confirm HTTP 200 with `decision: "allow"`.
-- [ ] Request a fresh token using the original action and payload hash, then
-      change only `payload.amount` in the backend POST body before the token's
-      first submission; confirm HTTP 403 with `REQUEST_HASH_MISMATCH`.
+- [ ] Create an attempt with `phoneNumber`, `clientId`, and `serverId`; confirm
+      HTTP 201 returns `attemptId`, `requestHash`, and `expiresAt`.
+- [ ] Request a fresh token using that exact backend-returned `requestHash`,
+      then POST `attemptId` and `integrityToken` to `/verify`; confirm HTTP 201
+      returns a signed `state` and `expiresAt`.
+- [ ] Call `setState(state)` before `startAuthentication()`, then POST the
+      returned authorization `code` and unchanged `state` to
+      `/token-exchange`; confirm HTTP 200 with `decision: "allow"`.
+- [ ] Create two attempts, request a fresh token for the first, and submit it
+      once against the second attempt; confirm HTTP 403 with
+      `REQUEST_HASH_MISMATCH`. Do not submit that token again.
 - [ ] Confirm logs contain only request ID, decision, reason codes, and
       duration, with no token, credential, request body, or decoded response.

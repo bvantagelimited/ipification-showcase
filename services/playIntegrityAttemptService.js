@@ -215,6 +215,19 @@ function createPlayIntegrityAttemptService({
     });
   }
 
+  async function completeTransaction(transactionId, status) {
+    if (!['consumed', 'failed'].includes(status)) throw new TypeError('transaction status is invalid');
+    const key = transactionKey(transactionId);
+    return withKeyLock(key, async () => {
+      const transaction = await dataStore.get(key);
+      if (!transaction || transaction.status !== 'exchanging' || isExpired(transaction, currentTimeMs())) {
+        return null;
+      }
+      const completed = freezeSnapshot({ ...transaction, status });
+      return await save(key, completed) ? completed : null;
+    });
+  }
+
   return {
     createAttempt,
     claimAttempt,
@@ -222,6 +235,7 @@ function createPlayIntegrityAttemptService({
     approveAttempt,
     createSignedState,
     claimTransaction,
+    completeTransaction,
   };
 }
 

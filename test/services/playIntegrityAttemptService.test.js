@@ -236,6 +236,18 @@ test('does not claim a state whose signed attempt or action does not match the t
   assert.equal(transaction.status, 'approved');
 });
 
+test('completes only an exchanging transaction as consumed or failed', async () => {
+  const { service, dataStore } = createService();
+  const transaction = await approvedTransaction(service);
+  const state = service.createSignedState(transaction);
+
+  assert.ok(await service.claimTransaction(state));
+  const consumed = await service.completeTransaction(transaction.id, 'consumed');
+  assert.equal(consumed.status, 'consumed');
+  assert.equal((await dataStore.get(`play-integrity:transaction:${transaction.id}`)).status, 'consumed');
+  assert.equal(await service.completeTransaction(transaction.id, 'failed'), null);
+});
+
 test('does not claim state with a wrong issuer, audience, or signature', async () => {
   const { service } = createService();
   const transaction = await approvedTransaction(service);

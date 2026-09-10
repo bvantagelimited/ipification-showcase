@@ -4,20 +4,23 @@ const {
   createPlayIntegrityService,
   PlayIntegrityUnavailableError,
 } = require('../../services/playIntegrityService');
-const { createRequestHash } = require('../../utils/canonicalJson');
 
 const validInput = {
   integrityToken: 'opaque-integrity-token',
-  action: 'demo.protected-action.v1',
-  payload: { transactionId: 'demo-123', amount: 100 },
-  requestId: 'request-1',
+  expectedRequestHash: 'expected-request-hash',
+  expectedPackageName: 'com.example.demo',
+  maxAgeMs: 120_000,
 };
+
+const fixedNow = new Date('2026-09-10T10:00:00.000Z');
 
 function decodedFixture(overrides = {}) {
   return {
     tokenPayloadExternal: {
       requestDetails: {
-        requestHash: createRequestHash(validInput.action, validInput.payload),
+        requestHash: validInput.expectedRequestHash,
+        requestPackageName: validInput.expectedPackageName,
+        timestampMillis: String(fixedNow.getTime()),
       },
       appIntegrity: { appRecognitionVerdict: 'PLAY_RECOGNIZED' },
       deviceIntegrity: { deviceRecognitionVerdict: ['MEETS_DEVICE_INTEGRITY'] },
@@ -47,6 +50,7 @@ function createService({ decoded = decodedFixture(), authError, httpError, requi
       authClient,
       httpClient,
       timeoutMs: 10_000,
+      now: () => fixedNow,
     }),
     httpClient,
   };
@@ -58,7 +62,6 @@ test('allows a recognized app with matching hash and device integrity', async ()
   const result = await service.verify(validInput);
 
   assert.deepEqual(result, {
-    requestId: 'request-1',
     decision: 'allow',
     reasonCodes: [],
     requestHashMatched: true,
@@ -70,10 +73,34 @@ test('allows a recognized app with matching hash and device integrity', async ()
   });
 });
 
+test('denies a mismatched package or stale timestamp', async () => {
+  const { service: mismatchedPackage } = createService({
+    decoded: decodedFixture({ requestDetails: {
+      requestHash: validInput.expectedRequestHash,
+      requestPackageName: 'com.other.demo',
+      timestampMillis: String(fixedNow.getTime()),
+    } }),
+  });
+  const { service: stale } = createService({
+    decoded: decodedFixture({ requestDetails: {
+      requestHash: validInput.expectedRequestHash,
+      requestPackageName: validInput.expectedPackageName,
+      timestampMillis: String(fixedNow.getTime() - validInput.maxAgeMs - 1),
+    } }),
+  });
+
+  assert.deepEqual((await mismatchedPackage.verify(validInput)).reasonCodes, ['PACKAGE_NAME_MISMATCH']);
+  assert.deepEqual((await stale.verify(validInput)).reasonCodes, ['REQUEST_TOO_OLD']);
+});
+
 test('denies a mismatched request hash before other policy failures', async () => {
   const { service } = createService({
     decoded: decodedFixture({
-      requestDetails: { requestHash: 'wrong-hash' },
+      requestDetails: {
+        requestHash: 'wrong-hash',
+        requestPackageName: validInput.expectedPackageName,
+        timestampMillis: String(fixedNow.getTime()),
+      },
       appIntegrity: { appRecognitionVerdict: 'UNRECOGNIZED_VERSION' },
       deviceIntegrity: { deviceRecognitionVerdict: [] },
       accountDetails: { appLicensingVerdict: 'UNLICENSED' },

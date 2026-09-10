@@ -6,9 +6,15 @@ function loadFeatureEnabledApp(verify) {
   const appPath = require.resolve('../../app');
   const playIntegrityService = require('../../services/playIntegrityService');
   const originalEnabled = process.env.PLAY_INTEGRITY_ENABLED;
+  const originalStateSecret = process.env.PLAY_INTEGRITY_STATE_SECRET;
+  const originalStateIssuer = process.env.PLAY_INTEGRITY_STATE_ISSUER;
+  const originalStateAudience = process.env.PLAY_INTEGRITY_STATE_AUDIENCE;
   const originalCreateService = playIntegrityService.createPlayIntegrityService;
 
   process.env.PLAY_INTEGRITY_ENABLED = 'true';
+  process.env.PLAY_INTEGRITY_STATE_SECRET = 'test-state-secret';
+  process.env.PLAY_INTEGRITY_STATE_ISSUER = 'test-issuer';
+  process.env.PLAY_INTEGRITY_STATE_AUDIENCE = 'test-audience';
   playIntegrityService.createPlayIntegrityService = () => ({ verify });
   delete require.cache[appPath];
 
@@ -18,6 +24,12 @@ function loadFeatureEnabledApp(verify) {
     playIntegrityService.createPlayIntegrityService = originalCreateService;
     if (originalEnabled === undefined) delete process.env.PLAY_INTEGRITY_ENABLED;
     else process.env.PLAY_INTEGRITY_ENABLED = originalEnabled;
+    if (originalStateSecret === undefined) delete process.env.PLAY_INTEGRITY_STATE_SECRET;
+    else process.env.PLAY_INTEGRITY_STATE_SECRET = originalStateSecret;
+    if (originalStateIssuer === undefined) delete process.env.PLAY_INTEGRITY_STATE_ISSUER;
+    else process.env.PLAY_INTEGRITY_STATE_ISSUER = originalStateIssuer;
+    if (originalStateAudience === undefined) delete process.env.PLAY_INTEGRITY_STATE_AUDIENCE;
+    else process.env.PLAY_INTEGRITY_STATE_AUDIENCE = originalStateAudience;
   }
 }
 
@@ -28,7 +40,7 @@ async function withServer(app, run) {
   const { port } = server.address();
 
   try {
-    await run(`http://127.0.0.1:${port}/api/play-integrity/verify`);
+    await run(`http://127.0.0.1:${port}/api/play-integrity/attempt`);
   } finally {
     await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
   }
@@ -41,10 +53,7 @@ async function assertInvalidRequest(response) {
   assert.notEqual(responseBody.requestId, '');
   assert.deepEqual({ ...responseBody, requestId: 'generated-request-id' }, {
     requestId: 'generated-request-id',
-    decision: 'deny',
-    reasonCodes: ['INVALID_REQUEST'],
-    requestHashMatched: false,
-    verdict: null,
+    decision: 'deny', reasonCodes: ['INVALID_REQUEST'],
   });
 }
 
@@ -70,11 +79,7 @@ test('mounted Play Integrity endpoint safely rejects malformed and oversized JSO
     await assertInvalidRequest(await fetch(url, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        integrityToken: 'opaque-integrity-token',
-        action: 'demo.protected-action.v1',
-        payload: { value: 'x'.repeat(17 * 1024) },
-      }),
+      body: JSON.stringify({ phoneNumber: '+84901234567', clientId: 'demo', serverId: 'stage', value: 'x'.repeat(17 * 1024) }),
     }));
   });
 

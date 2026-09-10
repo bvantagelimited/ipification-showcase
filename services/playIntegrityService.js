@@ -1,6 +1,5 @@
 const axios = require('axios');
 const { GoogleAuth } = require('google-auth-library');
-const { createRequestHash } = require('../utils/canonicalJson');
 
 const PLAY_INTEGRITY_SCOPE = 'https://www.googleapis.com/auth/playintegrity';
 
@@ -19,12 +18,13 @@ function createPlayIntegrityService({
   authClient = new GoogleAuth({ scopes: [PLAY_INTEGRITY_SCOPE] }),
   httpClient = axios,
   timeoutMs,
+  now = () => new Date(),
 }) {
-  async function verify({ integrityToken, action, payload, requestId }) {
+  async function verify({ integrityToken, expectedRequestHash, expectedPackageName, maxAgeMs }) {
     const accessToken = await getAccessToken(authClient);
     const decoded = await decodeIntegrityToken({
       httpClient,
-      packageName,
+      packageName: expectedPackageName || packageName,
       integrityToken,
       accessToken,
       timeoutMs,
@@ -32,9 +32,10 @@ function createPlayIntegrityService({
 
     return evaluateVerdict({
       decoded,
-      action,
-      payload,
-      requestId,
+      expectedRequestHash,
+      expectedPackageName: expectedPackageName || packageName,
+      maxAgeMs,
+      nowMs: currentTimeMs(now),
       requireLicensedApp,
     });
   }
@@ -72,18 +73,36 @@ async function decodeIntegrityToken({ httpClient, packageName, integrityToken, a
   }
 }
 
-function evaluateVerdict({ decoded, action, payload, requestId, requireLicensedApp }) {
+function evaluateVerdict({
+  decoded,
+  expectedRequestHash,
+  expectedPackageName,
+  maxAgeMs,
+  nowMs,
+  requireLicensedApp,
+}) {
   const tokenPayload = decoded?.tokenPayloadExternal;
-  const requestHash = tokenPayload?.requestDetails?.requestHash;
+  const requestDetails = tokenPayload?.requestDetails;
+  const requestHash = requestDetails?.requestHash;
+  const requestPackageName = requestDetails?.requestPackageName;
+  const timestampMillis = Number(requestDetails?.timestampMillis);
   const appRecognition = tokenPayload?.appIntegrity?.appRecognitionVerdict ?? null;
   const deviceIntegrity = Array.isArray(tokenPayload?.deviceIntegrity?.deviceRecognitionVerdict)
     ? tokenPayload.deviceIntegrity.deviceRecognitionVerdict
     : [];
   const appLicensing = tokenPayload?.accountDetails?.appLicensingVerdict ?? null;
-  const requestHashMatched = requestHash === createRequestHash(action, payload);
+  const requestHashMatched = requestHash === expectedRequestHash;
+  const packageNameMatched = requestPackageName === expectedPackageName;
+  const requestIsFresh = Number.isFinite(timestampMillis)
+    && Number.isFinite(maxAgeMs)
+    && maxAgeMs > 0
+    && timestampMillis <= nowMs
+    && nowMs - timestampMillis <= maxAgeMs;
   const reasonCodes = [];
 
   if (!requestHashMatched) reasonCodes.push('REQUEST_HASH_MISMATCH');
+  if (!packageNameMatched) reasonCodes.push('PACKAGE_NAME_MISMATCH');
+  if (!requestIsFresh) reasonCodes.push('REQUEST_TOO_OLD');
   if (appRecognition !== 'PLAY_RECOGNIZED') reasonCodes.push('APP_NOT_RECOGNIZED');
   if (!deviceIntegrity.includes('MEETS_DEVICE_INTEGRITY')) {
     reasonCodes.push('DEVICE_INTEGRITY_NOT_MET');
@@ -91,7 +110,6 @@ function evaluateVerdict({ decoded, action, payload, requestId, requireLicensedA
   if (requireLicensedApp && appLicensing !== 'LICENSED') reasonCodes.push('APP_NOT_LICENSED');
 
   return {
-    requestId,
     decision: reasonCodes.length === 0 ? 'allow' : 'deny',
     reasonCodes,
     requestHashMatched,
@@ -101,6 +119,13 @@ function evaluateVerdict({ decoded, action, payload, requestId, requireLicensedA
       appLicensing,
     },
   };
+}
+
+function currentTimeMs(now) {
+  const value = now();
+  const milliseconds = value instanceof Date ? value.getTime() : Number(value);
+  if (!Number.isFinite(milliseconds)) throw new TypeError('now must return a valid time');
+  return milliseconds;
 }
 
 module.exports = { createPlayIntegrityService, PlayIntegrityUnavailableError };

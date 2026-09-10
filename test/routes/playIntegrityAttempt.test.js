@@ -2,7 +2,9 @@ const http = require('node:http');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const { PlayIntegrityUnavailableError } = require('../../services/playIntegrityService');
+const { createPlayIntegrityAttemptService } = require('../../services/playIntegrityAttemptService');
 const { createPlayIntegrityRouter } = require('../../routes/playIntegrity');
 
 const publicAttempt = {
@@ -43,14 +45,25 @@ function createAttemptService(overrides = {}) {
       expiresAt: publicAttempt.expiresAt,
     }),
     createSignedState: () => 'signed.state.value',
-    claimTransaction: async () => ({
-      id: 'transaction-id',
-      attempt: frozenAttempt,
-      status: 'exchanging',
-    }),
+    claimTransaction: async () => ({ status: 'claimed', transaction: {
+      id: 'transaction-id', attempt: frozenAttempt, status: 'exchanging',
+    } }),
     completeTransaction: async () => undefined,
     ...overrides,
   };
+}
+
+function createRealAttemptService() {
+  const values = new Map();
+  return createPlayIntegrityAttemptService({
+    dataStore: {
+      get: async (key) => values.get(key),
+      set: async (key, value) => values.set(key, value),
+    },
+    stateSecret: 'trusted-state-secret',
+    stateIssuer: 'ipification-demo',
+    stateAudience: 'ipification-sdk',
+  });
 }
 
 function createRouter({ attemptService, verify, exchangeCodeAndGetUserInfo, logCompletion } = {}) {
@@ -214,15 +227,38 @@ test('token exchange rejects invalid state', async () => {
   assert.equal(exchangeCalls, 0);
 });
 
+test('token exchange rejects a forged compact JWT as invalid state', async () => {
+  let exchangeCalls = 0;
+  const router = createRouter({
+    attemptService: createRealAttemptService(),
+    exchangeCodeAndGetUserInfo: async () => { exchangeCalls += 1; },
+  });
+  const forgedState = jwt.sign(
+    { typ: 'IPIFICATION_AUTH', tx: 'forged-transaction', aid: 'forged-attempt', act: 'IPIFICATION_AUTH' },
+    'untrusted-state-secret',
+    { algorithm: 'HS512', issuer: 'ipification-demo', audience: 'ipification-sdk' },
+  );
+
+  await withServer(router, async (post) => {
+    const response = await post('/token-exchange', { code: 'input', state: forgedState });
+    assert.equal(response.status, 400);
+    assert.deepEqual(await response.json(), {
+      requestId: 'request-id', decision: 'deny', reasonCodes: ['INVALID_STATE'],
+    });
+  });
+
+  assert.equal(exchangeCalls, 0);
+});
+
 test('token exchange rejects reuse before a second IPification call', async () => {
   let claims = 0;
   const exchangeInputs = [];
   const completions = [];
   const router = createRouter({
     attemptService: createAttemptService({
-      claimTransaction: async () => (claims++ === 0 ? {
+      claimTransaction: async () => (claims++ === 0 ? { status: 'claimed', transaction: {
         id: 'transaction-id', attempt: frozenAttempt, status: 'exchanging',
-      } : null),
+      } } : { status: 'unavailable' }),
       completeTransaction: async (...input) => completions.push(input),
     }),
     exchangeCodeAndGetUserInfo: async (...input) => {

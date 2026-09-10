@@ -94,11 +94,16 @@ function createPlayIntegrityRouter({
       return;
     }
 
-    const transaction = await attemptService.claimTransaction(state);
-    if (!transaction) {
+    const claim = await attemptService.claimTransaction(state);
+    if (claim?.status === 'invalid') {
+      respond(res, 400, safeResponse(completion.requestId, 'deny', ['INVALID_STATE']), completion, logCompletion);
+      return;
+    }
+    if (claim?.status !== 'claimed') {
       respond(res, 409, safeResponse(completion.requestId, 'deny', ['TRANSACTION_UNAVAILABLE']), completion, logCompletion);
       return;
     }
+    const transaction = claim.transaction;
 
     try {
       const { tokenUrl, userUrl, params } = exchangeInputs(transaction.attempt, code);

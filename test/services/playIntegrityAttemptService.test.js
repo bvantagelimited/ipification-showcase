@@ -213,8 +213,8 @@ test('rejects a signed state after its transaction has been claimed once', async
   const transaction = await approvedTransaction(service);
   const state = service.createSignedState(transaction);
 
-  assert.ok(await service.claimTransaction(state));
-  assert.equal(await service.claimTransaction(state), null);
+  assert.equal((await service.claimTransaction(state)).status, 'claimed');
+  assert.equal((await service.claimTransaction(state)).status, 'unavailable');
 });
 
 test('does not claim a state whose signed attempt or action does not match the transaction', async () => {
@@ -232,7 +232,7 @@ test('does not claim a state whose signed attempt or action does not match the t
     },
   );
 
-  assert.equal(await service.claimTransaction(mismatchedState), null);
+  assert.equal((await service.claimTransaction(mismatchedState)).status, 'invalid');
   assert.equal(transaction.status, 'approved');
 });
 
@@ -241,7 +241,7 @@ test('completes only an exchanging transaction as consumed or failed', async () 
   const transaction = await approvedTransaction(service);
   const state = service.createSignedState(transaction);
 
-  assert.ok(await service.claimTransaction(state));
+  assert.equal((await service.claimTransaction(state)).status, 'claimed');
   const consumed = await service.completeTransaction(transaction.id, 'consumed');
   assert.equal(consumed.status, 'consumed');
   assert.equal((await dataStore.get(`play-integrity:transaction:${transaction.id}`)).status, 'consumed');
@@ -258,7 +258,7 @@ test('does not claim state with a wrong issuer, audience, or signature', async (
     { algorithm: 'HS512', expiresIn: '120s', issuer: 'ipification-demo', audience: 'other', jwtid: 'jwt-other' },
   );
 
-  assert.equal(await service.claimTransaction(wrongAudience), null);
-  assert.equal(await service.claimTransaction(`${state}x`), null);
-  assert.ok(await service.claimTransaction(state));
+  assert.equal((await service.claimTransaction(wrongAudience)).status, 'invalid');
+  assert.equal((await service.claimTransaction(`${state}x`)).status, 'invalid');
+  assert.equal((await service.claimTransaction(state)).status, 'claimed');
 });

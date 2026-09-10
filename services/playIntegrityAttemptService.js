@@ -193,25 +193,27 @@ function createPlayIntegrityAttemptService({
         audience: stateAudience,
       });
     } catch {
-      return null;
+      return { status: 'invalid' };
     }
-    if (!isValidStateClaims(claims)) return null;
+    if (!isValidStateClaims(claims)) return { status: 'invalid' };
 
     const key = transactionKey(claims.tx);
     return withKeyLock(key, async () => {
       const transaction = await dataStore.get(key);
       if (!transaction || transaction.status !== 'approved' || isExpired(transaction, currentTimeMs())) {
-        return null;
+        return { status: 'unavailable' };
       }
       if (transaction.id !== claims.tx
         || transaction.attemptId !== claims.aid
         || transaction.attempt?.id !== claims.aid
         || transaction.attempt?.action !== claims.act) {
-        return null;
+        return { status: 'invalid' };
       }
 
       const exchanging = freezeSnapshot({ ...transaction, status: 'exchanging' });
-      return await save(key, exchanging) ? exchanging : null;
+      return await save(key, exchanging)
+        ? { status: 'claimed', transaction: exchanging }
+        : { status: 'unavailable' };
     });
   }
 

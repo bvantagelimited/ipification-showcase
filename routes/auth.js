@@ -60,7 +60,9 @@ router.get('/start', function (req, res) {
   // Get auth server (defaults to first server if serverId not provided)
   const authServer = getAuthServer(serverId);
   if (!authServer) {
-    res.status(HTTP_STATUS.BAD_REQUEST).send(serverId ? `Invalid server_id: '${serverId}'` : 'No auth servers configured');
+    res.status(HTTP_STATUS.BAD_REQUEST).json({
+      error: serverId ? 'INVALID_SERVER_ID' : 'NO_AUTH_SERVERS_CONFIGURED',
+    });
     return;
   }
 

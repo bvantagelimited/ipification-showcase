@@ -96,6 +96,72 @@ test('rejects phone numbers that cannot be normalized to E.164', async () => {
   );
 });
 
+test('requires both client and server resolvers', async () => {
+  const { service } = createService();
+
+  await assert.rejects(
+    service.createAttempt({
+      phoneNumber: '+84901234567', clientId: 'demo', serverId: 'stage', resolveServer: () => ({ id: 'stage' }),
+    }),
+    /client resolver/,
+  );
+  await assert.rejects(
+    service.createAttempt({
+      phoneNumber: '+84901234567', clientId: 'demo', serverId: 'stage', resolveClient: () => ({ id: 'demo' }),
+    }),
+    /server resolver/,
+  );
+});
+
+test('rejects unresolved client or server IDs', async () => {
+  const { service } = createService();
+
+  await assert.rejects(
+    createAttempt(service, { resolveClient: () => null }),
+    /client not found/,
+  );
+  await assert.rejects(
+    createAttempt(service, { resolveServer: () => null }),
+    /server not found/,
+  );
+});
+
+test('rejects resolved snapshots whose IDs do not match the requested IDs', async () => {
+  const { service } = createService();
+
+  await assert.rejects(
+    createAttempt(service, { resolveClient: () => ({ id: 'other-client' }) }),
+    /client id does not match/,
+  );
+  await assert.rejects(
+    createAttempt(service, { resolveServer: () => ({ id: 'other-server' }) }),
+    /server id does not match/,
+  );
+});
+
+test('fails closed when resolver time exhausts the attempt TTL before persistence', async () => {
+  const dataStore = createDataStore();
+  let time = fixedNow.getTime();
+  const service = createPlayIntegrityAttemptService({
+    dataStore,
+    stateSecret,
+    stateIssuer: 'ipification-demo',
+    stateAudience: 'ipification-sdk',
+    now: () => time,
+    randomId: () => 'attempt-1',
+  });
+
+  const result = await createAttempt(service, {
+    resolveClient: async () => {
+      time += 120_000;
+      return { id: 'demo' };
+    },
+  });
+
+  assert.equal(result, null);
+  assert.equal(dataStore.writes.length, 0);
+});
+
 test('allows exactly one concurrent attempt claim', async () => {
   const { service } = createService();
   const { attemptId } = await createAttempt(service);

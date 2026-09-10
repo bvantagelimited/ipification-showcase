@@ -66,10 +66,10 @@ function createPlayIntegrityAttemptService({
   }
 
   async function resolveSnapshot(resolver, id, kind) {
-    if (resolver === undefined) return freezeSnapshot({ id });
     if (typeof resolver !== 'function') throw new TypeError(`${kind} resolver must be a function`);
     const resolved = await resolver(id);
     if (!resolved) throw new Error(`${kind} not found`);
+    if (resolved.id !== id) throw new Error(`${kind} id does not match requested id`);
     return freezeSnapshot(resolved);
   }
 
@@ -78,6 +78,7 @@ function createPlayIntegrityAttemptService({
     if (typeof serverId !== 'string' || serverId.length === 0) throw new TypeError('serverId is required');
 
     const phoneNumberE164 = normalizePhoneNumber(phoneNumber);
+    const createdAtMs = currentTimeMs();
     const [client, server] = await Promise.all([
       resolveSnapshot(resolveClient, clientId, 'client'),
       resolveSnapshot(resolveServer, serverId, 'server'),
@@ -86,7 +87,6 @@ function createPlayIntegrityAttemptService({
     if (typeof id !== 'string' || !/^[\w-]+$/.test(id)) {
       throw new TypeError('randomId must return a URL-safe identifier');
     }
-    const createdAtMs = currentTimeMs();
     const expiresAt = new Date(createdAtMs + ATTEMPT_TTL_MS).toISOString();
     const phoneNumberHash = crypto.createHash('sha256').update(phoneNumberE164, 'utf8').digest('base64url');
     const requestHash = createRequestHash(ACTION, {
@@ -110,7 +110,7 @@ function createPlayIntegrityAttemptService({
       expiresAt,
     });
 
-    await save(attemptKey(id), attempt);
+    if (!await save(attemptKey(id), attempt)) return null;
     return freezeSnapshot({ attemptId: id, requestHash, expiresAt });
   }
 

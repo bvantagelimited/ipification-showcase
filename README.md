@@ -69,7 +69,7 @@ npm run dev  # Start with auto-reload
 - **[Quick Start](docs/QUICKSTART.md)** - Setup guide and common issues
 - **[API Reference](docs/API.md)** - Complete endpoint documentation
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and components
-- **[Play Integrity backend demo](docs/PLAY_INTEGRITY.md)** - Backend verification setup, request hashing, and Android checklist
+- **[Play Integrity backend demo](docs/PLAY_INTEGRITY.md)** - Backend verification setup, request hashing, and Android checklist. The IPification flow creates a short-lived attempt, uses its backend-returned hash with a fresh Android token, verifies once, calls `setState` before IPification, then exchanges the returned code and state.
 - **[Documentation Index](docs/INDEX.md)** - Documentation overview
 
 ## Support

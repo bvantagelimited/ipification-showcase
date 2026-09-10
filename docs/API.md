@@ -156,27 +156,68 @@ Get application configuration (auth servers, clients, etc.)
 
 ## Play Integrity Backend Demo
 
-### POST /api/play-integrity/verify
+The IPification demo flow is enabled only when `PLAY_INTEGRITY_ENABLED=true`.
+Create an attempt, verify its fresh Play Integrity token, then exchange the
+IPification authorization code:
 
-Verifies an Android Play Integrity Standard API token and checks that it was
-created for the same protected request received by the backend. The endpoint
-exists only when `PLAY_INTEGRITY_ENABLED=true`.
+```text
+POST /api/play-integrity/attempt
+  -> attemptId, backend-returned requestHash, expiresAt
+POST /api/play-integrity/verify
+  -> signed state, expiresAt
+setState(state), then start IPification
+POST /api/play-integrity/token-exchange
+  -> decision: allow
+```
+
+### POST /api/play-integrity/attempt
+
+Creates an immutable authentication attempt. `phoneNumber`, `clientId`, and
+`serverId` are all required; `serverId` is mandatory even when a default auth
+server exists. The backend resolves and snapshots the configured client and
+server, normalizes and hashes the phone number, and returns the hash Android
+must use verbatim.
 
 **Request**:
 
 ```json
 {
-  "integrityToken": "<token-from-android>",
-  "action": "demo.protected-action.v1",
-  "payload": {
-    "transactionId": "demo-123",
-    "amount": 100
-  }
+  "phoneNumber": "<e164-phone-number>",
+  "clientId": "<configured-client-id>",
+  "serverId": "<configured-server-id>"
 }
 ```
 
-`action` must be a non-empty string of at most 128 characters. `payload` must
-be a JSON object and the complete request body must not exceed 16 KB.
+**Response — HTTP 201**:
+
+```json
+{
+  "attemptId": "<attempt-id>",
+  "requestHash": "<backend-returned-request-hash>",
+  "expiresAt": "<iso-8601-expiry>"
+}
+```
+
+The attempt and its transaction expire after 120 seconds. The response never
+contains the stored client secret or normalized phone number.
+
+### POST /api/play-integrity/verify
+
+Verifies an Android Play Integrity Standard API token and checks that it was
+created for the same immutable attempt received by the backend.
+
+**Request**:
+
+```json
+{
+  "attemptId": "<attempt-id>",
+  "integrityToken": "<fresh-token-from-android>"
+}
+```
+
+Android must request a fresh token for each attempt and send it only once. The
+backend obtains the expected request hash from the stored attempt; the verify
+request does not accept an action, phone number, or client/server configuration.
 
 Android and the backend must use this exact request hash:
 
@@ -185,31 +226,26 @@ base64url(SHA-256(UTF-8(action + "\n" + canonicalJson(payload))))
 ```
 
 `canonicalJson` recursively sorts object keys and preserves array order. The
-Android app supplies this hash to the Standard Integrity API, then sends the
-resulting opaque token with the original `action` and `payload` to this API.
+server computes the hash from the immutable attempt snapshot, including the
+normalized phone-number hash, attempt ID, client ID, and server ID. Android
+supplies that exact string to the Standard Integrity API.
 
-**Successful response — HTTP 200**:
+**Successful response — HTTP 201**:
 
 ```json
 {
-  "requestId": "request-id",
-  "decision": "allow",
-  "reasonCodes": [],
-  "requestHashMatched": true,
-  "verdict": {
-    "appRecognition": "PLAY_RECOGNIZED",
-    "deviceIntegrity": ["MEETS_DEVICE_INTEGRITY"],
-    "appLicensing": "LICENSED"
-  }
+  "state": "<signed-state>",
+  "expiresAt": "<iso-8601-expiry>"
 }
 ```
 
 | Status | `decision` | Meaning |
 | --- | --- | --- |
-| 200 | `allow` | Hash and configured integrity policy passed. |
-| 400 | `deny` | Malformed or invalid request; Google is not called. |
+| 201 | state returned | Hash and configured integrity policy passed. |
+| 400 | `deny` | Malformed request; Google is not called. |
 | 403 | `deny` | Token decoded but did not meet policy. |
-| 503 | `unavailable` | Google credentials, network, decode, or timeout failure. Retry with a newly requested Android token. |
+| 409 | `deny` | Attempt is expired or already used. |
+| 503 | `unavailable` | Google credentials, network, decode, or timeout failure. The attempt is rejected. |
 
 Policy reason codes include `REQUEST_HASH_MISMATCH`, `APP_NOT_RECOGNIZED`,
 `DEVICE_INTEGRITY_NOT_MET`, and (when strict licensing is enabled)
@@ -218,6 +254,42 @@ Policy reason codes include `REQUEST_HASH_MISMATCH`, `APP_NOT_RECOGNIZED`,
 
 The API never returns the submitted Integrity token, service-account
 credential, Google access token, or raw decoded Google response.
+
+### POST /api/play-integrity/token-exchange
+
+After verification, Android must call `setState(state)` before starting
+IPification. Send the returned authorization code and unchanged signed state:
+
+```json
+{
+  "code": "<authorization-code>",
+  "state": "<signed-state>"
+}
+```
+
+Successful response — HTTP 200:
+
+```json
+{ "decision": "allow" }
+```
+
+The backend verifies and atomically consumes the transaction before exchanging
+the code with IPification. A state, attempt, or authorization code cannot be
+reused. A failed upstream exchange returns HTTP 401 with
+`IPIFICATION_EXCHANGE_FAILED`.
+
+### Security and operational limits
+
+- Attempts, transactions, and signed states have a 120-second TTL.
+- The built-in `dataStore` is an in-memory, single-process store; it is not
+  shared between workers or instances and is lost on restart.
+- Production must use Redis or a database with atomic claim/consume operations,
+  and bind the attempt and signed state to an authenticated user session or a
+  short-lived verification session.
+- Never log phone numbers or other PII, request bodies, integrity tokens,
+  authorization codes, signed states, credentials, client secrets, or decoded
+  Google payloads. Logs may contain only request ID, endpoint, decision, reason
+  codes, and duration.
 
 **Server setup**:
 

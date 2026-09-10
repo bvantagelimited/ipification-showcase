@@ -13,6 +13,7 @@ Quick reference for API endpoints and usage patterns.
 - [Mobile Integration](#mobile-integration)
 - [TS43/SIM Integration](#ts43sim-integration)
 - [Configuration API](#configuration-api)
+- [Play Integrity Backend Demo](#play-integrity-backend-demo)
 - [Error Handling](#error-handling)
 - [Advanced Details](#advanced-details)
 
@@ -53,6 +54,12 @@ Quick reference for API endpoints and usage patterns.
 ### I want to get app configuration
 
 → Call `/api/config` to get auth_servers, clients, etc.
+
+### I want to protect an Android backend request with Play Integrity
+
+→ Enable `PLAY_INTEGRITY_ENABLED=true`, then call
+`POST /api/play-integrity/verify`. See [Play Integrity backend demo](PLAY_INTEGRITY.md)
+for Google Cloud setup and Android token lifecycle.
 
 ---
 
@@ -144,6 +151,84 @@ Get application configuration (auth servers, clients, etc.)
   "clients": [...]
 }
 ```
+
+---
+
+## Play Integrity Backend Demo
+
+### POST /api/play-integrity/verify
+
+Verifies an Android Play Integrity Standard API token and checks that it was
+created for the same protected request received by the backend. The endpoint
+exists only when `PLAY_INTEGRITY_ENABLED=true`.
+
+**Request**:
+
+```json
+{
+  "integrityToken": "<token-from-android>",
+  "action": "demo.protected-action.v1",
+  "payload": {
+    "transactionId": "demo-123",
+    "amount": 100
+  }
+}
+```
+
+`action` must be a non-empty string of at most 128 characters. `payload` must
+be a JSON object and the complete request body must not exceed 16 KB.
+
+Android and the backend must use this exact request hash:
+
+```text
+base64url(SHA-256(UTF-8(action + "\n" + canonicalJson(payload))))
+```
+
+`canonicalJson` recursively sorts object keys and preserves array order. The
+Android app supplies this hash to the Standard Integrity API, then sends the
+resulting opaque token with the original `action` and `payload` to this API.
+
+**Successful response — HTTP 200**:
+
+```json
+{
+  "requestId": "request-id",
+  "decision": "allow",
+  "reasonCodes": [],
+  "requestHashMatched": true,
+  "verdict": {
+    "appRecognition": "PLAY_RECOGNIZED",
+    "deviceIntegrity": ["MEETS_DEVICE_INTEGRITY"],
+    "appLicensing": "LICENSED"
+  }
+}
+```
+
+| Status | `decision` | Meaning |
+| --- | --- | --- |
+| 200 | `allow` | Hash and configured integrity policy passed. |
+| 400 | `deny` | Malformed or invalid request; Google is not called. |
+| 403 | `deny` | Token decoded but did not meet policy. |
+| 503 | `unavailable` | Google credentials, network, decode, or timeout failure. Retry with a newly requested Android token. |
+
+Policy reason codes include `REQUEST_HASH_MISMATCH`, `APP_NOT_RECOGNIZED`,
+`DEVICE_INTEGRITY_NOT_MET`, and (when strict licensing is enabled)
+`APP_NOT_LICENSED`. Dependency reason codes are `GOOGLE_CREDENTIALS_UNAVAILABLE`,
+`GOOGLE_DECODE_FAILED`, and `GOOGLE_DECODE_TIMEOUT`.
+
+The API never returns the submitted Integrity token, service-account
+credential, Google access token, or raw decoded Google response.
+
+**Server setup**:
+
+1. Link the app's Play Console configuration to its Google Cloud project and enable Play Integrity API.
+2. Give the backend runtime identity permission to decode verdicts for that project.
+3. Set `PLAY_INTEGRITY_PACKAGE_NAME` to the Android `applicationId`.
+4. Provide Application Default Credentials using workload identity or a read-only secret mount; never commit a key file.
+5. Set `PLAY_INTEGRITY_ENABLED=true` and restart the server.
+
+The full Android provider warm-up, credential guidance, and manual test
+checklist are in [PLAY_INTEGRITY.md](PLAY_INTEGRITY.md).
 
 ---
 

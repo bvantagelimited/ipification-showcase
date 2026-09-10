@@ -114,8 +114,8 @@ application.
       expired state.
 - [ ] Submit a token whose request hash matches the documented action and
       payload; confirm HTTP 200 with `decision: "allow"`.
-- [ ] Retain that exact token, change only `payload.amount` in the backend POST
-      body, and reuse the retained token; confirm HTTP 403 with
-      `REQUEST_HASH_MISMATCH`.
+- [ ] Request a fresh token using the original action and payload hash, then
+      change only `payload.amount` in the backend POST body before the token's
+      first submission; confirm HTTP 403 with `REQUEST_HASH_MISMATCH`.
 - [ ] Confirm logs contain only request ID, decision, reason codes, and
       duration, with no token, credential, request body, or decoded response.

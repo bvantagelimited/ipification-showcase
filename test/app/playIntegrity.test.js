@@ -79,7 +79,7 @@ test('mounted Play Integrity endpoint safely rejects malformed and oversized JSO
     await assertInvalidRequest(await fetch(url, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ phoneNumber: '+84901234567', clientId: 'demo', serverId: 'stage', value: 'x'.repeat(17 * 1024) }),
+      body: JSON.stringify({ phone_number: '+84901234567', client_id: 'demo', server_id: 'stage', value: 'x'.repeat(17 * 1024) }),
     }));
   });
 

@@ -13,16 +13,16 @@ server-side snapshot are the source of truth for the operation.
 
 ### 1. Create an attempt
 
-Android sends all three required fields; `serverId` is mandatory:
+Android sends all three required fields; `server_id` is mandatory:
 
 ```http
 POST /api/play-integrity/attempt
 Content-Type: application/json
 
 {
-  "phoneNumber": "<e164-phone-number>",
-  "clientId": "<configured-client-id>",
-  "serverId": "<configured-server-id>"
+  "phone_number": "<e164-phone-number>",
+  "client_id": "<configured-client-id>",
+  "server_id": "<configured-server-id>"
 }
 ```
 
@@ -32,7 +32,7 @@ It returns only public values:
 
 ```json
 {
-  "attemptId": "<attempt-id>",
+  "attempt_id": "<attempt-id>",
   "requestHash": "<backend-returned-request-hash>",
   "expiresAt": "<iso-8601-expiry>"
 }
@@ -61,8 +61,8 @@ POST /api/play-integrity/verify
 Content-Type: application/json
 
 {
-  "attemptId": "<attempt-id>",
-  "integrityToken": "<fresh-token-from-android>"
+  "attempt_id": "<attempt-id>",
+  "integrity_token": "<fresh-token-from-android>"
 }
 ```
 
@@ -161,7 +161,7 @@ base64url(SHA-256(UTF-8(action + "\n" + canonicalJson(payload))))
 compact JSON without whitespace. Numbers must be finite; unsupported values
 and circular structures are rejected. Android must use the backend-returned
 hash verbatim in the Standard Integrity request. The verify request contains
-only `attemptId` and the resulting token; the client never supplies the action,
+only `attempt_id` and the resulting token; the client never supplies the action,
 phone number, or expected hash.
 
 ## Verify the demo endpoint
@@ -171,7 +171,7 @@ locally and do not paste real tokens, authorization codes, signed states, or
 phone numbers into source control or documentation:
 
 ```bash
-curl --request POST "http://localhost:3000/api/play-integrity/verify" --header "Content-Type: application/json" --data '{"attemptId":"<attempt-id>","integrityToken":"<fresh-token-from-android>"}'
+curl --request POST "http://localhost:3000/api/play-integrity/verify" --header "Content-Type: application/json" --data '{"attempt_id":"<attempt-id>","integrity_token":"<fresh-token-from-android>"}'
 ```
 
 The successful response contains only:
@@ -204,7 +204,7 @@ this demo: it is not shared between workers or instances and all state is lost
 when the process restarts. Production deployments must replace it with Redis
 or a database supporting atomic claim/consume operations, and must bind the
 attempt and signed state to an authenticated user session or a short-lived
-verification session. An unguessable `attemptId` alone is not an authenticated
+verification session. An unguessable `attempt_id` alone is not an authenticated
 credential.
 
 ## Android verification checklist
@@ -221,10 +221,10 @@ application.
 - [ ] Confirm the Android package name equals `PLAY_INTEGRITY_PACKAGE_NAME`.
 - [ ] Warm the Android provider and renew it when the SDK reports invalid or
       expired state.
-- [ ] Create an attempt with `phoneNumber`, `clientId`, and `serverId`; confirm
-      HTTP 201 returns `attemptId`, `requestHash`, and `expiresAt`.
+- [ ] Create an attempt with `phone_number`, `client_id`, and `server_id`; confirm
+      HTTP 201 returns `attempt_id`, `requestHash`, and `expiresAt`.
 - [ ] Request a fresh token using that exact backend-returned `requestHash`,
-      then POST `attemptId` and `integrityToken` to `/verify`; confirm HTTP 201
+      then POST `attempt_id` and `integrity_token` to `/verify`; confirm HTTP 201
       returns a signed `state` and `expiresAt`.
 - [ ] Call `setState(state)` before `startAuthentication()`, then POST the
       returned authorization `code` and unchanged `state` to

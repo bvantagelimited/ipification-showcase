@@ -21,7 +21,11 @@ function createPlayIntegrityRouter({
 
   router.post('/attempt', async (req, res) => {
     const completion = createCompletion('attempt', requestIdFactory);
-    const { phoneNumber, clientId, serverId } = req.body || {};
+    const {
+      phone_number: phoneNumber,
+      client_id: clientId,
+      server_id: serverId,
+    } = req.body || {};
     if (!isNonEmptyString(phoneNumber) || !isNonEmptyString(clientId) || !isNonEmptyString(serverId)) {
       respond(res, 400, safeResponse(completion.requestId, 'deny', ['INVALID_REQUEST']), completion, logCompletion);
       return;
@@ -47,7 +51,10 @@ function createPlayIntegrityRouter({
 
   router.post('/verify', async (req, res) => {
     const completion = createCompletion('verify', requestIdFactory);
-    const { attemptId, integrityToken } = req.body || {};
+    const {
+      attempt_id: attemptId,
+      integrity_token: integrityToken,
+    } = req.body || {};
     if (!isNonEmptyString(attemptId) || !isNonEmptyString(integrityToken)) {
       respond(res, 400, safeResponse(completion.requestId, 'deny', ['INVALID_REQUEST']), completion, logCompletion);
       return;

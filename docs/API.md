@@ -172,8 +172,8 @@ POST /api/play-integrity/token-exchange
 
 ### POST /api/play-integrity/attempt
 
-Creates an immutable authentication attempt. `phoneNumber`, `clientId`, and
-`serverId` are all required; `serverId` is mandatory even when a default auth
+Creates an immutable authentication attempt. `phone_number`, `client_id`, and
+`server_id` are all required; `server_id` is mandatory even when a default auth
 server exists. The backend resolves and snapshots the configured client and
 server, normalizes and hashes the phone number, and returns the hash Android
 must use verbatim.
@@ -182,9 +182,9 @@ must use verbatim.
 
 ```json
 {
-  "phoneNumber": "<e164-phone-number>",
-  "clientId": "<configured-client-id>",
-  "serverId": "<configured-server-id>"
+  "phone_number": "<e164-phone-number>",
+  "client_id": "<configured-client-id>",
+  "server_id": "<configured-server-id>"
 }
 ```
 
@@ -192,7 +192,7 @@ must use verbatim.
 
 ```json
 {
-  "attemptId": "<attempt-id>",
+  "attempt_id": "<attempt-id>",
   "requestHash": "<backend-returned-request-hash>",
   "expiresAt": "<iso-8601-expiry>"
 }
@@ -210,8 +210,8 @@ created for the same immutable attempt received by the backend.
 
 ```json
 {
-  "attemptId": "<attempt-id>",
-  "integrityToken": "<fresh-token-from-android>"
+  "attempt_id": "<attempt-id>",
+  "integrity_token": "<fresh-token-from-android>"
 }
 ```
 
@@ -389,7 +389,7 @@ Handles the OAuth2 callback after user authentication.
 | Parameter  | Type   | Required | Description                                                      |
 | ---------- | ------ | -------- | ---------------------------------------------------------------- |
 | `userFlow` | string | Yes      | User flow identifier (e.g., `pvn_ip`, `login_ip`)                |
-| `serverId` | string | No       | Auth server ID (e.g., `stage`, `live`). Defaults to first server |
+| `server_id` | string | No       | Auth server ID (e.g., `stage`, `live`). Defaults to first server |
 
 **Query Parameters**:
 
@@ -420,8 +420,8 @@ GET /auth/callback/login_ip?code=abc123&state=xyz789
 
 **Flow**:
 
-1. Extracts `serverId` from URL path (or defaults to first server)
-2. Resolves auth server URL from `serverId`
+1. Extracts `server_id` from URL path (or defaults to first server)
+2. Resolves auth server URL from `server_id`
 3. Validates authorization code and state
 4. Exchanges authorization code for access token (using same auth server)
 5. Retrieves user information using access token

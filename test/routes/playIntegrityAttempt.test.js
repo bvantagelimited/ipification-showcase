@@ -116,7 +116,7 @@ test('attempt rejects a missing serverId and never creates storage', async () =>
   });
 
   await withServer(router, async (post) => {
-    const response = await post('/attempt', { phoneNumber: '+84901234567', clientId: 'demo' });
+    const response = await post('/attempt', { phone_number: '+84901234567', client_id: 'demo' });
     assert.equal(response.status, 400);
     assert.deepEqual(await response.json(), {
       requestId: 'request-id', decision: 'deny', reasonCodes: ['INVALID_REQUEST'],
@@ -124,6 +124,29 @@ test('attempt rejects a missing serverId and never creates storage', async () =>
   });
 
   assert.equal(createCalls, 0);
+});
+
+test('attempt accepts snake_case request fields', async () => {
+  let received;
+  const router = createRouter({
+    attemptService: createAttemptService({
+      createAttempt: async (input) => {
+        received = input;
+        return publicAttempt;
+      },
+    }),
+  });
+
+  await withServer(router, async (post) => {
+    const response = await post('/attempt', {
+      phone_number: '+84901234567', client_id: 'demo', server_id: 'stage',
+    });
+    assert.equal(response.status, 201);
+  });
+
+  assert.equal(received.phoneNumber, '+84901234567');
+  assert.equal(received.clientId, 'demo');
+  assert.equal(received.serverId, 'stage');
 });
 
 test('verify issues state only after a matching verdict', async () => {
@@ -136,7 +159,7 @@ test('verify issues state only after a matching verdict', async () => {
   });
 
   await withServer(router, async (post) => {
-    const response = await post('/verify', { attemptId: publicAttempt.attemptId, integrityToken: 'opaque' });
+    const response = await post('/verify', { attempt_id: publicAttempt.attemptId, integrity_token: 'opaque' });
     assert.equal(response.status, 201);
     assert.deepEqual(await response.json(), {
       state: 'signed.state.value', expiresAt: publicAttempt.expiresAt,
@@ -163,7 +186,7 @@ test('verify denies a hash mismatch without issuing state', async () => {
   });
 
   await withServer(router, async (post) => {
-    const response = await post('/verify', { attemptId: publicAttempt.attemptId, integrityToken: 'opaque' });
+    const response = await post('/verify', { attempt_id: publicAttempt.attemptId, integrity_token: 'opaque' });
     assert.equal(response.status, 403);
     const body = await response.json();
     assert.equal(Object.hasOwn(body, 'state'), false);
@@ -184,7 +207,7 @@ test('verify rejects an expired or claimed attempt before Google is called', asy
   });
 
   await withServer(router, async (post) => {
-    const response = await post('/verify', { attemptId: publicAttempt.attemptId, integrityToken: 'opaque' });
+    const response = await post('/verify', { attempt_id: publicAttempt.attemptId, integrity_token: 'opaque' });
     assert.equal(response.status, 409);
     assert.deepEqual(await response.json(), {
       requestId: 'request-id', decision: 'deny', reasonCodes: ['ATTEMPT_UNAVAILABLE'],
@@ -202,7 +225,7 @@ test('verify maps unavailable Google verification without exposing its input', a
   });
 
   await withServer(router, async (post) => {
-    const response = await post('/verify', { attemptId: publicAttempt.attemptId, integrityToken: 'opaque' });
+    const response = await post('/verify', { attempt_id: publicAttempt.attemptId, integrity_token: 'opaque' });
     assert.equal(response.status, 503);
     assert.deepEqual(await response.json(), {
       requestId: 'request-id', decision: 'unavailable', reasonCodes: ['GOOGLE_DECODE_FAILED'],
@@ -319,7 +342,7 @@ test('responses and completion logs omit sensitive request values', async () => 
 
   await withServer(router, async (post) => {
     const response = await post('/attempt', {
-      phoneNumber: '+84901234567', clientId: 'demo', serverId: 'stage',
+      phone_number: '+84901234567', client_id: 'demo', server_id: 'stage',
     });
     assert.equal(response.status, 201);
     const body = JSON.stringify(await response.json());

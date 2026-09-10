@@ -7,6 +7,7 @@ function createPlayIntegrityRouter({
   verify,
   exchangeCodeAndGetUserInfo,
   expectedPackageName,
+  userFlow,
   maxAgeMs = 120_000,
   requestIdFactory = uuidv4,
   logCompletion = defaultLogCompletion,
@@ -14,6 +15,9 @@ function createPlayIntegrityRouter({
   if (!attemptService || typeof attemptService.completeTransaction !== 'function'
     || typeof verify !== 'function' || typeof exchangeCodeAndGetUserInfo !== 'function') {
     throw new TypeError('attempt, verification, and exchange services are required');
+  }
+  if (!isNonEmptyString(userFlow)) {
+    throw new TypeError('a Play Integrity user flow is required');
   }
 
   const router = express.Router();
@@ -23,20 +27,24 @@ function createPlayIntegrityRouter({
     const completion = createCompletion('attempt', requestIdFactory);
     const {
       phone_number: phoneNumber,
-      client_id: clientId,
       server_id: serverId,
     } = req.body || {};
-    if (!isNonEmptyString(phoneNumber) || !isNonEmptyString(clientId) || !isNonEmptyString(serverId)) {
+    if (!isNonEmptyString(phoneNumber) || !isNonEmptyString(serverId)) {
       respond(res, 400, safeResponse(completion.requestId, 'deny', ['INVALID_REQUEST']), completion, logCompletion);
       return;
     }
 
     try {
+      const resolveClient = createClientResolver(res.locals, serverId, userFlow);
+      const client = resolveClient();
+      if (!client || !isNonEmptyString(client.client_id)) {
+        throw new TypeError('configured Play Integrity client is unavailable');
+      }
       const result = await attemptService.createAttempt({
         phoneNumber,
-        clientId,
+        clientId: client.client_id,
         serverId,
-        resolveClient: createClientResolver(res.locals, serverId),
+        resolveClient,
         resolveServer: createServerResolver(res.locals),
       });
       if (!result) {
@@ -81,7 +89,7 @@ function createPlayIntegrityRouter({
         return;
       }
       const state = attemptService.createSignedState(transaction);
-      respond(res, 201, { state, expiresAt: transaction.expiresAt }, completion, logCompletion, 'allow');
+      respond(res, 201, { state, expires_at: transaction.expiresAt }, completion, logCompletion, 'allow');
     } catch (error) {
       if (error instanceof PlayIntegrityUnavailableError) {
         await rejectAttemptSafely(attemptService, attempt.id, error.reasonCode);
@@ -135,14 +143,14 @@ function createPlayIntegrityRouter({
   return router;
 }
 
-function createClientResolver(locals, serverId) {
-  return (clientId) => {
+function createClientResolver(locals, serverId, userFlow) {
+  return () => {
     const client = Array.isArray(locals.clients)
-      ? locals.clients.find((candidate) => candidate?.client_id === clientId)
+      ? locals.clients.find((candidate) => candidate?.user_flow === userFlow)
       : null;
     if (!client) return null;
     const redirectUri = client.redirect_uri || `${locals.baseUrl}/auth/callback/${client.user_flow}/${serverId}`;
-    return { ...client, id: clientId, redirectUri };
+    return { ...client, id: client.client_id, redirectUri };
   };
 }
 
@@ -178,7 +186,11 @@ function exchangeInputs(attempt, code) {
 }
 
 function publicAttemptResponse(result) {
-  return { attemptId: result.attemptId, requestHash: result.requestHash, expiresAt: result.expiresAt };
+  return {
+    attempt_id: result.attemptId,
+    request_hash: result.requestHash,
+    expires_at: result.expiresAt,
+  };
 }
 
 function isNonEmptyString(value) {
@@ -197,7 +209,7 @@ function safeReasonCodes(reasonCodes) {
 }
 
 function safeResponse(requestId, decision, reasonCodes) {
-  return { requestId, decision, reasonCodes: safeReasonCodes(reasonCodes) };
+  return { request_id: requestId, decision, reason_codes: safeReasonCodes(reasonCodes) };
 }
 
 function createCompletion(endpoint, requestIdFactory) {
@@ -208,7 +220,7 @@ function requestEndpoint(req) {
   return req.path?.replace(/^\//, '') || 'unknown';
 }
 
-function respond(res, status, body, completion, logCompletion, decision = body.decision, reasonCodes = body.reasonCodes || []) {
+function respond(res, status, body, completion, logCompletion, decision = body.decision, reasonCodes = body.reason_codes || []) {
   logCompletionSafely(logCompletion, {
     requestId: completion.requestId,
     endpoint: completion.endpoint,

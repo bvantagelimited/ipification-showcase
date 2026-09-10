@@ -107,6 +107,7 @@ if (process.env.PLAY_INTEGRITY_ENABLED === 'true') {
     verify,
     exchangeCodeAndGetUserInfo,
     expectedPackageName: process.env.PLAY_INTEGRITY_PACKAGE_NAME,
+    userFlow: process.env.PLAY_INTEGRITY_USER_FLOW,
   }));
 }
 

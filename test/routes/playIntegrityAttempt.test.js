@@ -72,6 +72,7 @@ function createRouter({ attemptService, verify, exchangeCodeAndGetUserInfo, logC
     verify: verify || (async () => ({ decision: 'allow', reasonCodes: [] })),
     exchangeCodeAndGetUserInfo: exchangeCodeAndGetUserInfo || (async () => ({ userInfo: {} })),
     expectedPackageName: 'com.example.demo',
+    userFlow: 'mobile',
     maxAgeMs: 120_000,
     requestIdFactory: () => 'request-id',
     logCompletion,
@@ -116,17 +117,17 @@ test('attempt rejects a missing serverId and never creates storage', async () =>
   });
 
   await withServer(router, async (post) => {
-    const response = await post('/attempt', { phone_number: '+84901234567', client_id: 'demo' });
+    const response = await post('/attempt', { phone_number: '+84901234567' });
     assert.equal(response.status, 400);
     assert.deepEqual(await response.json(), {
-      requestId: 'request-id', decision: 'deny', reasonCodes: ['INVALID_REQUEST'],
+      request_id: 'request-id', decision: 'deny', reason_codes: ['INVALID_REQUEST'],
     });
   });
 
   assert.equal(createCalls, 0);
 });
 
-test('attempt accepts snake_case request fields', async () => {
+test('attempt resolves its configured user flow without accepting client_id', async () => {
   let received;
   const router = createRouter({
     attemptService: createAttemptService({
@@ -139,14 +140,20 @@ test('attempt accepts snake_case request fields', async () => {
 
   await withServer(router, async (post) => {
     const response = await post('/attempt', {
-      phone_number: '+84901234567', client_id: 'demo', server_id: 'stage',
+      phone_number: '+84901234567', server_id: 'stage',
     });
     assert.equal(response.status, 201);
+    assert.deepEqual(await response.json(), {
+      attempt_id: publicAttempt.attemptId,
+      request_hash: publicAttempt.requestHash,
+      expires_at: publicAttempt.expiresAt,
+    });
   });
 
   assert.equal(received.phoneNumber, '+84901234567');
   assert.equal(received.clientId, 'demo');
   assert.equal(received.serverId, 'stage');
+  assert.equal(received.resolveClient().user_flow, 'mobile');
 });
 
 test('verify issues state only after a matching verdict', async () => {
@@ -162,7 +169,7 @@ test('verify issues state only after a matching verdict', async () => {
     const response = await post('/verify', { attempt_id: publicAttempt.attemptId, integrity_token: 'opaque' });
     assert.equal(response.status, 201);
     assert.deepEqual(await response.json(), {
-      state: 'signed.state.value', expiresAt: publicAttempt.expiresAt,
+      state: 'signed.state.value', expires_at: publicAttempt.expiresAt,
     });
   });
 
@@ -191,7 +198,7 @@ test('verify denies a hash mismatch without issuing state', async () => {
     const body = await response.json();
     assert.equal(Object.hasOwn(body, 'state'), false);
     assert.deepEqual(body, {
-      requestId: 'request-id', decision: 'deny', reasonCodes: ['REQUEST_HASH_MISMATCH'],
+      request_id: 'request-id', decision: 'deny', reason_codes: ['REQUEST_HASH_MISMATCH'],
     });
   });
 
@@ -210,7 +217,7 @@ test('verify rejects an expired or claimed attempt before Google is called', asy
     const response = await post('/verify', { attempt_id: publicAttempt.attemptId, integrity_token: 'opaque' });
     assert.equal(response.status, 409);
     assert.deepEqual(await response.json(), {
-      requestId: 'request-id', decision: 'deny', reasonCodes: ['ATTEMPT_UNAVAILABLE'],
+      request_id: 'request-id', decision: 'deny', reason_codes: ['ATTEMPT_UNAVAILABLE'],
     });
   });
 
@@ -228,7 +235,7 @@ test('verify maps unavailable Google verification without exposing its input', a
     const response = await post('/verify', { attempt_id: publicAttempt.attemptId, integrity_token: 'opaque' });
     assert.equal(response.status, 503);
     assert.deepEqual(await response.json(), {
-      requestId: 'request-id', decision: 'unavailable', reasonCodes: ['GOOGLE_DECODE_FAILED'],
+      request_id: 'request-id', decision: 'unavailable', reason_codes: ['GOOGLE_DECODE_FAILED'],
     });
   });
 });
@@ -243,7 +250,7 @@ test('token exchange rejects invalid state', async () => {
     const response = await post('/token-exchange', { code: 'input', state: '' });
     assert.equal(response.status, 400);
     assert.deepEqual(await response.json(), {
-      requestId: 'request-id', decision: 'deny', reasonCodes: ['INVALID_REQUEST'],
+      request_id: 'request-id', decision: 'deny', reason_codes: ['INVALID_REQUEST'],
     });
   });
 
@@ -266,7 +273,7 @@ test('token exchange rejects a forged compact JWT as invalid state', async () =>
     const response = await post('/token-exchange', { code: 'input', state: forgedState });
     assert.equal(response.status, 400);
     assert.deepEqual(await response.json(), {
-      requestId: 'request-id', decision: 'deny', reasonCodes: ['INVALID_STATE'],
+      request_id: 'request-id', decision: 'deny', reason_codes: ['INVALID_STATE'],
     });
   });
 
@@ -298,7 +305,7 @@ test('token exchange rejects reuse before a second IPification call', async () =
     const reused = await post('/token-exchange', { code: 'different-input', state: 'signed.state.value' });
     assert.equal(reused.status, 409);
     assert.deepEqual(await reused.json(), {
-      requestId: 'request-id', decision: 'deny', reasonCodes: ['TRANSACTION_UNAVAILABLE'],
+      request_id: 'request-id', decision: 'deny', reason_codes: ['TRANSACTION_UNAVAILABLE'],
     });
   });
 
@@ -329,7 +336,7 @@ test('token exchange records a failed transaction without exposing the dependenc
     const response = await post('/token-exchange', { code: 'input', state: 'signed.state.value' });
     assert.equal(response.status, 401);
     assert.deepEqual(await response.json(), {
-      requestId: 'request-id', decision: 'deny', reasonCodes: ['IPIFICATION_EXCHANGE_FAILED'],
+      request_id: 'request-id', decision: 'deny', reason_codes: ['IPIFICATION_EXCHANGE_FAILED'],
     });
   });
 
@@ -342,7 +349,7 @@ test('responses and completion logs omit sensitive request values', async () => 
 
   await withServer(router, async (post) => {
     const response = await post('/attempt', {
-      phone_number: '+84901234567', client_id: 'demo', server_id: 'stage',
+      phone_number: '+84901234567', server_id: 'stage',
     });
     assert.equal(response.status, 201);
     const body = JSON.stringify(await response.json());

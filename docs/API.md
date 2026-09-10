@@ -162,9 +162,9 @@ IPification authorization code:
 
 ```text
 POST /api/play-integrity/attempt
-  -> attemptId, backend-returned requestHash, expiresAt
+  -> attempt_id, backend-returned request_hash, expires_at
 POST /api/play-integrity/verify
-  -> signed state, expiresAt
+  -> signed state, expires_at
 setState(state), then start IPification
 POST /api/play-integrity/token-exchange
   -> decision: allow
@@ -172,10 +172,10 @@ POST /api/play-integrity/token-exchange
 
 ### POST /api/play-integrity/attempt
 
-Creates an immutable authentication attempt. `phone_number`, `client_id`, and
-`server_id` are all required; `server_id` is mandatory even when a default auth
-server exists. The backend resolves and snapshots the configured client and
-server, normalizes and hashes the phone number, and returns the hash Android
+Creates an immutable authentication attempt. `phone_number` and `server_id` are
+required; `server_id` is mandatory even when a default auth server exists. The
+backend resolves and snapshots the configured `PLAY_INTEGRITY_USER_FLOW` client
+and server, normalizes and hashes the phone number, and returns the hash Android
 must use verbatim.
 
 **Request**:
@@ -183,7 +183,6 @@ must use verbatim.
 ```json
 {
   "phone_number": "<e164-phone-number>",
-  "client_id": "<configured-client-id>",
   "server_id": "<configured-server-id>"
 }
 ```
@@ -193,8 +192,8 @@ must use verbatim.
 ```json
 {
   "attempt_id": "<attempt-id>",
-  "requestHash": "<backend-returned-request-hash>",
-  "expiresAt": "<iso-8601-expiry>"
+  "request_hash": "<backend-returned-request-hash>",
+  "expires_at": "<iso-8601-expiry>"
 }
 ```
 
@@ -235,7 +234,7 @@ supplies that exact string to the Standard Integrity API.
 ```json
 {
   "state": "<signed-state>",
-  "expiresAt": "<iso-8601-expiry>"
+  "expires_at": "<iso-8601-expiry>"
 }
 ```
 
@@ -297,7 +296,8 @@ reused. A failed upstream exchange returns HTTP 401 with
 2. Give the backend runtime identity permission to decode verdicts for that project.
 3. Set `PLAY_INTEGRITY_PACKAGE_NAME` to the Android `applicationId`.
 4. Provide Application Default Credentials using workload identity or a read-only secret mount; never commit a key file.
-5. Set `PLAY_INTEGRITY_ENABLED=true` and restart the server.
+5. Set `PLAY_INTEGRITY_USER_FLOW` to the configured flow to use (for this demo,
+   `pvn_ip`), set `PLAY_INTEGRITY_ENABLED=true`, and restart the server.
 
 The full Android provider warm-up, credential guidance, and manual test
 checklist are in [PLAY_INTEGRITY.md](PLAY_INTEGRITY.md).

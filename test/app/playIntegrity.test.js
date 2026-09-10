@@ -9,12 +9,14 @@ function loadFeatureEnabledApp(verify) {
   const originalStateSecret = process.env.PLAY_INTEGRITY_STATE_SECRET;
   const originalStateIssuer = process.env.PLAY_INTEGRITY_STATE_ISSUER;
   const originalStateAudience = process.env.PLAY_INTEGRITY_STATE_AUDIENCE;
+  const originalUserFlow = process.env.PLAY_INTEGRITY_USER_FLOW;
   const originalCreateService = playIntegrityService.createPlayIntegrityService;
 
   process.env.PLAY_INTEGRITY_ENABLED = 'true';
   process.env.PLAY_INTEGRITY_STATE_SECRET = 'test-state-secret';
   process.env.PLAY_INTEGRITY_STATE_ISSUER = 'test-issuer';
   process.env.PLAY_INTEGRITY_STATE_AUDIENCE = 'test-audience';
+  process.env.PLAY_INTEGRITY_USER_FLOW = 'pvn_ip';
   playIntegrityService.createPlayIntegrityService = () => ({ verify });
   delete require.cache[appPath];
 
@@ -30,6 +32,8 @@ function loadFeatureEnabledApp(verify) {
     else process.env.PLAY_INTEGRITY_STATE_ISSUER = originalStateIssuer;
     if (originalStateAudience === undefined) delete process.env.PLAY_INTEGRITY_STATE_AUDIENCE;
     else process.env.PLAY_INTEGRITY_STATE_AUDIENCE = originalStateAudience;
+    if (originalUserFlow === undefined) delete process.env.PLAY_INTEGRITY_USER_FLOW;
+    else process.env.PLAY_INTEGRITY_USER_FLOW = originalUserFlow;
   }
 }
 
@@ -49,11 +53,11 @@ async function withServer(app, run) {
 async function assertInvalidRequest(response) {
   assert.equal(response.status, 400);
   const responseBody = await response.json();
-  assert.equal(typeof responseBody.requestId, 'string');
-  assert.notEqual(responseBody.requestId, '');
-  assert.deepEqual({ ...responseBody, requestId: 'generated-request-id' }, {
-    requestId: 'generated-request-id',
-    decision: 'deny', reasonCodes: ['INVALID_REQUEST'],
+  assert.equal(typeof responseBody.request_id, 'string');
+  assert.notEqual(responseBody.request_id, '');
+  assert.deepEqual({ ...responseBody, request_id: 'generated-request-id' }, {
+    request_id: 'generated-request-id',
+    decision: 'deny', reason_codes: ['INVALID_REQUEST'],
   });
 }
 
@@ -79,7 +83,7 @@ test('mounted Play Integrity endpoint safely rejects malformed and oversized JSO
     await assertInvalidRequest(await fetch(url, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ phone_number: '+84901234567', client_id: 'demo', server_id: 'stage', value: 'x'.repeat(17 * 1024) }),
+      body: JSON.stringify({ phone_number: '+84901234567', server_id: 'stage', value: 'x'.repeat(17 * 1024) }),
     }));
   });
 

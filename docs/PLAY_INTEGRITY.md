@@ -13,7 +13,7 @@ server-side snapshot are the source of truth for the operation.
 
 ### 1. Create an attempt
 
-Android sends all three required fields; `server_id` is mandatory:
+Android sends both required fields; `server_id` is mandatory:
 
 ```http
 POST /api/play-integrity/attempt
@@ -21,7 +21,6 @@ Content-Type: application/json
 
 {
   "phone_number": "<e164-phone-number>",
-  "client_id": "<configured-client-id>",
   "server_id": "<configured-server-id>"
 }
 ```
@@ -33,12 +32,12 @@ It returns only public values:
 ```json
 {
   "attempt_id": "<attempt-id>",
-  "requestHash": "<backend-returned-request-hash>",
-  "expiresAt": "<iso-8601-expiry>"
+  "request_hash": "<backend-returned-request-hash>",
+  "expires_at": "<iso-8601-expiry>"
 }
 ```
 
-Android must use the returned `requestHash` verbatim. It must not recreate or
+Android must use the returned `request_hash` verbatim. It must not recreate or
 modify the hash from client-provided values.
 
 ### 2. Request a fresh token and verify it
@@ -49,7 +48,7 @@ backend-returned hash. Never cache, log, or reuse an integrity token:
 ```kotlin
 val token = integrityTokenProvider.request(
   StandardIntegrityTokenRequest.builder()
-    .setRequestHash(attempt.requestHash)
+    .setRequestHash(attempt.request_hash)
     .build()
 ).await().token()
 ```
@@ -74,7 +73,7 @@ transaction. A successful HTTP 201 response contains:
 ```json
 {
   "state": "<signed-state>",
-  "expiresAt": "<iso-8601-expiry>"
+  "expires_at": "<iso-8601-expiry>"
 }
 ```
 
@@ -117,6 +116,7 @@ PLAY_INTEGRITY_ENABLED=false
 PLAY_INTEGRITY_PACKAGE_NAME=com.example.demo
 GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/play-integrity-service-account.json
 PLAY_INTEGRITY_REQUIRE_LICENSED_APP=false
+PLAY_INTEGRITY_USER_FLOW=pvn_ip
 ```
 
 The Google Cloud project used by the backend must be linked to the matching
@@ -179,7 +179,7 @@ The successful response contains only:
 ```json
 {
   "state": "<signed-state>",
-  "expiresAt": "<iso-8601-expiry>"
+  "expires_at": "<iso-8601-expiry>"
 }
 ```
 
@@ -221,11 +221,12 @@ application.
 - [ ] Confirm the Android package name equals `PLAY_INTEGRITY_PACKAGE_NAME`.
 - [ ] Warm the Android provider and renew it when the SDK reports invalid or
       expired state.
-- [ ] Create an attempt with `phone_number`, `client_id`, and `server_id`; confirm
-      HTTP 201 returns `attempt_id`, `requestHash`, and `expiresAt`.
-- [ ] Request a fresh token using that exact backend-returned `requestHash`,
+- [ ] Set `PLAY_INTEGRITY_USER_FLOW` to a configured flow (for example, `pvn_ip`).
+- [ ] Create an attempt with `phone_number` and `server_id`; confirm
+      HTTP 201 returns `attempt_id`, `request_hash`, and `expires_at`.
+- [ ] Request a fresh token using that exact backend-returned `request_hash`,
       then POST `attempt_id` and `integrity_token` to `/verify`; confirm HTTP 201
-      returns a signed `state` and `expiresAt`.
+      returns a signed `state` and `expires_at`.
 - [ ] Call `setState(state)` before `startAuthentication()`, then POST the
       returned authorization `code` and unchanged `state` to
       `/token-exchange`; confirm HTTP 200 with `decision: "allow"`.

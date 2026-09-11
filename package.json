@@ -5,6 +5,7 @@
   "private": false,
   "scripts": {
     "version": "echo $npm_package_version",
+    "test": "node --test",
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www"
   },
@@ -16,6 +17,7 @@
     "debug": "^4.4.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.7.0",
     "express-session": "^1.18.1",
     "firebase-admin": "^12.4.1",
     "geoip-lite": "^1.4.10",

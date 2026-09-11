@@ -37,7 +37,9 @@ test('returns 429 with Retry-After when TS43 authentication exceeds its rate lim
       body: JSON.stringify({ client_id: 'demo-client', login_hint: '+84901234567' }),
     });
 
-    assert.equal((await request()).status, 400);
+    const first = await request();
+    assert.equal(first.status, 400);
+    assert.equal(first.headers.get('ratelimit-policy'), '2;w=60');
     assert.equal((await request()).status, 400);
 
     const limited = await request();

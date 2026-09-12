@@ -117,6 +117,7 @@ PLAY_INTEGRITY_PACKAGE_NAME=com.example.demo
 GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/play-integrity-service-account.json
 PLAY_INTEGRITY_REQUIRE_LICENSED_APP=false
 PLAY_INTEGRITY_USER_FLOW=pvn_ip
+PLAY_INTEGRITY_BYPASS_VERIFICATION=false
 ```
 
 The Google Cloud project used by the backend must be linked to the matching
@@ -125,6 +126,11 @@ project, and grant the runtime identity permission to call it (for example,
 the least-privilege Play Integrity API user role). The package name in
 `PLAY_INTEGRITY_PACKAGE_NAME`, the Play Console app, and the Android build must
 match exactly.
+
+For local demo troubleshooting only, set `PLAY_INTEGRITY_BYPASS_VERIFICATION=true`.
+The backend still requires and consumes an attempt and integrity token, but skips
+the Google verdict call and issues state. This setting is ignored when
+`NODE_ENV=production`.
 
 For local or secret-mounted deployments, Google Application Default
 Credentials (ADC) may read the service-account JSON from

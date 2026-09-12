@@ -8,7 +8,7 @@ class PlayIntegrityUnavailableError extends Error {
     super(reasonCode);
     this.name = 'PlayIntegrityUnavailableError';
     this.reasonCode = reasonCode;
-    void cause;
+    this.cause = cause;
   }
 }
 

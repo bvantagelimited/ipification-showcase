@@ -66,16 +66,18 @@ function createRealAttemptService() {
   });
 }
 
-function createRouter({ attemptService, verify, exchangeCodeAndGetUserInfo, logCompletion } = {}) {
+function createRouter({ attemptService, verify, exchangeCodeAndGetUserInfo, logCompletion, bypassVerification, logVerificationFailure } = {}) {
   return createPlayIntegrityRouter({
     attemptService: attemptService || createAttemptService(),
     verify: verify || (async () => ({ decision: 'allow', reasonCodes: [] })),
     exchangeCodeAndGetUserInfo: exchangeCodeAndGetUserInfo || (async () => ({ userInfo: {} })),
     expectedPackageName: 'com.example.demo',
     userFlow: 'mobile',
+    bypassVerification,
     maxAgeMs: 120_000,
     requestIdFactory: () => 'request-id',
     logCompletion,
+    logVerificationFailure,
   });
 }
 
@@ -179,6 +181,45 @@ test('verify issues state only after a matching verdict', async () => {
     expectedPackageName: 'com.example.demo',
     maxAgeMs: 120_000,
   });
+});
+
+test('verify bypass issues state without calling Google verification', async () => {
+  let verifyCalls = 0;
+  const router = createRouter({
+    bypassVerification: true,
+    verify: async () => { verifyCalls += 1; throw new Error('Google must not be called'); },
+  });
+
+  await withServer(router, async (post) => {
+    const response = await post('/verify', { attempt_id: publicAttempt.attemptId, integrity_token: 'opaque' });
+    assert.equal(response.status, 201);
+    assert.deepEqual(await response.json(), {
+      state: 'signed.state.value', expires_at: publicAttempt.expiresAt,
+    });
+  });
+
+  assert.equal(verifyCalls, 0);
+});
+
+test('verify logs the safe upstream error details without the integrity token', async () => {
+  const events = [];
+  const router = createRouter({
+    verify: async () => { throw new PlayIntegrityUnavailableError('GOOGLE_DECODE_FAILED', new Error('upstream unavailable: opaque-secret-token')); },
+    logVerificationFailure: (event) => events.push(event),
+  });
+
+  await withServer(router, async (post) => {
+    const response = await post('/verify', { attempt_id: publicAttempt.attemptId, integrity_token: 'opaque-secret-token' });
+    assert.equal(response.status, 503);
+  });
+
+  assert.deepEqual(events, [{
+    request_id: 'request-id',
+    reason_code: 'GOOGLE_DECODE_FAILED',
+    error_name: 'Error',
+    error_message: 'upstream unavailable: [REDACTED]',
+  }]);
+  assert.equal(JSON.stringify(events).includes('opaque-secret-token'), false);
 });
 
 test('verify denies a hash mismatch without issuing state', async () => {

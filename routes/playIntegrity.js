@@ -1,6 +1,7 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const { PlayIntegrityUnavailableError } = require('../services/playIntegrityService');
+const logger = require('../utils/logger');
 
 function createPlayIntegrityRouter({
   attemptService,
@@ -8,9 +9,11 @@ function createPlayIntegrityRouter({
   exchangeCodeAndGetUserInfo,
   expectedPackageName,
   userFlow,
+  bypassVerification = false,
   maxAgeMs = 120_000,
   requestIdFactory = uuidv4,
   logCompletion = defaultLogCompletion,
+  logVerificationFailure = defaultLogVerificationFailure,
 }) {
   if (!attemptService || typeof attemptService.completeTransaction !== 'function'
     || typeof verify !== 'function' || typeof exchangeCodeAndGetUserInfo !== 'function') {
@@ -75,7 +78,9 @@ function createPlayIntegrityRouter({
     }
 
     try {
-      const verdict = await verify({ integrityToken, expectedRequestHash: attempt.requestHash, expectedPackageName, maxAgeMs });
+      const verdict = bypassVerification
+        ? { decision: 'allow', reasonCodes: [] }
+        : await verify({ integrityToken, expectedRequestHash: attempt.requestHash, expectedPackageName, maxAgeMs });
       const reasonCodes = safeReasonCodes(verdict?.reasonCodes);
       if (verdict?.decision !== 'allow') {
         await attemptService.rejectAttempt(attempt.id, reasonCodes[0] || 'POLICY_DENIED');
@@ -92,10 +97,12 @@ function createPlayIntegrityRouter({
       respond(res, 201, { state, expires_at: transaction.expiresAt }, completion, logCompletion, 'allow');
     } catch (error) {
       if (error instanceof PlayIntegrityUnavailableError) {
+        logVerificationFailureSafely(logVerificationFailure, completion.requestId, error.reasonCode, error, integrityToken);
         await rejectAttemptSafely(attemptService, attempt.id, error.reasonCode);
         respond(res, 503, safeResponse(completion.requestId, 'unavailable', [error.reasonCode]), completion, logCompletion);
         return;
       }
+      logVerificationFailureSafely(logVerificationFailure, completion.requestId, 'GOOGLE_VERIFICATION_FAILED', error, integrityToken);
       await rejectAttemptSafely(attemptService, attempt.id, 'GOOGLE_VERIFICATION_FAILED');
       respond(res, 503, safeResponse(completion.requestId, 'unavailable', ['GOOGLE_VERIFICATION_FAILED']), completion, logCompletion);
     }
@@ -253,6 +260,33 @@ function logCompletionSafely(logCompletion, event) {
   } catch {
     // Completion logging must not change the endpoint response.
   }
+}
+
+function defaultLogVerificationFailure(event) {
+  logger.error('Play Integrity verification failed', event);
+}
+
+function logVerificationFailureSafely(logVerificationFailure, requestId, reasonCode, error, integrityToken) {
+  try {
+    const cause = error?.cause instanceof Error ? error.cause : error;
+    logVerificationFailure({
+      request_id: requestId,
+      reason_code: reasonCode,
+      error_name: safeErrorName(cause),
+      error_message: safeErrorMessage(cause, integrityToken),
+    });
+  } catch {
+    // Diagnostic logging must not change the endpoint response.
+  }
+}
+
+function safeErrorName(error) {
+  return typeof error?.name === 'string' && error.name.length > 0 ? error.name.slice(0, 80) : 'Error';
+}
+
+function safeErrorMessage(error, integrityToken) {
+  if (typeof error?.message !== 'string' || error.message.length === 0) return 'unknown error';
+  return error.message.slice(0, 500).replaceAll(integrityToken, '[REDACTED]');
 }
 
 function defaultLogCompletion(event) {

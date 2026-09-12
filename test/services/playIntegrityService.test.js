@@ -163,6 +163,21 @@ test('does not expose decoded payloads or access tokens in normal results', asyn
   assert.doesNotMatch(serialized, /tokenPayloadExternal/);
 });
 
+test('does not write decoded Play Integrity verdicts to stdout', async () => {
+  const { service } = createService();
+  const originalLog = console.log;
+  let logCalls = 0;
+  console.log = () => { logCalls += 1; };
+
+  try {
+    await service.verify(validInput);
+  } finally {
+    console.log = originalLog;
+  }
+
+  assert.equal(logCalls, 0);
+});
+
 test('maps authentication failures to unavailable credential errors', async () => {
   const { service } = createService({ authError: new Error('credential details') });
 
